@@ -19337,3 +19337,413 @@ To withdraw consent, email dpo@scientecconsulting.com.
 All applications will be processed with strict confidence. Only shortlisted candidates will be contacted.
 Wong Siew Ting (Maeve) - Outsourcing Team
 ScienTec Consulting Pte Ltd – 11C5781","['Budgets', 'Scalability', 'Azure', 'Financial Management', 'Outsourcing', 'Architect', 'High Availability', 'Contract Management', 'Information Technology', 'Reliability', 'Stakeholder Engagement', 'Cloud Services', 'Budgeting', 'Consulting', 'Service Delivery']",Scientec Consulting Pte. Ltd.,Engineering,84.0,2024Q4,5.0,0.0,https://www.mycareersfuture.gov.sg/job/engineering/cloud-specialist-scientec-consulting-71d2daafdd7c4a3ef8dc9509933b7e31?source=MCF&event=Search
+,MCF-2024-1707670,84.0,96.0,180.0,Permanent,2024-11-19,,Staff Engineer  Mbist For Advanced Process Node & Package Technology,"What you will do
+1. DFT architecture exploration & evaluation for next-gen process node & package technology of MediaTek:
+Scan chain insertion & ATPG pattern generation
+Pattern validation through simulation & silicon analysis(pass/fail, shmoo, fail log, etc.)
+Diagnosis to help manufacture process improvement
+2. Co-work with SoC architect, RTL designer, physical design engineer, and package engineer to define best architecture for 3D-IC:
+PPA(Performance/Power/Area) impact analysis & mitigation via DFT innovation
+Develop & integrate DFT-related RTL design modules to test chip
+
+What you will bring
+Master's Degree in EEE/ EE/ CE
+Expertise in Synopsys and/or Mentor DFT tools, and HDL simulators like Synopsys VCS
+Fluency in script language including but not limited to TCL/Perl/Python
+Experience about MBIST with state-of-the-art SRAM structure & EDA tools is big plus
+Skill for RTL design & integration, and physical failure analysis(PFA) will also be plus
+Ability to think and work independently with different teams
+Interest in understanding more details in entire design flow
+Ability to use English for discussing technical details
+With a minimum of 7 years relevant industrial work experience
+About the company
+MediaTek Incorporated (TWSE: 2454) is the world’s 5th largest global fabless semiconductor company. Joining MediaTek means becoming part of a team that powers over 2 billion ICs worldwide, enriching and enhancing everyday life. Our chipsets are integral to a wide range of products, from smartphones, mobile devices to home and IoT devices, in entertainment and multimedia products, and provide connectivity and communication solutions that keep people connected with friends and their families with access to online resources. Working at MediaTek offers you the opportunity to contribute to the world through the devices we use in our daily lives – it’s more than just a job, it’s a chance to make a meaningful impact.","['Perl', 'TCL', 'Synopsys Tools', 'SRAM', 'EDA', 'RTL Design', 'VCS', 'SoC', 'Python', 'Perl Script', 'DFT', 'RTL Synthesis', 'Atpg', 'Physical Design', 'Silicon']",Mediatek Singapore Pte. Ltd.,Engineering,138.0,2024Q4,7.0,0.0,https://www.mycareersfuture.gov.sg/job/engineering/staff-engineertechnical-manager-dftmbist-advanced-process-node-package-technology-mediatek-singapore-992d31a273816dba5e65e4eee1d6be4b?source=MCF&event=Search
+,MCF-2024-1707281,84.0,96.0,180.0,Permanent,2024-11-19,,Cpu Product Engineering Manager,"What you will do
+CPU Testing Binning Strategy & Realization
+Production volume ramp-up support which includes fast-turn-around test program delivery/optimization and cost reduction through yield optimization and test time reduction
+Cross collaboration with Design/DFT/DV/TE team to enable efficient test-case simulation and (mini)ATE bring-up
+What you will bring
+Bachelor/Masters Degree in Electrical/Computer Engineering
+Min 7 years of CPU related Chip Mass Production Experience is a MUST.
+Software+Hardware Testing PCB built
+Familiarity with CPU Testing (ARM/MIPS/SNPS etc)
+Cross-site working experience is a MUST.
+Experience with Foundry, Post-Silicon, FPGA, DVT, SLT debug is a PLUS.
+Smart-Phone Adv. ASIC consumer product HW design experience is a PLUS.
+Location: One North, Singapore
+
+About the company
+MediaTek Incorporated (TWSE: 2454) is the world’s 5th largest global fabless semiconductor company. Joining MediaTek means becoming part of a team that powers over 2 billion ICs worldwide, enriching and enhancing everyday life. Our chipsets are integral to a wide range of products, from smartphones, mobile devices to home and IoT devices, in entertainment and multimedia products, and provide connectivity and communication solutions that keep people connected with friends and their families with access to online resources. Working at MediaTek offers you the opportunity to contribute to the world through the devices we use in our daily lives – it’s more than just a job, it’s a chance to make a meaningful impact.","['Data Analysis', 'Hardware', 'Dynamics', 'ARM', 'Test Engineering', 'Test Cases', 'Product Engineering', 'DVT', 'test case execution', 'test case reviews', 'yield optimization', 'FPGA', 'Software Testing', 'Software Design', 'DFT', 'ASIC', 'Product Development', 'Benchmarking', 'test case', 'Testing']",Mediatek Singapore Pte. Ltd.,Engineering,138.0,2024Q4,7.0,0.0,https://www.mycareersfuture.gov.sg/job/engineering/cpu-product-engineering-manager-mediatek-singapore-d872f2749155139a9f66de1f7dc20e86?source=MCF&event=Search
+,MCF-2024-1707495,84.0,96.0,180.0,Permanent,2024-11-19,,Cpu Physical Design Engineer  Manager,"What you will do
+[Physical Design]
+Work for physical design and development activities of MediaTek’s Ghz ARM-based microprocessors
+Involve in activities encompass physical design and analysis of complex and timing-critical microprocessor partition blocks and
+Technical disciplines include synthesis, floor-planning, place and route, RC extraction, timing and power optimization
+[STA/Power Signoff]
+Involve in activities encompass Static Timing Analysis on advanced process nodes (28nm, 20nm, 16nm & beyond)
+Technical disciplines include STA, and analysis of complex and timing-critical microprocessor
+Work closely with RTL function designers and physical designers to optimize design components such as timing and power
+Design Methodology (1):
+This position is in charge of design methodology from RTL-Synthesis-DFT-PNR-STA-PI.
+Specific skill set is: able to boost productivity using either programming or EDA solution
+AI learning Programming is a big plus
+What you will bring
+Bachelor/Masters Degree in Electrical and Electronic Engineering/Computer Engineering
+Minimum with 7 years relevant experience
+Good with concept of digital design
+Good with communication, team work and scripting skills
+Understanding of RTL2GDS flow is a plus
+Location: One North, Singapore
+
+About the company
+MediaTek Incorporated (TWSE: 2454) is the world’s 5th largest global fabless semiconductor company. Joining MediaTek means becoming part of a team that powers over 2 billion ICs worldwide, enriching and enhancing everyday life. Our chipsets are integral to a wide range of products, from smartphones, mobile devices to home and IoT devices, in entertainment and multimedia products, and provide connectivity and communication solutions that keep people connected with friends and their families with access to online resources. Working at MediaTek offers you the opportunity to contribute to the world through the devices we use in our daily lives – it’s more than just a job, it’s a chance to make a meaningful impact.","['Static Timing Analysis', 'ARM', 'Floorplanning', 'Scripting', 'Drawing', 'Electrical', 'EDA', 'RTL Design', 'DFT', 'RTL Synthesis', 'Physical Design', 'Electrical Engineering']",Mediatek Singapore Pte. Ltd.,Engineering,138.0,2024Q4,7.0,0.0,https://www.mycareersfuture.gov.sg/job/engineering/cpu-physical-design-engineer-manager-mediatek-singapore-177be574ff37ef3ff61755309620aa2f?source=MCF&event=Search
+,MCF-2024-1699272,84.0,96.0,180.0,Permanent,2024-11-18,,Staff Engineer  Technical Manager Full Chip Physical Design Verification Cad,"What you do
+Be part of the team that validates the physical sign-off of our chips, powering the brands we love every year with 2 billion consumer electronic products such as digital TVs, home audio devices, DVD/Blue-ray players, smartphones, tablets, networking and connectivity products, and many more. As a member of the MediaTek Physical Verification Sign-off team, you will be responsible for ensuring the manufacturability and reliability of IC designs through rigorous physical verification processes to enable the success of our chips tape-out. Join us in shaping the future of technology and making a real impact on the world!
+Responsible for assembling of various design system into a full chip.
+Perform design rule checking (DRC) to identify and resolve System-on-chip layout violations and ensure compliance with manufacturing rules and constraints.
+Conduct layout versus schematic (LVS) verification to ensure the accuracy and consistency between full chip layout and schematic of the IC design.
+Execute electrical rule check (ERC) to identify potential electrical issues and ensure the integrity of the design.
+Perform antenna and electrostatic discharge (ESD) checks to prevent potential reliability, latch-up, leakage issues.
+Collaborate with design and layout teams to address and resolve physical design issues and optimize the layout for manufacturability and reliability.
+Contribute to the development and improvement of physical verification methodologies and flows.
+Work closely with process technology teams to understand and address process-related challenges and constraints.
+Participate in tape-out activities and ensure that the physical design meets the required quality and reliability standards for fabrication.
+What you bring
+With minimum 8 years of relevant experience.tronic Engineering / Computer Science or equivalent..
+With minimum 8 years of relevant experience
+Solid understanding of physical design concepts, IC manufacturing processes, and semiconductor device physics.
+Proficiency in using physical verification tools such as Calibre, IC Validator, or other industry-standard DRC/LVS tools.
+Experience with scripting languages such as TCL, Perl, or Python for automation and tool customization.
+Strong problem-solving skills and the ability to analyze and debug complex physical design issues.
+Excellent communication and teamwork skills to collaborate effectively with cross-functional teams.
+Familiarity with EDA (Electronic Design Automation) tools and design methodologies is a plus.
+Proficient in UNIX (Linux) platforms.
+Strong communication skills, problem solving and analytical skills.
+Location: One North, Singapore
+
+Who We Are
+MediaTek Incorporated (TWSE: 2454) is the world’s 5th largest global fabless semiconductor company. Joining MediaTek means becoming part of a team that powers over 2 billion ICs worldwide, enriching and enhancing everyday life. Our chipsets are integral to a wide range of products, from smartphones, mobile devices to home and IoT devices, in entertainment and multimedia products, and provide connectivity and communication solutions that keep people connected with friends and their families with access to online resources. Working at MediaTek offers you the opportunity to contribute to the world through the devices we use in our daily lives – it’s more than just a job, it’s a chance to make a meaningful impact. – Join us now!","['Perl', 'Physical Verification', 'design verification', 'Synopsys Tools', 'EDA', 'Python', 'Cadence', 'Validation and Verification', 'Cadence Virtuoso', 'ASIC verification', 'IC', 'Teamwork Skills', 'Physical Design']",Mediatek Singapore Pte. Ltd.,Engineering,138.0,2024Q4,8.0,0.0,https://www.mycareersfuture.gov.sg/job/engineering/staff-engineer-technical-manager-full-chip-physical-design-verification-cad-mediatek-singapore-b59ddbedfb11859406d651c126d683cf?source=MCF&event=Search
+,MCF-2024-1683525,108.0,156.0,264.0,Contract,2024-11-14,,Process Engineering Expert,"Job Responsibilities:
+Independently carry out design safety philosophy, HSE Plan, and specifications for fire protection systems (Active and Passive), HFE, etc.
+Participate in process hazard reviews and analysis, including HAZOP/HAZID/SIL studies, and be responsible for action close-outs.
+Lead/Chair the HAZOP/HAZID/SIL workshops, if required.
+Review third party safety studies, including FERA, dispersion analysis, EERA, ESSA, dropped objects study, QRA studies, etc. (not limited to). Capable of independently carrying out similar safety studies, as required.
+Independently design active and passive fire protection systems and prepare Hazardous/H2S Area Classification documentation, safety and fire fighting layouts, escape route and lifesaving equipment layout, and other safety drawings.
+Carry out safety critical elements performance standards, RAM, fire and gas detection mapping, etc., based on project requirements.
+Act as Package Engineer for safety and firefighting equipment.
+Manage and guide Junior/Senior Engineers and Designers on Concept/FEED/Detailed Engineering projects.
+Provide health and environmental inputs (including health risk assessments such as chemical exposure, noise and lighting, Ergonomics/Human Factors Engineering, environmental impact assessments, etc.) to projects.
+Interface/Coordinate with other engineering disciplines and clients, and take the lead in resolving technical matters related to safety aspects.
+Deliver project safety deliverables as per the project schedule.
+Provide inputs and support to projects in all safety aspects, including progress reports.
+Job Requirements:
+Bachelor’s degree in Chemical Engineering or equivalent from an accredited university.
+Minimum 22 years of relevant design engineering experience.
+Good HSE Engineering experience in the oil and gas industry, in process safety/technical safety, with a minimum of 3-5 years in a Lead position on similar projects.
+Involvement in design projects for offshore (FPSO/Platforms) and onshore (Refineries, LNG facilities, Storage terminals, etc.).
+Experience in a minimum number of offshore projects (FPSO/Platforms).
+Good knowledge of oil and gas process facilities, local and international process safety codes and standards, and regulatory/marine codes and standards (MODU, SOLAS, DNV/Lloyds Register).
+Hands-on experience in plot plan review, HAZID, HAZOP, SIL classification/verification, and other safety reviews (e.g., SIMOPS, ALARP).
+Good working knowledge of PIPENET Vision, Flaresim, and other consequence modeling software such as DNV PHAST, etc.
+Ability to influence designs to achieve optimal HSE outcomes.
+A team player with leadership potential and proactive inter-discipline communication skills.","['Firefighting', 'Leadership', 'Lighting', 'Modeling', 'HAZOP', 'Fire Protection', 'Onshore', 'Process Engineering', 'Process Safety', 'Communication Skills', 'Team Player', 'Manufacturing', 'Layout', 'Chemical Engineering', 'Commissioning', 'Mapping']",Talent Spot Group Private Ltd.,Engineering,210.0,2024Q4,20.0,0.0,https://www.mycareersfuture.gov.sg/job/engineering/process-engineering-expert-talent-spot-group-27ef38a5a45021ca57bae95c35e2fcfd?source=MCF&event=Search
+,MCF-2024-1710090,60.000000000000014,57.6,117.6,Full-Time,2024-11-20,,Quantity  Land Surveyor,"Reviewing construction plans and preparing quantity requirements.
+Scrutinizing maintenance and material costs, as well as contracts to ensure the best deals.
+Liaising with site managers, clients, contractors, and subcontractors.
+Preparing reports, analyses, contracts, budgets, risk assessment, and other documents.
+Advising managers and clients on improvements and new strategies.
+Keeping track of materials and ordering more when required.
+Documenting any changes in design and updating budgets.
+Establishing and maintaining professional relationships with external and internal stakeholders.
+Traveling from the office to various sites as required.","['Negotiation', 'Budgets', 'Construction', 'Risk Assessment', 'Quantity Surveying', 'Administration', 'Surveying', 'Estimates', 'Procurement', 'AutoCAD', 'Civil Engineering', 'Tendering', 'Pricing', 'Sourcing', 'Cost Control']",Reliant Human Resource Pte. Ltd.,Engineering,87.6,2024Q4,8.0,0.0,https://www.mycareersfuture.gov.sg/job/engineering/quantityland-surveyor-reliant-human-resource-0c31cc0dd59b1c9f9b6210ce0d6b8308?source=MCF&event=Search
+,MCF-2024-1708355,45.6,57.6,103.2,Permanent,2024-11-19,,Engineer  Analog  Rf Design,"Engineer - Analog / RF Design [Radio System Solutions]
+Job Description:
+Design of RF/Analog/Mixed-signal IC circuit blocks / IPs based on specifications (performance, area, power consumption).
+Realize IC layout with floor planning and performance considerations (with layout engineers).
+Testing & Debugging of IC prototypes (with system verification engineers).
+Support of IC to mass production ready.
+Continual support / debug of field related issues or customer IC rejects.
+IC design and performance documentation.
+Requirement
+Bachelor's Degree / Master’s Degree in EEE (major in IC Design).
+Knowledge of RF/analog designs through final year project and internship are an added advantage.
+Training will be provided.
+Important Note: This advertisement is not for immediate hiring but is intended to identify suitable candidates for future openings in this position.
+
+About the team
+Radio System Solutions Division develops standalone RF-IC or IPs for wireless communication products within MediaTek. This involves designing and verification of building blocks such as low-noise amplifiers, power amplifiers, filters, data-converters, phase-locked loops, low-dropout regulators and digital calibration circuits in advanced semiconductor processes. We are looking for a passionate talent who always up for challenges to join us for this exciting career journey!
+
+In MediaTek, we believe technology changes lives and a changed life can change the world.
+
+Joint us - Tomorrow built by you.","['Electronics Engineering', 'Analog', 'RF', 'IEEE', 'Analog Design', 'Integrated Circuit Design', 'Analog Circuit Design', 'Debugging', 'IC', 'analog electronic circuits', 'Layout', 'Testing']",Mediatek Singapore Pte. Ltd.,Engineering,80.39999999999999,2024Q4,0.0,0.0,https://www.mycareersfuture.gov.sg/job/engineering/engineer-analog-rf-design-radio-system-solutions-mediatek-singapore-cf21280a6423688c355fb831455094c3?source=MCF&event=Search
+,MCF-2024-1707392,45.6,57.6,103.2,Permanent,2024-11-19,,Cpu Physical Design Engineer,"What you will do
+[Physical Design]
+Work for physical design and development activities of MediaTek’s Ghz ARM-based microprocessors
+Involve in activities encompass physical design and analysis of complex and timing-critical microprocessor partition blocks and
+Technical disciplines include synthesis, floor-planning, place and route, RC extraction, timing and power optimization
+[STA/Power Signoff]
+Involve in activities encompass Static Timing Analysis on advanced process nodes (28nm, 20nm, 16nm & beyond)
+Technical disciplines include STA, and analysis of complex and timing-critical microprocessor
+Work closely with RTL function designers and physical designers to optimize design components such as timing and power
+Design Methodology (1):
+This position is in charge of design methodology from RTL-Synthesis-DFT-PNR-STA-PI.
+Specific skill set is: able to boost productivity using either programming or EDA solution
+AI learning Programming is a big plus
+What you will bring
+Bachelor/Masters Degree in Electrical and Electronic Engineering/Computer Engineering
+Good with concept of digital design
+Good with communication, team work and scripting skills
+Understanding of RTL2GDS flow is a plus
+Location: One North, Singapore
+
+About the company
+MediaTek Incorporated (TWSE: 2454) is the world’s 5th largest global fabless semiconductor company. Joining MediaTek means becoming part of a team that powers over 2 billion ICs worldwide, enriching and enhancing everyday life. Our chipsets are integral to a wide range of products, from smartphones, mobile devices to home and IoT devices, in entertainment and multimedia products, and provide connectivity and communication solutions that keep people connected with friends and their families with access to online resources. Working at MediaTek offers you the opportunity to contribute to the world through the devices we use in our daily lives – it’s more than just a job, it’s a chance to make a meaningful impact.","['Static Timing Analysis', 'Floorplanning', 'Synopsys Tools', 'Scripting', 'Electrical', 'EDA', 'RTL Design', 'Cadence', 'DFT', 'Cadence Virtuoso', 'RTL Synthesis', 'Physical Design', 'Electrical Engineering']",Mediatek Singapore Pte. Ltd.,Engineering,80.39999999999999,2024Q4,0.0,0.0,https://www.mycareersfuture.gov.sg/job/engineering/cpu-physical-design-engineer-mediatek-singapore-f5c7b8741ae7536ea19f93c256f885e3?source=MCF&event=Search
+,MCF-2024-1707021,45.6,57.6,103.2,Permanent,2024-11-19,,Cpu Product Engineer,"What you will do
+CPU Testing Binning Strategy & Realization
+Production volume ramp-up support which includes fast-turn-around test program delivery/optimization and cost reduction through yield optimization and test time reduction
+Cross collaboration with Design/DFT/DV/TE team to enable efficient test-case simulation and (mini)ATE bring-up
+What you will bring
+Bachelor/Masters Degree in Electrical/Computer Engineering
+Min 3 years of CPU related Chip Mass Production Experience is a MUST.
+Software+Hardware Testing PCB built
+Familiarity with CPU Testing (ARM/MIPS/SNPS...)
+Cross-site working experience is a MUST.
+Experience with Foundry, Post-Silicon, FPGA, DVT, SLT debug is a PLUS.
+Smart-Phone Adv. ASIC consumer product HW design experience is a PLUS.
+Location: One North, Singapore
+
+About the company
+MediaTek Incorporated (TWSE: 2454) is the world’s 5th largest global fabless semiconductor company. Joining MediaTek means becoming part of a team that powers over 2 billion ICs worldwide, enriching and enhancing everyday life. Our chipsets are integral to a wide range of products, from smartphones, mobile devices to home and IoT devices, in entertainment and multimedia products, and provide connectivity and communication solutions that keep people connected with friends and their families with access to online resources. Working at MediaTek offers you the opportunity to contribute to the world through the devices we use in our daily lives – it’s more than just a job, it’s a chance to make a meaningful impact.","['Execute Test cases', 'design verification', 'Hardware', 'ARM', 'Reviewing test cases', 'ARM processor', 'Test Cases', 'Product Engineering', 'Software Design', 'Assembly Processes', 'DFT', 'ASIC', 'Product Development', 'Benchmarking', 'test case', 'Mechanical Engineering', 'Failure Analysis']",Mediatek Singapore Pte. Ltd.,Engineering,80.39999999999999,2024Q4,3.0,0.0,https://www.mycareersfuture.gov.sg/job/engineering/cpu-product-engineer-mediatek-singapore-a8f810a751828022be8ef42638bade2c?source=MCF&event=Search
+,MCF-2024-1708284,45.6,57.6,103.2,Permanent,2024-11-19,,Ic Physical Design Engineer,"About the team:
+MediaTek’s Physical design team is responsible to implement top quality digital backend design for our advanced process chips which have billions of transistors. Passionate talent who are eager to join this fast-growing IC design industry and grow together with our passionate team are welcome to apply!
+
+Job Description
+Working on 6nm and below advanced process project APR and Timing/PI sign-off
+Take the TOP and PM role for the complicated hierarchical chip (more than 20M inst plus 500+ macros)
+Take the Block or Block coordinator role for complex blocks
+Do early prediction for critical APR/Timing/PI issues
+Job Requirements
+APR/Timing/PI hands-on/tapeout experience on complicated hierarchical chip
+TCL/Perl/Python/C/C++ programming skill
+Have advanced process(n6 or below) experience is a plus
+Excellent communication and team work spirit
+Location: One North, Singapore
+
+Important Note: This advertisement is meant to source suitable candidates for future openings for this position.
+
+About the company
+MediaTek Incorporated (TWSE: 2454) is the world’s 5th largest global fabless semiconductor company. Joining MediaTek means becoming part of a team that powers over 2 billion ICs worldwide, enriching and enhancing everyday life. Our chipsets are integral to a wide range of products, from smartphones, mobile devices to home and IoT devices, in entertainment and multimedia products, and provide connectivity and communication solutions that keep people connected with friends and their families with access to online resources. Working at MediaTek offers you the opportunity to contribute to the world through the devices we use in our daily lives – it’s more than just a job, it’s a chance to make a meaningful impact.","['ASIC (Application Specific Integrated Circuit)', 'CMOS Technology', 'BiCMOS', 'Floorplanning', 'Integrated Circuit Design', 'CMOS', 'IC', 'Physical Design', 'Electrical Engineering', 'Integrated circuits']",Mediatek Singapore Pte. Ltd.,Engineering,80.39999999999999,2024Q4,0.0,0.0,https://www.mycareersfuture.gov.sg/job/engineering/ic-physical-design-engineer-mediatek-singapore-4283daac4fd86e29fd5d7b8d3d4a35cc?source=MCF&event=Search
+,MCF-2024-1708213,45.6,57.6,103.2,Permanent,2024-11-19,,Dft  Mbist Engineer For Advanced Process Node & Package Technology,"What you will do
+1. DFT architecture exploration & evaluation for next-gen process node & package technology of MediaTek:
+Scan chain insertion & ATPG pattern generation
+Pattern validation through simulation & silicon analysis(pass/fail, shmoo, fail log, etc.)
+Diagnosis to help manufacture process improvement
+2. Co-work with SoC architect, RTL designer, physical design engineer, and package engineer to define best architecture for 3D-IC:
+PPA(Performance/Power/Area) impact analysis & mitigation via DFT innovation
+Develop & integrate DFT-related RTL design modules to test chip
+What you will bring
+Master's Degree in EEE/ EE/ CE
+Expertise in Synopsys and/or Mentor DFT tools, and HDL simulators like Synopsys VCS
+Fluency in script language including but not limited to TCL/Perl/Python
+Experience about MBIST with state-of-the-art SRAM structure & EDA tools is big plus
+Skill for RTL design & integration, and physical failure analysis(PFA) will also be plus
+Ability to think and work independently with different teams
+Interest in understanding more details in entire design flow
+Ability to use English for discussing technical details
+More than 4-year industrial work experience is preferred","['Process Improvement', 'SRAM', 'EDA', 'RTL Design', 'VCS', 'SoC', 'DFT', 'Atpg', 'Physical Design', 'Silicon']",Mediatek Singapore Pte. Ltd.,Engineering,80.39999999999999,2024Q4,4.0,0.0,https://www.mycareersfuture.gov.sg/job/engineering/dftmbist-engineer-advanced-process-node-package-technology-mediatek-singapore-7c8cef6dcaea4b6ddc48a27d3ea5bb7a?source=MCF&event=Search
+,MCF-2024-1705949,45.6,57.6,103.2,Permanent,2024-11-19,,Senior  Staff Physical Design Engineer,"What you will do
+APU Physical Design Implementation for APU partitions focus on MDLA/NDLA n5/n4/n3e/ process
+Physical VerificaTion to deliver clean APU partition gds N5/n4/n3e/ process
+Perform Timing Closure ECO for APU partition including PrimeTime timing check and twk timing ECO
+What you bring
+Apr hands on for n5/n4/n3e process using Innovus and Fusion compiler EDA tool
+tcl/csh/perl/bash. programming skill
+Timing Analysis Debugging and Fixing skills
+Experienced N4/N3e process
+Location: One North, Singapore
+
+Why MediaTek?
+MediaTek Incorporated (TWSE: 2454) is the world’s 5th largest global fabless semiconductor company. Joining MediaTek means becoming part of a team that powers over 2 billion ICs worldwide, enriching and enhancing everyday life. Our chipsets are integral to a wide range of products, from smartphones, mobile devices to home and IoT devices, in entertainment and multimedia products, and provide connectivity and communication solutions that keep people connected with friends and their families with access to online resources. Working at MediaTek offers you the opportunity to contribute to the world through the devices we use in our daily lives – it’s more than just a job, it’s a chance to make a meaningful impact. – Join us now!","['Static Timing Analysis', 'Timing Closure', 'Floorplanning', 'Synopsys Tools', 'EDA', 'Cadence', 'Cadence Virtuoso', 'Debugging', 'IC', 'Physical Design', 'Programming', 'Electrical Engineering']",Mediatek Singapore Pte. Ltd.,Engineering,80.39999999999999,2024Q4,0.0,0.0,https://www.mycareersfuture.gov.sg/job/engineering/senior-staff-physical-design-engineer-mediatek-singapore-8c35c458d48ab093d6117446cbebe69f?source=MCF&event=Search
+,MCF-2024-1708332,45.6,57.6,103.2,Permanent,2024-11-19,,Ai Algorithm Engineer,"What you do:
+Generative AI: Language/Multi-modal Model Algorithm Development
+- Transformer-based architecture (LLaMa etc.)
+- RNN and SSM-based architecture (Mamba etc.)
+AI Vison/Voice/NLP/Algorithm Development
+Edge AI (APU) Algorithm Development and Optimization
+- Neural network optimization (Quantization/Pruning/Speculative Decoding)
+- Neural network design automation
+Advanced AI Algorithm: Reinforcement learning (RL), On-device learning
+What you bring:
+Familiar with deep learning framework: Tensorflow, Pytorch.
+Familiar with on-device framework for mobile/embedding devices: TFLite, ExecuTorch
+Required programming language: Python, C/C++, Java.
+Knowledge in deep learning and generative AI algorithm/model development/optimization, model training methodology preferred
+It is nice to have experience in developing deep learning and generative AI algorithms for mobile/embedding devices.
+Candidates with more years of experience will be considered for a senior role.
+Location: One North, Singapore
+
+Important note: This advertisement is not for immediate hiring but is intended to identify suitable candidates for future openings in this position.
+
+About the company
+MediaTek Incorporated (TWSE: 2454) is the world’s 5th largest global fabless semiconductor company. Joining MediaTek means becoming part of a team that powers over 2 billion ICs worldwide, enriching and enhancing everyday life. Our chipsets are integral to a wide range of products, from smartphones, mobile devices to home and IoT devices, in entertainment and multimedia products, and provide connectivity and communication solutions that keep people connected with friends and their families with access to online resources. Working at MediaTek offers you the opportunity to contribute to the world through the devices we use in our daily lives – it’s more than just a job, it’s a chance to make a meaningful impact.","['TensorFlow', 'Machine Learning', 'Data Management', 'Computer Vision', 'Network Optimization', 'Network Design', 'PyTorch', 'Algorithm Development', 'Python', 'Java', 'C#', 'Software Development', 'Visual Studio', 'Signal Processing']",Mediatek Singapore Pte. Ltd.,Engineering,80.39999999999999,2024Q4,0.0,0.0,https://www.mycareersfuture.gov.sg/job/engineering/ai-algorithm-engineer-mediatek-singapore-ee4172d2c0a0e19d80b29eaa9789191c?source=MCF&event=Search
+,MCF-2024-1705227,36.0,48.0,84.0,Full-Time,2024-11-19,,Eda Sales Engineer,"About CAD-IT:
+
+Established in Singapore in 1991, our vision is to be the preferred Industry 4.0 partner to our valued customers and a key global contributor to the successful use of innovation and technology. Our mission is to provide world-class Industry 4.0 solutions, thereby helping our customers and their supply chains achieve greater innovation, quality, productivity, reduced costs and time-to-market, whilst being good stewards of the resources that are entrusted to us.
+
+Key Responsibilities:
+Establish and maintain long-term relationships with existing and prospective customers to maximize business opportunities.
+Build and own a sales portfolio that sets out the strategy to achieve your key performance metrics.
+Develop and maintain a sustainable pipeline.
+Stay up-to-date with the company's new and existing products/services to facilitate sales efforts.
+Identify customers' needs and create relevant sales presentations for the company's products/services.
+Create, execute and maintain account plans for existing customers highlighting profile, share and value opportunities including strategy, goals, tactics and milestones.
+Initiate and drive technical activities in line with the business goals such as:
+- Leverage on advanced-level engineering knowledge to analyze technical needs and solve complex engineering problems
+- Provide technical support for both academic and commercial customers
+- Perform engineering simulation consulting services
+- Customize and conduct ANSYS software training
+- Provide some technical support relating to electromagnetics theory, RF system and antenna design, high-speed PCB design, EMI/EMC, signal/power integrity or RF circuits and antenna
+- Create and demonstrate simulation solutions to streamline customer workflows, in support of the software sales process
+- Conduct technical presentations, product demonstrations and software evaluation
+
+
+We would love to hear from you if:
+
+You possess a Bachelor’s Degree in Electronics/Electrical/Telecommunications Engineering or related specialization.
+You possess knowledge and understanding in areas such as electromagnetics theory, high-speed electronics, RF system and antenna design, high-speed PCB design, EMI/EMC, signal/power integrity or RF circuits and antenna
+You have knowledge in Product Design, Manufacturing Process, FMEA, DOE Optimization, Root-Cause Analysis, Six-Sigma or TRIZ methodologies.
+You have the ability to build relationships with prospective customers through the use of various prospecting techniques.
+You are professional, with a strong sense of ethics and morals.
+You are self-motivated.
+You have excellent communication, presentation and influencing skills.
+You are confident working in a fast-paced environment.
+
+
+What would you get?
+Training and Development
+Discretionary Yearly Bonus
+Medical & Insurance Benefits
+CAD-IT rewards employees in various ways based on their role, contribution and performance. We believe in training and developing our employees to help them achieve their fullest potential.","['Influencing Skills', 'Tactics', 'FMEA', 'Product Design', 'RF', 'TRIZ', 'Sales Process', 'PCB Design', 'Technical Presentations', 'Consulting', 'Manufacturing', 'Electronics', 'Technical Support', 'ANSYS']",Cad-It Consultants (Asia) Pte Ltd,Engineering,66.0,2024Q4,4.0,0.0,https://www.mycareersfuture.gov.sg/job/consulting/eda-sales-engineer-cad-it-consultants-55529ec4d4181eb82931e4d5da6c0f56?source=MCF&event=Search
+,MCF-2024-1709642,18.0,36.0,54.0,Permanent,2024-11-20,,Application Engineer,"Key Accountabilities
+Technical support to Group sales affiliates in the region for product groups such as control products, IAQ products and air conditioning installation material products
+Perform as the technical supporting desk
+Support the installation and commissioning for each job site
+Create demo kits for assigned product for regional promotion
+Support the marketing department to give the technical advice for the sales promotion enhancement
+Analyse and test product failures for better quality achievement
+Any adhoc duties as assigned by superior
+Requirements
+Degree in Electrical/Electronic/Mechanical Engineering, or relevant
+Experience in air-conditioning or electrical industry will be an advantage
+Proactive and influential personality with ability to persuade and drive decisions
+Good to have PC programming and drafting skills
+Willing to travel with APEC regions","['Air Conditioning', 'Troubleshooting', 'Customer Support', 'Electrical', 'airconditioning', 'Communication Skills', 'Indoor Air Quality', 'Commissioning', 'Able To Work Independently', 'Technical Support']",Daikin Holdings Singapore Pte. Ltd.,Engineering,45.0,2024Q4,2.0,0.0,https://www.mycareersfuture.gov.sg/job/engineering/application-engineer-daikin-holdings-singapore-08e5433b85d1c26409dbbbb37afcb3c1?source=MCF&event=Search
+,MCF-2024-1699398,45.6,57.6,103.2,Permanent,2024-11-18,,Senior  Staff Engineer,"What you will do
+Develop and review test plans.
+Develop verification environment/testbench in Module/IP/SOC level.
+Develop verification IP and reference model.
+Implement test with randomization based coverage driven verification methodology.
+Implement functional and functional/code coverage closure.
+Hands-on code/debug with UVM, SystemVerilog, Verilog and SystemC.
+Low Power verification.
+Verification automation flow.
+What you will bring
+Bachelor's/Master's Degree in EEE/Computer/IC design/equivalent.
+With IC/ASIC design verification experience on SOC, Ethernet, PCIe, DDR, USB, ARM CPU.
+Strong experience and debugging ability on SystemVerilog/UVM.
+Skilled in Synopsys/Cadence/Mentor Simulator and debugging flow.
+Experience on Low Power and formal verification is a plus.
+Strong in UNIX scripting with Pyhon, Perl, makefile Cshell.
+Fast learner and a good team player.
+Candidates with more years of experience will be considered for a more senior role.
+About the team
+Our ASIC DV Team focus on developing full and advanced verification methodology IP/SOC. You will have chance to work on challenging projects that attractive and be immersed in leading tech e.g.: WiFi, 5G, AR/VR, AI, Cloud Networking. A comprehensive program for professional development / career growth will be provided to the new joiner and he/she will have chance to learn from the best expert in this area.
+In MediaTek, we promote diversity and inclusiveness. Passionate talents who love new challenges and keen on learning new technologies, do send us your cv our way today and join our multicultural team that consists of talents from all over the world!","['Perl', 'Hardware', 'ARM', 'Scripting', 'Unix', 'EDA', 'UVM', 'IP', 'SoC', 'Networking', 'SystemVerilog', 'Ethernet', 'ASIC', 'Team Player', 'Debugging', 'Verilog']",Mediatek Singapore Pte. Ltd.,Engineering,80.39999999999999,2024Q4,0.0,0.0,https://www.mycareersfuture.gov.sg/job/engineering/seniorstaff-engineer-mediatek-singapore-c22a484bd2c6249af2bbdd9d56c2e8fd?source=MCF&event=Search
+,MCF-2024-1699216,45.6,57.6,103.2,Permanent,2024-11-18,,Full Chip Physical Design Verification Cad Engineer,"What you do
+Be part of the team that validates the physical sign-off of our chips, powering the brands we love every year with 2 billion consumer electronic products such as digital TVs, home audio devices, DVD/Blue-ray players, smartphones, tablets, networking and connectivity products, and many more. As a member of the MediaTek Physical Verification Sign-off team, you will be responsible for ensuring the manufacturability and reliability of IC designs through rigorous physical verification processes to enable the success of our chips tape-out. Join us in shaping the future of technology and making a real impact on the world!
+Responsible for assembling of various design system into a full chip.
+Perform design rule checking (DRC) to identify and resolve System-on-chip layout violations and ensure compliance with manufacturing rules and constraints.
+Conduct layout versus schematic (LVS) verification to ensure the accuracy and consistency between full chip layout and schematic of the IC design.
+Execute electrical rule check (ERC) to identify potential electrical issues and ensure the integrity of the design.
+Perform antenna and electrostatic discharge (ESD) checks to prevent potential reliability, latch-up, leakage issues.
+Collaborate with design and layout teams to address and resolve physical design issues and optimize the layout for manufacturability and reliability.
+Contribute to the development and improvement of physical verification methodologies and flows.
+Work closely with process technology teams to understand and address process-related challenges and constraints.
+Participate in tape-out activities and ensure that the physical design meets the required quality and reliability standards for fabrication.
+What you bring
+Bachelor/master’s degree in Electrical/Electronic Engineering / Computer Science or equivalent
+With minimum 4 years of relevant experience
+Solid understanding of physical design concepts, IC manufacturing processes, and semiconductor device physics.
+Proficiency in using physical verification tools such as Calibre, IC Validator, or other industry-standard DRC/LVS tools.
+Experience with scripting languages such as TCL, Perl, or Python for automation and tool customization.
+Strong problem-solving skills and the ability to analyze and debug complex physical design issues.
+Excellent communication and teamwork skills to collaborate effectively with cross-functional teams.
+Familiarity with EDA (Electronic Design Automation) tools and design methodologies is a plus.
+Proficient in UNIX (Linux) platforms
+Strong communication skills, problem solving and analytical skills
+Candidate with more years of experience will be considered for a more Senior role.
+Location: One North, Singapore
+
+Who We Are
+MediaTek Incorporated (TWSE: 2454) is the world’s 5th largest global fabless semiconductor company. Joining MediaTek means becoming part of a team that powers over 2 billion ICs worldwide, enriching and enhancing everyday life. Our chipsets are integral to a wide range of products, from smartphones, mobile devices to home and IoT devices, in entertainment and multimedia products, and provide connectivity and communication solutions that keep people connected with friends and their families with access to online resources. Working at MediaTek offers you the opportunity to contribute to the world through the devices we use in our daily lives – it’s more than just a job, it’s a chance to make a meaningful impact. – Join us now!","['Perl', 'Physical Verification', 'design verification', 'Synopsys Tools', 'EDA', 'Python', 'Cadence', 'Cadence Virtuoso', 'ASIC verification', 'IC', 'Teamwork Skills', 'Physical Design']",Mediatek Singapore Pte. Ltd.,Engineering,80.39999999999999,2024Q4,4.0,0.0,https://www.mycareersfuture.gov.sg/job/engineering/full-chip-physical-design-verification-cad-engineer-mediatek-singapore-dd357f17171d3380d5b49219cfbe0f3e?source=MCF&event=Search
+,MCF-2024-1707782,12.0,36.0,48.0,Contract,2024-11-19,,Customer Service Engineer,"Overview
+Being a service-oriented organization, we constantly strive to provide a hassle-free service to our customers. The successful candidate will provide timely onsite support to our customers and address their concerns and enquiries about our multi-function devices (MFDs). The key to success will lie in the passion and willingness to go the extra mile for our customers. If you have what it takes, join our service team in upholding our service standards.
+
+The Role:
+Carry out installation, repair and preventive maintenance of customers’ MFDs (e.g. copiers and printers)
+Manage the inventory of MFD parts, tools and assets assigned to you
+Ensure internal records are updated timely and status of service calls are communicated to the team
+Requirements:
+Experience in troubleshooting monochrome and colour printers in a network environment
+Good interpersonal skills and the ability to work in a team
+A valid Class 2 or 3 driving license with good driving record preferred
+Entry level NITEC/ Higher NITEC/ Diploma holders in Electronics or Mechatronics Engineering or any related fields are welcome to apply
+
+Please reach out to Rachel Heng for a further discussion on this opportunity!
+Only shortlisted candidates will receive a response. Therefore, if you do not receive a response within 14 days, please accept this as notification that you have not been shortlisted.
+Morgan McKinley Pte Ltd
+Rachel Heng
+EA License No: 11C5502
+Registration No: R23115318","['Good Driving Record', 'Preventive Maintenance', 'Troubleshooting', 'Hardware', 'Interpersonal Skills', 'Inventory', 'Project Quality', 'Access Control', 'CCTV', 'Finish', 'Driving License', 'Customer Satisfaction', 'AutoCAD', 'Microsoft Word', 'Customer Service', 'Electronics']",Morgan Mckinley Pte. Ltd.,Engineering,42.0,2024Q4,3.0,0.0,https://www.mycareersfuture.gov.sg/job/engineering/customer-service-engineer-morgan-mckinley-09f592360e42eb13fa02f9e464729f9f?source=MCF&event=Search
+,MCF-2024-1687376,30.0,78.0,108.0,Permanent,2024-11-15,,Project Manager  Diaphragm Wall  Yk,"☑ Main Con Builder
+☑ East – Islandwide Job Site travelling needed
+☑ $ 6500 – $ 9000
+☑ 5 Days 9:00am – 6:00pm
+☑ MNC Good Benefits & Career Prospect
+
+Job Description
+Lead and manage the planning, execution, and completion of diaphragm wall construction projects.
+Coordinate with consultants, subcontractors, and suppliers to ensure smooth project execution and compliance with safety and legal regulations
+Monitor project progress, manage risks, and make necessary adjustments to meet timelines.
+Manage project budgets, including cost control and resource allocation.
+Communicate effectively with stakeholders to provide updates and resolve project-related issues.
+Requirement:
+Bachelor’s degree in Civil Engineering, Construction Management, or related field.
+Min 5 years’ experience in project management, specifically in diaphragm wall construction.
+Strong knowledge of local building regulations, safety standards, and diaphragm wall construction techniques.
+Interested applicants are welcome to apply OR email to yvette.kam@ideals.com.sg
+
+Only shortlisted candidate will be notified
+Yvette, Kam Soo Leng
+Registration: R22107492","['Excavation', 'Budgets', 'Construction Management', 'Construction', 'BIM', 'local regulations', 'Risk Management', 'Civil Construction', 'Tunnels', 'Compliance', 'Project Management', 'Project budgeting', 'Civil Engineering', 'Scheduling', 'Cost Control', 'safety standards']",Ideals Recruitment Pte. Ltd.,Engineering,93.0,2024Q4,5.0,0.0,https://www.mycareersfuture.gov.sg/job/building-construction/project-manager-lta-diaphragm-wall-yk-ideals-recruitment-192002addcf9b97df3c040edeec686e7?source=MCF&event=Search
+,MCF-2024-1659701,36.0,72.0,108.0,Permanent,2024-11-11,,Project Manager  Diaphragm Wall Construction  Yk,"🏢Multinational Main Con, LTA
+📍 Location: East – Islandwide job site travel required
+💲 Salary: $6,500 – $9,000
+📅 Working Days: 6 Days, 9:00am – 6:00pm
+🌟 MNC: Great Benefits & Career Prospects
+
+Job Description:
+Lead and manage the planning, execution, and completion of diaphragm wall construction projects.
+Coordinate with consultants, subcontractors, and suppliers to ensure seamless project execution and compliance with safety and legal regulations.
+Monitor project progress, manage risks, and make necessary adjustments to maintain timelines.
+Oversee project budgets, including cost control and resource allocation.
+Communicate effectively with stakeholders, providing updates and addressing project-related issues.
+Requirements:
+Bachelor’s Degree in Civil Engineering, Construction Management, or a related field.
+Minimum 5 years of experience in project management, specifically in diaphragm wall construction.
+Strong understanding of local building regulations, safety standards, and diaphragm wall construction techniques.
+📩Interested applicants:
+Apply online with an updated Resume or email to yvette.kam@ideals.com.sg
+Only shortlisted candidates will be notified.
+Kam Soo Leng, Yvette
+Registration: R22107492","['Excavation', 'Budgets', 'Construction Management', 'Construction', 'Quality Control', 'BIM', 'Quantity Surveying', 'Site Management', 'Project Quality', 'Drawing', 'Procurement', 'Tunnels', 'Compliance', 'Project Management', 'Civil Engineering', 'Geotechnical Engineering', 'Scheduling', 'Directing', 'Cost Control', 'Commissioning']",Ideals Recruitment Pte. Ltd.,Engineering,90.0,2024Q4,5.0,0.0,https://www.mycareersfuture.gov.sg/job/building-construction/project-manager-diaphragm-wall-construction-yk-ideals-recruitment-1b38095b4200889693e9e4f8ca308617?source=MCF&event=Search
