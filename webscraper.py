@@ -151,7 +151,7 @@ def scrape_page(page):
                     job_company = scrape_job_info(driver, "p[data-testid='company-hire-info']")
                     job_industry = scrape_job_info(driver, "p[data-testid='job-details-info-job-categories']")
                     job_desc = scrape_job_info(driver, "div[data-testid='description-content']")
-                    job_location = scrape_job_info(driver, "a[data-testid='job-details-info-location-map']")
+                    job_location = driver.find_element(By.XPATH, "//a[@data-testid='job-details-info-location-map']").text
                     job_employment_type = scrape_job_info(driver, "p[data-testid='job-details-info-employment-type']")
                     job_min_exp = scrape_job_info(driver, "p[data-testid='job-details-info-min-experience']")
                     job_salary_range = scrape_job_info(driver, "span[data-testid='salary-range']")
