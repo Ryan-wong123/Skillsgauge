@@ -37,9 +37,9 @@ jobs:
         run: |
           python webscraper.py 
 
-      - name: Run Processor Script
-        run: |
-          python processor.py
+      # - name: Run Processor Script
+      #   run: |
+      #     python processor.py
 
       - name: Configure git
         run: |
@@ -65,7 +65,7 @@ jobs:
       - name: Commit and push changes
         run: |
           git add .
-          git reset job_listings_scraped.csv
+        # git reset job_listings_scraped.csv
           git reset 	google-chrome-stable_current_amd64.deb
           git commit -m "Update scraped data [skip ci]" || echo "No changes to commit"
           git push origin main
