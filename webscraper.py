@@ -1,4 +1,3 @@
-import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
@@ -17,35 +16,9 @@ import threading
 import os
 import csv
 
-'''
-- Author: Ainsley Cabading
-What's changed with Version 2?
+scrapeCSV = "mcf_Scraped.csv"
 
-1. Added parallel processing using ThreadPoolExecutor to be able to have up to X threads rotating across a queue of pages based on the page_count set Y.
-2. Added dynamic user agents and random rate-limiting to the scraping functions to prevent the website from reaching the rate limit.
-3. Added exponential backoff to manage retries in commmunicating with the web server, progressively increasing wait time between retries.
-4. Made the Chromium drivers headless to reduce overhead.
-5. Added time-keeping to roughly track how long it takes for the webscraper to run in full.
-7. Did some housekeeping and documentation on my code as well as made some functions for re-used statements.
-
-Current main() variables in this version you can change:
-1. page_count - Number of pages to scrape
-2. max_workers - Number of threads to run concurrently
-3. industry_input - Industry to scrape job listings from (based on website input)
-
-'''
-
-#--------------------INITIALIZATION--------------------
-
-# Initialize the UserAgent object
-ua = UserAgent()
-
-#--------------------FUNCTIONS--------------------
-# Function to wait for an element to be present
-def wait_for_element(driver, by, value, timeout=15):
-    return WebDriverWait(driver, timeout).until(EC.presence_of_element_located((by, value)))
-
-# Function to initialize a new WebDriver instance with a random user-agent
+# Function to initialize a new WebDriver instance
 def create_driver():
     options = Options()
     options.add_argument('--headless')  # Run Chromium in headless mode
@@ -55,29 +28,24 @@ def create_driver():
     options.add_argument('--window-size=1920x1080')  # Set window size to avoid issues with elements not being visible
     
     # Set a random user-agent
-    user_agent = ua.random
+    user_agent = UserAgent().random
     options.add_argument(f'user-agent={user_agent}')
 
     # Initialize the WebDriver with the specified options
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     return driver
 
-# Example of using the create_driver function
-driver = create_driver()
+# Function to wait for an element to be present
+def wait_for_element(driver, by, value, timeout=15):
+    WebDriverWait(driver, timeout).until(EC.presence_of_element_located((by, value)))
 
-
-# #Function to calculate the exponential backoff delay with optional jitter
+# Function to calculate the exponential backoff delay with jitter
 def exponential_backoff(retries, base_delay=2, max_delay=120):
-    """
-    Calculate the exponential backoff delay with optional jitter.
-    :param retries: Number of retries attempted.
-    :param base_delay: Initial delay in seconds.
-    :param max_delay: Maximum delay in seconds.
-    :return: Delay time in seconds.
-    """
-    delay = min(base_delay * (2 ** retries), max_delay) #Increases delay time through exponential grrowth based on number of current retries
-    jitter = random.uniform(0, delay / 2) # Random value chosen forr jitter that is between 0 and Half of the delay count
-    return delay + jitter #Returns both.
+    #Increases delay time through exponential grrowth based on number of current retries
+    delay = min(base_delay * (2 ** retries), max_delay)
+    # Random value chosen forr jitter that is between 0 and Half of the delay count
+    jitter = random.uniform(0, delay / 2) 
+    return delay + jitter
 
 # Function to scrape job information from a specific element on the page
 def scrape_job_info(driver, selector):
@@ -92,35 +60,29 @@ def scrape_job_info(driver, selector):
             print(f"[{threading.current_thread().name}] Exception: {e}. Retrying in {delay:.2f} seconds... (Attempt {retries + 1}/{max_retries})")
             time.sleep(delay)
             retries += 1
-        # print(f"[{threading.current_thread().name}] Failed to scrape job info after {max_retries} attempts.")
     return None
 
 # Function to write job listings to a CSV file
 def write_jobs_to_csv(job_list, csv_file):
-    with open(csv_file, mode='a', newline='', encoding='utf-8') as file:
-        writer = csv.DictWriter(file, fieldnames=job_list[0].keys())
+    # Define the header row of the CSV File.
+    header = ["Job Id", "Job URL", "Job Title", "Company", "Job Industry", "Job Description","Job Location", "Job Employment Type", "Job Minimum Experience", "Job Salary Range", "skills", "Job Posting Date"]
 
-        writer.writerows(job_list)
+    if job_list:
+        # Check if the file exists
+        file_exists = os.path.isfile(csv_file)
+        
+        with open(csv_file, mode='a', newline='', encoding='utf-8') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=header)
+            
+            # Write header only if the file is being created
+            if not file_exists:
+                writer.writeheader()
+                
+            # Write the job data
+            writer.writerows(job_list)
 
 # Function to scrape a single page
 def scrape_page(page):
-    """
-    Scrapes job listings from a specified page on the MyCareersFuture website.
-    Args:
-        page (int): The page number to scrape.
-    Returns:
-        list: A list of dictionaries, each containing job details such as URL, title, location, employment type, seniority, minimum experience, industry, salary range, description, and required skills.
-    The function performs the following steps:
-    1. Creates a web driver instance and sets an implicit wait time.
-    2. Constructs the query URL based on user input for the industry and the specified page number.
-    3. Fetches the page using the web driver.
-    4. Checks for any error messages on the page.
-    5. Waits for the job card container to be present on the page.
-    6. Iterates through job cards, extracting job details and storing them in a list.
-    7. Handles various exceptions such as `NoSuchElementException`, `ElementClickInterceptedException`, and `StaleElementReferenceException`.
-    8. Adds random delays to avoid rate-limiting.
-    9. Returns the list of job details.
-    """
     # Create a new WebDriver instance with a random user-agent
     driver = create_driver()
     driver.implicitly_wait(10)  # Set to 10 seconds
@@ -128,7 +90,6 @@ def scrape_page(page):
     #Take in user input for industry and create query_final based on industry input
     query_initial = "https://www.mycareersfuture.gov.sg/search?sortBy=relevancy&page="
     query_final = query_initial + str(page)
-    print(query_final)
 
     #Fetch page with driver
     driver.get(query_final)
@@ -161,7 +122,6 @@ def scrape_page(page):
     for counter in range(0, job_count):
         try:
             driver.refresh()
-            job_url = job_title = job_location = job_employment_type = job_seniority = job_min_exp = job_industry = job_salary_range = job_desc = job_skills_needed = ""
             job_card_id = f"job-card-{counter}"
             print(f"[{threading.current_thread().name}] Trying to find job card with ID: {job_card_id}")
 
@@ -170,7 +130,6 @@ def scrape_page(page):
                 try:
                     card_container = driver.find_element(By.CSS_SELECTOR, "div[data-testid='card-list']")
                     job_card = card_container.find_element(By.ID, job_card_id)
-                    print(f"[{threading.current_thread().name}] Job Card {counter} found. Clicking on it.")
 
                     try:
                         job_card.click()
@@ -182,48 +141,39 @@ def scrape_page(page):
                     print(f"[{threading.current_thread().name}] Currently Searching through: Job-Card-{counter}")
 
                     # Explicit wait until the job details are found before continuing
-                    WebDriverWait(driver, 15).until(
-                        EC.presence_of_element_located((By.CSS_SELECTOR, "h1[data-testid='job-details-info-job-title']"))
-                    )
-                    
-                    WebDriverWait(driver, 15).until(
-                        EC.presence_of_element_located((By.CSS_SELECTOR, "div[data-testid='description-content']"))
-                    )
+                    wait_for_element(driver, By.CSS_SELECTOR, "h1[data-testid='job-details-info-job-title']", 15)
+                    wait_for_element(driver, By.CSS_SELECTOR, "div[data-testid='description-content']", 15)
 
-                    job_url = driver.current_url
-                    print(f"[{threading.current_thread().name}] Job URL: {job_url}")
-
-                    #-----------EXTRACTION----------
                     # Add in scrape_job_info
-
+                    job_id = scrape_job_info(driver, "span[data-testid='job-details-info-job-post-id']")
+                    job_url = driver.current_url
                     job_title = scrape_job_info(driver, "h1[data-testid='job-details-info-job-title']")
+                    job_company = scrape_job_info(driver, "p[data-testid='company-hire-info']")
+                    job_industry = scrape_job_info(driver, "p[data-testid='job-details-info-job-categories']")
+                    job_desc = scrape_job_info(driver, "div[data-testid='description-content']")
+                    job_location = scrape_job_info(driver, "a[data-testid='job-details-info-location-map']")
                     job_employment_type = scrape_job_info(driver, "p[data-testid='job-details-info-employment-type']")
                     job_min_exp = scrape_job_info(driver, "p[data-testid='job-details-info-min-experience']")
-                    job_industry = scrape_job_info(driver, "p[data-testid='job-details-info-job-categories']")
                     job_salary_range = scrape_job_info(driver, "span[data-testid='salary-range']")
-                    job_desc = scrape_job_info(driver, "div[data-testid='description-content']")
                     job_skills_needed = scrape_job_info(driver, "div[data-testid='multi-pill-button']")
-                    job_id = scrape_job_info(driver, "span[data-testid='job-details-info-job-post-id']")
                     job_post_date = scrape_job_info(driver, "span[data-testid='job-details-info-last-posted-date']")
-                    job_company = scrape_job_info(driver, "p[data-testid='company-hire-info']")
-
-                    #-----------STORAGE------------
 
                     # Store the extracted data into a dictionary
                     job_data = {
                         "Job Id": job_id,
                         "Job URL": job_url,
-                        "Job Salary Range": job_salary_range,
-                        "Job Employment Type": job_employment_type,
-                        "Job Posting Date": job_post_date,
                         "Job Title": job_title,
-                        "Job Description": job_desc,
-                        "skills": job_skills_needed,
                         "Company": job_company,
                         "Job Industry": job_industry,
+                        "Job Description": job_desc,
+                        "Job Location": job_location,
+                        "Job Employment Type": job_employment_type,
                         "Job Minimum Experience": job_min_exp,
+                        "Job Salary Range": job_salary_range,
+                        "skills": job_skills_needed,
+                        "Job Posting Date": job_post_date,
                     }
-    
+
                     # Append the job data to the list
                     all_jobs.append(job_data)
 
@@ -238,8 +188,9 @@ def scrape_page(page):
 
                     break
 
-                except StaleElementReferenceException: # Handle StaleElementReferenceException
-                    print(f"[{threading.current_thread().name}] StaleElementReferenceException encountered for job card {counter}. Retrying...")
+                except (StaleElementReferenceException, NoSuchElementException, TimeoutException) as e: 
+                    print(f"[{threading.current_thread().name}] Exception: {e} encountered for job card {counter}. Retrying...")
+
                     retries -= 1
                     if retries == 0:
                         print(f"[{threading.current_thread().name}] Failed to interact with job card {counter} after multiple retries.")
@@ -250,16 +201,12 @@ def scrape_page(page):
                         driver.back()
                         wait_for_element(driver, By.CSS_SELECTOR, "div[data-testid='card-list']", 15)
 
-                except (NoSuchElementException, TimeoutException): #Handles NoSuchElementException
-                    retries -= 1
-                    if retries == 0:
-                        print(f"[{threading.current_thread().name}] Failed to find job card {counter} after multiple retries.")
-                        driver.back()
-                        wait_for_element(driver, By.CSS_SELECTOR, "div[data-testid='card-list']", 15)
-                        raise
-                    else:
-                        time.sleep(random.uniform(5, 10))
-                        driver.back() #Reload
+                        if isinstance(e, StaleElementReferenceException):
+                            # Special handling for StaleElementReferenceException, if needed
+                            pass
+                        else:
+                            time.sleep(random.uniform(5, 10))
+
                         delay = exponential_backoff(retries)
                         print(f"[{threading.current_thread().name}] Retries: {retries}. Delay: {delay}")
                         time.sleep(delay)
@@ -274,40 +221,8 @@ def scrape_page(page):
     driver.quit()
     return all_jobs
 
-# Function to check for the error message
-def check_for_error_message(driver):
-    try:
-        error_message = driver.find_element(By.CSS_SELECTOR, "div.error-message-selector")  # Replace with the actual selector
-        if "temporarily unable to showcase any job postings" in error_message.text:
-            return True
-    except NoSuchElementException:
-        return False
-    return False
-
-# Example function to wait for an element
-def wait_for_element(driver, by, value, timeout=30):
-    WebDriverWait(driver, timeout).until(EC.presence_of_element_located((by, value)))
-
-#--------------------MAIN--------------------
-
 # Main function to run the scraper in parallel
-"""
-Main function to scrape job listings from multiple pages concurrently and save the results to a CSV file.
-This function performs the following steps:
-1. Initializes the number of pages to scrape and an empty list to store job listings.
-2. Uses a ThreadPoolExecutor to scrape multiple pages concurrently.
-3. Collects the results from each thread and combines them into a single list.
-4. Converts the list of job listings (dictionaries) into a pandas DataFrame.
-5. Saves the DataFrame to a CSV file named 'job_listings_scraped.csv'.
-
-"""
 def main():
-
-    #For testing purposes: check how long it takes for the webscraper to run.
-    #Start timer
-    start_time = time.time()
-    print(start_time)
-
     page_count = 5  # MUST be same number to avoid the website crashing. All 20 per page need to be done in 1 sessions
     all_jobs = []  # List to store all job listings
 
@@ -318,83 +233,16 @@ def main():
             for future in futures:
                 all_jobs.extend(future.result())  # Collect results from each thread
 
-        # Define the header row of the CSV File.
-        header = ["Job Id", "Job URL", "Job Salary Range", "Job Employment Type", "Job Posting Date", "Job Title", "Job Description", "skills", "Company", "Job Industry", "Job Minimum Experience"]
+        # Write accumulated job data to CSV (append mode)
+        write_jobs_to_csv(all_jobs, scrapeCSV)
 
-        # Check if the CSV file already exists
-        file_exists = os.path.isfile('job_listings_scraped.csv')
-
-        # Convert all_jobs to a DataFrame
-        # df = pd.DataFrame(all_jobs)
-        
-        # Write the DataFrame to a CSV file
-        #df.to_csv('job_listings_scraped.csv', mode='a' if file_exists else 'w', header=not file_exists, index=False, encoding='utf-8')
-        # df.to_csv('job_listings_TEST.csv', mode='w', header=True, index=False, encoding='utf-8')
-
-        # Check if the CSV file already exists
-        file_exists = os.path.isfile('job_listings_scraped.csv')
-
-        # Open the CSV file in append mode if it exists, otherwise in write mode
-        with open('job_listings_scraped.csv', 'a' if file_exists else 'w', newline='', encoding='utf-8') as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=header)
-            # Write the header row only if the file is being created
-            if not file_exists:
-                writer.writeheader()
-
-            # Write accumulated job data to CSV
-            write_jobs_to_csv(all_jobs, 'job_listings_scraped.csv')
-    
     except TimeoutException:
-        # # Check if the CSV file already exists
-        # file_exists = os.path.isfile('job_listings_scraped.csv')
-
-        # # Convert all_jobs to a DataFrame
-        # df = pd.DataFrame(all_jobs)
-        
-        # # Write the DataFrame to a CSV file
-        # df.to_csv('job_listings_scraped.csv', mode='a' if file_exists else 'w', header=not file_exists, index=False, encoding='utf-8')
-
-        # Check if the CSV file already exists
-        file_exists = os.path.isfile('job_listings_scraped.csv')
-
-        # Open the CSV file in append mode if it exists, otherwise in write mode
-        with open('job_listings_scraped.csv', 'a' if file_exists else 'w', newline='', encoding='utf-8') as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=header)
-            # Write the header row only if the file is being created
-            if not file_exists:
-                writer.writeheader()
-
-            # Write accumulated job data to CSV
-            write_jobs_to_csv(all_jobs, 'job_listings_scraped.csv')
+        # In case of a timeout, write the job data (if any) to CSV
+        write_jobs_to_csv(all_jobs, scrapeCSV)
 
     finally:
-        # Check if the CSV file already exists
-        file_exists = os.path.isfile('job_listings_scraped.csv')
-
-        # Open the CSV file in append mode if it exists, otherwise in write mode
-        with open('job_listings_scraped.csv', 'a' if file_exists else 'w', newline='', encoding='utf-8') as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=header)
-            # Write the header row only if the file is being created
-            if not file_exists:
-                writer.writeheader()
-
-            # Write accumulated job data to CSV
-            write_jobs_to_csv(all_jobs, 'job_listings_scraped.csv')
-
-    #Save end time
-    end_time = time.time()
-    print(end_time)
-
-    # Calculate elapsed time in seconds
-    elapsed_time = end_time - start_time
-
-    # Convert elapsed time to minutes and seconds
-    minutes, seconds = divmod(elapsed_time, 60)
-
-    # Print time taken to run the webscraper
-    print(f"Time taken to run the webscraper: {int(minutes)} minutes and {seconds:.2f} seconds")
-
-    print(len(all_jobs))
+        # Ensure job data is written to CSV even if an exception occurs
+        write_jobs_to_csv(all_jobs, scrapeCSV)
 
 if __name__ == "__main__":
     main()
