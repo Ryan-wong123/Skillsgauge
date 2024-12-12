@@ -65,7 +65,7 @@ def scrape_job_info(driver, selector):
 # Function to write job listings to a CSV file
 def write_jobs_to_csv(job_list, csv_file):
     # Define the header row of the CSV File.
-    header = ["Job Id", "Job URL", "Job Title", "Company", "Job Industry", "Job Description","Job Location", "Job Employment Type", "Job Minimum Experience", "Job Salary Range", "skills", "Job Posting Date"]
+    header = ["Job Id", "Job URL", "Job Title", "Company", "Job Industry", "Job Description", "Job Employment Type", "Job Minimum Experience", "Job Salary Range", "skills", "Job Posting Date"]
 
     if job_list:
         # Check if the file exists
@@ -151,7 +151,6 @@ def scrape_page(page):
                     job_company = scrape_job_info(driver, "p[data-testid='company-hire-info']")
                     job_industry = scrape_job_info(driver, "p[data-testid='job-details-info-job-categories']")
                     job_desc = scrape_job_info(driver, "div[data-testid='description-content']")
-                    job_location = driver.find_element(By.XPATH, "//a[@data-testid='job-details-info-location-map']").text
                     job_employment_type = scrape_job_info(driver, "p[data-testid='job-details-info-employment-type']")
                     job_min_exp = scrape_job_info(driver, "p[data-testid='job-details-info-min-experience']")
                     job_salary_range = scrape_job_info(driver, "span[data-testid='salary-range']")
@@ -166,7 +165,6 @@ def scrape_page(page):
                         "Company": job_company,
                         "Job Industry": job_industry,
                         "Job Description": job_desc,
-                        "Job Location": job_location,
                         "Job Employment Type": job_employment_type,
                         "Job Minimum Experience": job_min_exp,
                         "Job Salary Range": job_salary_range,
