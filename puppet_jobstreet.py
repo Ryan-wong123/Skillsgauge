@@ -63,14 +63,21 @@ async def job_street_scraper():
     #card_link = await card[0].querySelector("a")
 
 
-    #TODO: loop cards in page
+
     # TODO: save variable into pandas
 
-
+    card_count = 0
     for card in cards:
+
+        # error handle urgent hiring causing link to another page
+        #TODO: future check how to solve this issue
+        if await card.querySelector("span[data-automation='urgentAdBadge']"):
+            continue
+
         await card.click()
         # wait for 0.5 s
         await page.waitFor(500)
+
         try:
             # wait for side detail to appear
             detail_card = await page.waitForSelector("div[data-automation='jobDetailsPage']", {"visible": True})
@@ -90,6 +97,21 @@ async def job_street_scraper():
 
         except Exception as e:
             print(f"An error occurred: {str(e)}")
+
+        try:
+            # link section
+            # function to extract element content
+            link_parent = await detail_card.querySelector("h1[data-automation='job-detail-title'] > a")
+
+            # return js handler and convert to py string cant merge as need to be awaited
+            link_js = await link_parent.getProperty("href")
+            link = await link_js.jsonValue()
+            print(link)
+
+        except Exception as e:
+            print(f"An error occurred: {str(e)}")
+
+
 
         try:
             # company name section
@@ -125,6 +147,8 @@ async def job_street_scraper():
 
         except Exception as e:
             print(f"An error occurred: {str(e)}")
+            salary = None
+            print(salary)
 
 
         try:
@@ -143,6 +167,16 @@ async def job_street_scraper():
 
         except Exception as e:
             print(f"An error occurred: {str(e)}")
+
+        card_count += 1
+
+
+
+    # scrape analysis ====================
+
+    print("total card: ", len(cards))
+    print("total scrape:", card_count)
+
 
     await browser.close()
     return "success"
