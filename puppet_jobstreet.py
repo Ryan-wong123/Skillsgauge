@@ -36,8 +36,7 @@ async def job_street_scraper():
 
     page = await browser.newPage()
     await page.goto(url)
-    # TODO: next time to calculate screen size and auto enter para
-    await page.setViewport({"width": 1500, "height": 4000})
+    await page.setViewport({"width": 1920, "height": 1080})
     current_page = 1
     page_count = 5
     total_scrape_count = 0
