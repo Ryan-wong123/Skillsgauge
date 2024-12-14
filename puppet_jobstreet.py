@@ -3,7 +3,7 @@
 
 import asyncio
 from pyppeteer import launch
-import pandas
+import pandas as pd
 
 
 
@@ -44,6 +44,14 @@ async def job_street_scraper():
     total_cards = 0
 
 
+    # setup pandas
+
+    #job_street_df = pd.DataFrame(columns=["Job Title", "Job Link", "Company Name", "Location", "Work Type",
+    #                                      "Salary", "Date Posted", "Description"])
+
+
+
+
     ## get HTML
     #htmlContent = await page.content()
 
@@ -76,9 +84,9 @@ async def job_street_scraper():
         # TODO: save variable into pandas
 
         card_count = 0
-        """
-        for card in cards:
 
+        for card in cards:
+            card_list = []
             # error handle urgent hiring causing link to another page
             #TODO: future check how to solve this issue
             if await card.querySelector("span[data-automation='urgentAdBadge']"):
@@ -178,9 +186,12 @@ async def job_street_scraper():
             except Exception as e:
                 print(f"An error occurred: {str(e)}")
 
+
+
+
             card_count += 1
         
-        """
+
 
         # page scrape analysis ====================
         print("===============================PAGE ANAlYSIS =============================================")
