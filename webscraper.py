@@ -164,7 +164,7 @@ def scrape_page(page):
                         "Job URL": job_url,
                         "Job Title": job_title,
                         "Company": job_company,
-                        "Location": job_location,
+                        "Job Location": job_location,
                         "Job Industry": job_industry,
                         "Job Description": job_desc,
                         "Job Employment Type": job_employment_type,
