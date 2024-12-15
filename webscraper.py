@@ -50,7 +50,7 @@ def exponential_backoff(retries, base_delay=2, max_delay=120):
 # Function to scrape job information from a specific element on the page
 def scrape_job_info(driver, selector):
     retries = 0
-    max_retries = 5
+    max_retries = 1
     while retries < max_retries:
         try:
             element = driver.find_element(By.CSS_SELECTOR, selector)
@@ -60,7 +60,7 @@ def scrape_job_info(driver, selector):
             print(f"[{threading.current_thread().name}] Exception: {e}. Retrying in {delay:.2f} seconds... (Attempt {retries + 1}/{max_retries})")
             time.sleep(delay)
             retries += 1
-    return None
+    return "-"
 
 # Function to write job listings to a CSV file
 def write_jobs_to_csv(job_list, csv_file):
