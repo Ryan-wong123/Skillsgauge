@@ -69,7 +69,8 @@ async def job_street_scraper():
     while current_page <= page_count:
 
 
-        cards = await page.querySelectorAll("[data-automation='normalJob']")
+        #cards = await page.querySelectorAll("[data-automation='normalJob']")
+        cards = await page.querySelectorAll("[data-automation='jobTitle']")
 
 
         #html_content = await page.evaluate('''(element) => element.outerHTML''', first_card[0])
@@ -86,6 +87,8 @@ async def job_street_scraper():
 
         for card in cards:
             card_list = []
+            #await print_html_content(page,card)
+
             # error handle urgent hiring causing link to another page
             #TODO: future check how to solve this issue
             if await card.querySelector("span[data-automation='urgentAdBadge']"):
