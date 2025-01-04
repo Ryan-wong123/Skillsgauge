@@ -38,15 +38,15 @@ async def job_street_scraper():
     await page.goto(url)
     await page.setViewport({"width": 1920, "height": 1080})
     current_page = 1
-    page_count = 5
+    page_count = 1
     total_scrape_count = 0
     total_cards = 0
 
 
     # setup pandas
 
-    #job_street_df = pd.DataFrame(columns=["Job Title", "Job Link", "Company Name", "Location", "Work Type",
-    #                                      "Salary", "Date Posted", "Description"])
+    job_street_df = pd.DataFrame(columns=["Job Title", "Job Link", "Company Name", "Location", "Work Type",
+                                          "Salary", "Date Posted", "Description"])
 
 
 
@@ -139,7 +139,7 @@ async def job_street_scraper():
                 print(company)
 
             except Exception as e:
-                print(f"An error occurred: {str(e)}")
+                print(f"An error occurred : {str(e)}")
 
             try:
                 # location section
@@ -147,7 +147,7 @@ async def job_street_scraper():
                 print(location)
 
             except Exception as e:
-                print(f"An error occurred: {str(e)}")
+                print(f"An error occurred with location: {str(e)}")
 
 
             try:
@@ -157,7 +157,7 @@ async def job_street_scraper():
 
 
             except Exception as e:
-                print(f"An error occurred: {str(e)}")
+                print(f"An error occurred with work type: {str(e)}")
 
 
             try:
@@ -166,18 +166,24 @@ async def job_street_scraper():
                 print(salary)
 
             except Exception as e:
-                print(f"An error occurred: {str(e)}")
+                print(f"An error occurred with salary: {str(e)}")
                 salary = None
                 print(salary)
 
 
             try:
                 # date posted section
-                date_posted = await get_element_content(detail_card,"span._1unphw40.tcmsgw4z._1siu89c0._1siu89c1._1siu89c22._9b1ltu4._1siu89c7")
-                print(date_posted)
+                #date_posted = await get_element_content(detail_card,"span[data-automation='jobListingDate']")
+                #print(date_posted)
+
+
+                date_posted = await detail_card.xpath("//span[contains(text(), 'Posted')]")
+                date_posted_text = await page.evaluate('(element) => element.textContent', date_posted[0])
+                print(date_posted_text)
+
 
             except Exception as e:
-                print(f"An error occurred: {str(e)}")
+                print(f"An error occurred with date posted: {str(e)}")
 
 
             try:
@@ -186,11 +192,14 @@ async def job_street_scraper():
                 print(description)
 
             except Exception as e:
-                print(f"An error occurred: {str(e)}")
+                print(f"An error occurred desc: {str(e)}")
 
 
 
-
+            job_street_df = job_street_df.append({"Job Title":title, "Job Link": link,
+                                                    "Company Name": company, "Location": location,
+                                                    "Work Type": work_type,"Salary":salary,
+                                                    "Date Posted": date_posted_text, "Description": description}, ignore_index=True)
             card_count += 1
         
 
@@ -223,6 +232,9 @@ async def job_street_scraper():
 
 
     await browser.close()
+
+    job_street_df.to_csv('job_street_scrape.csv', index=False)
+
     return "success"
 
 
