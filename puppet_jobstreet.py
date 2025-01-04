@@ -4,6 +4,34 @@
 import asyncio
 from pyppeteer import launch
 import pandas as pd
+from datetime import datetime, timedelta
+import re
+
+current_datetime = datetime.now()
+async def calculate_date(date_extracted):
+    match = re.match(r"Posted (\d+)([dh]) ago", date_extracted)
+
+    if match:
+        # Extract the number and unit (days or hours)
+        number = int(match.group(1))
+        unit = match.group(2)
+
+        # Calculate the date based on the unit
+        if unit == 'd':  # Days ago
+            calculated_date = current_datetime - timedelta(days=number)
+        elif unit == 'h':  # Hours ago
+            calculated_date = current_datetime - timedelta(hours=number)
+        else:
+            raise ValueError("Unsupported unit in relative time format")
+    else:
+        raise ValueError("Unsupported relative time format")
+
+
+
+
+    print(calculated_date.date())
+    return calculated_date.date()
+
 
 
 
@@ -38,9 +66,10 @@ async def job_street_scraper():
     await page.goto(url)
     await page.setViewport({"width": 1920, "height": 1080})
     current_page = 1
-    page_count = 1
+    page_count = 5
     total_scrape_count = 0
     total_cards = 0
+
 
 
     # setup pandas
@@ -126,7 +155,7 @@ async def job_street_scraper():
                 # return js handler and convert to py string cant merge as need to be awaited
                 link_js = await link_parent.getProperty("href")
                 link = await link_js.jsonValue()
-                print(link)
+                #print(link)
 
             except Exception as e:
                 print(f"An error occurred: {str(e)}")
@@ -136,7 +165,7 @@ async def job_street_scraper():
             try:
                 # company name section
                 company = await get_element_content(detail_card,"span[data-automation='advertiser-name']")
-                print(company)
+                #print(company)
 
             except Exception as e:
                 print(f"An error occurred : {str(e)}")
@@ -144,7 +173,7 @@ async def job_street_scraper():
             try:
                 # location section
                 location = await get_element_content(detail_card,"span[data-automation='job-detail-location']")
-                print(location)
+                #print(location)
 
             except Exception as e:
                 print(f"An error occurred with location: {str(e)}")
@@ -153,7 +182,7 @@ async def job_street_scraper():
             try:
                 # work type section
                 work_type = await get_element_content(detail_card,"span[data-automation='job-detail-work-type']")
-                print(work_type)
+                #print(work_type)
 
 
             except Exception as e:
@@ -163,12 +192,12 @@ async def job_street_scraper():
             try:
                 # salary section
                 salary = await get_element_content(detail_card,"span[data-automation='job-detail-salary']")
-                print(salary)
+                #print(salary)
 
             except Exception as e:
                 print(f"An error occurred with salary: {str(e)}")
                 salary = None
-                print(salary)
+                #print(salary)
 
 
             try:
@@ -181,6 +210,10 @@ async def job_street_scraper():
                 date_posted_text = await page.evaluate('(element) => element.textContent', date_posted[0])
                 print(date_posted_text)
 
+                date_posted_text = await calculate_date(date_posted_text)
+
+
+
 
             except Exception as e:
                 print(f"An error occurred with date posted: {str(e)}")
@@ -189,7 +222,7 @@ async def job_street_scraper():
             try:
                 # description section
                 description = await get_element_content(detail_card,"div[data-automation='jobAdDetails']")
-                print(description)
+                #print(description)
 
             except Exception as e:
                 print(f"An error occurred desc: {str(e)}")
