@@ -53,10 +53,6 @@ jobs:
 
       - name: Run Puppeteer Script
         run: |
-          Xvfb :99 -screen 0 1280x1024x24 &  # Start Xvfb in the background
-          export DISPLAY=:99
-          export PYPPETEER_HEADLESS=0  # Enable debugging
-          export PYPPETEER_LOG_LEVEL=DEBUG
           python puppet_jobstreet.py
 
       - name: Configure git
