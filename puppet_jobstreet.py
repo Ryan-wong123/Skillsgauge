@@ -92,10 +92,13 @@ async def job_street_scraper():
     #                        executablePath='Win_x64_1181217_chrome-win/chrome-win/chrome.exe')
 
 
+    executable_path = '/home/runner/.local/share/pyppeteer/local-chromium/1181205/chrome-linux64/chrome'
     browser = await launch({
-            "headless": True,
-            "args": ['--no-sandbox', '--disable-setuid-sandbox']
-        })
+        "headless": True,
+        "args": ['--no-sandbox', '--disable-setuid-sandbox'],
+        "executablePath": executable_path,
+    })
+    
     page = await browser.newPage()
 
     # setup pandas
