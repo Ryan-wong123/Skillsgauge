@@ -1,6 +1,4 @@
-# Automates the github actions for webscraper
-
-name: pupeteer job street Web Scraper Automation
+name: Puppeteer JobStreet Web Scraper Automation
 
 on:
   schedule:
@@ -22,40 +20,43 @@ jobs:
 
       - name: Install dependencies
         run: |
-            sudo apt-get update
-            sudo apt-get install -y \
-              chromium-browser \
-              fonts-liberation \
-              libappindicator3-1 \
-              libatk-bridge2.0-0 \
-              libatk1.0-0 \
-              libcups2 \
-              libdbus-1-3 \
-              libgdk-pixbuf2.0-0 \
-              libnspr4 \
-              libnss3 \
-              libx11-xcb1 \
-              libxcomposite1 \
-              libxdamage1 \
-              libxrandr2 \
-              xdg-utils \
-              libgbm-dev  # Add this to prevent Chromium crashing
+          sudo apt-get update
+          sudo apt-get install -y \
+            chromium-browser \
+            fonts-liberation \
+            libappindicator3-1 \
+            libatk-bridge2.0-0 \
+            libatk1.0-0 \
+            libcups2 \
+            libdbus-1-3 \
+            libgdk-pixbuf2.0-0 \
+            libnspr4 \
+            libnss3 \
+            libx11-xcb1 \
+            libxcomposite1 \
+            libxdamage1 \
+            libxrandr2 \
+            xdg-utils \
+            libgbm-dev \
+            xvfb  # Install xvfb for simulating a display
 
       - name: Install Pyppeteer
         run: |
           python -m pip install pyppeteer
 
-      # Step 4: Install Python dependencies with specific versions
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r jobStreet_Scraper_requirement.txt 
+          pip install -r jobStreet_Scraper_requirement.txt  # Ensure you have this file in your repo
 
       - name: Run Puppeteer Script
         run: |
+          # Run the script using Xvfb to simulate a display
+          nohup Xvfb :99 &  # Start virtual framebuffer
+          export DISPLAY=:99
           python puppet_jobstreet.py
         env:
-          DISPLAY: :99  # If you need to simulate a display for pyppeteer
+          DISPLAY: :99  # Ensure DISPLAY variable is set
 
       - name: Configure git
         run: |
