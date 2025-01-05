@@ -34,11 +34,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r jobStreet_Scraper_requirement.txt 
 
-      # Step 4: Install Chromium for pyppeteer
-      - name: Install Chromium for pyppeteer
-        run: |
-          python -m pyppeteer.install
-
       # Step 5: Install Xvfb (for headless mode)
       - name: Install Xvfb
         run: |
