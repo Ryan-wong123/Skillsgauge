@@ -87,9 +87,15 @@ async def job_street_scraper():
 
             ]
     """
-    browser = await launch({"headless": False, "args": ['--start-maximized']},
-                           executablePath='Win_x64_1181217_chrome-win/chrome-win/chrome.exe')
+    # run in non headless
+    # browser = await launch({"headless": False, "args": ['--start-maximized']},
+    #                        executablePath='Win_x64_1181217_chrome-win/chrome-win/chrome.exe')
 
+
+    browser = await launch({
+            "headless": True,
+            "args": ['--no-sandbox', '--disable-setuid-sandbox']
+        })
     page = await browser.newPage()
 
     # setup pandas
