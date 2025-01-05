@@ -266,10 +266,14 @@ async def job_street_scraper():
                     print(f"An error occurred desc: {str(e)}")
                     description = None
 
-                job_street_df = job_street_df.append({"Job Id": job_id ,"Job Title":title, "Job URL": link,
-                                                        "Company": company, "Location": location, "Job Industry": industry, "Job Sub Industry": sub_industry,
-                                                        "Job Employment Type": work_type,"Job Salary Range":salary,
-                                                        "Job Posting Date": date_posted_text, "Job Description": description}, ignore_index=True)
+                job_data = {"Job Id": job_id, "Job Title": title, "Job URL": link,
+                            "Company": company, "Location": location, "Job Industry": industry, 
+                            "Job Sub Industry": sub_industry, "Job Employment Type": work_type,
+                            "Job Salary Range": salary, "Job Posting Date": date_posted_text, 
+                            "Job Description": description}
+
+                job_street_df = pd.concat([job_street_df, pd.DataFrame([job_data])], ignore_index=True)
+
                 card_count += 1
 
             # page scrape analysis ====================
