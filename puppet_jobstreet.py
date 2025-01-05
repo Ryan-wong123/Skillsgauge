@@ -91,14 +91,21 @@ async def job_street_scraper():
     # browser = await launch({"headless": False, "args": ['--start-maximized']},
     #                        executablePath='Win_x64_1181217_chrome-win/chrome-win/chrome.exe')
 
+    chromium_path = '/home/runner/.local/share/pyppeteer/local-chromium/'
+    print(f"Looking for Chromium at: {chromium_path}")
 
-    executable_path = '/home/runner/.local/share/pyppeteer/local-chromium/1181205/chrome-linux64/chrome'
+    # Check if the path exists
+    if os.path.exists(chromium_path):
+        print(f"Chromium found at {chromium_path}")
+    else:
+        print("Chromium binary not found!")
+
     browser = await launch({
-        "headless": True,
-        "args": ['--no-sandbox', '--disable-setuid-sandbox'],
-        "executablePath": executable_path,
+        'executablePath': chromium_path + '1181205/chrome-linux64/chrome',  # Or your specific path
+        'headless': True,
+        'args': ['--no-sandbox', '--disable-dev-shm-usage']
     })
-    
+
     page = await browser.newPage()
 
     # setup pandas
