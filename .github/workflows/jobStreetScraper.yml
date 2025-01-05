@@ -30,7 +30,7 @@ jobs:
         run: |
           python puppeteer_jobstreet.py
 
-          - name: Configure git
+      - name: Configure git
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
