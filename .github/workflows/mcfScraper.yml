@@ -1,6 +1,6 @@
 # Automates the github actions for webscraper and processor script
 
-name: Selenium Web Scraper Automation
+name: MCF Scraper Automation
 
 on:
   schedule:
@@ -34,7 +34,7 @@ jobs:
 
       - name: Run Selenium Script
         run: |
-          python webscraper.py 
+          python mcf_webscraper.py
 
       - name: Configure git
         run: |
@@ -61,7 +61,7 @@ jobs:
         run: |
           git add .
           git reset 	google-chrome-stable_current_amd64.deb
-          git commit -m "Update scraped data [skip ci]" || echo "No changes to commit"
+          git commit -m "MCF scraped" || echo "No changes to commit"
           git push origin main
         env:
           # This GITHUB_TOKEN is automatically provided by GitHub Actions
