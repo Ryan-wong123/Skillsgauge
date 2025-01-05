@@ -58,6 +58,9 @@ async def get_element_content(card, selector):
 
 async def job_street_scraper():
 
+
+
+
     # setup section
     url = "https://sg.jobstreet.com/jobs-in-information-communication-technology"
     browser = await launch({"headless": False, "args" :['--start-maximized']}, executablePath='Win_x64_1181217_chrome-win/chrome-win/chrome.exe')
@@ -66,7 +69,7 @@ async def job_street_scraper():
     await page.goto(url)
     await page.setViewport({"width": 1920, "height": 1080})
     current_page = 1
-    page_count = 5
+    page_count = 1
     total_scrape_count = 0
     total_cards = 0
 
@@ -74,8 +77,8 @@ async def job_street_scraper():
 
     # setup pandas
 
-    job_street_df = pd.DataFrame(columns=["Job Title", "Job Link", "Company Name", "Location", "Work Type",
-                                          "Salary", "Date Posted", "Description"])
+    job_street_df = pd.DataFrame(columns=["Job Id", "Job URL", "Job Title", "Company", "Job Industry", "Job Description", "Job Employment Type",
+                                          "Job Minimum Experience", "Job Salary Range", "Skills", "Job Posting Date", "Location"])
 
 
 
@@ -105,12 +108,6 @@ async def job_street_scraper():
         #html_content = await page.evaluate('''(element) => element.outerHTML''', first_card[0])
         #print(html_content)
 
-        # working but violate
-        #card_link = await card[0].querySelector("a")
-
-
-
-        # TODO: save variable into pandas
 
         card_count = 0
 
@@ -179,6 +176,9 @@ async def job_street_scraper():
                 print(f"An error occurred with location: {str(e)}")
 
 
+
+
+
             try:
                 # work type section
                 work_type = await get_element_content(detail_card,"span[data-automation='job-detail-work-type']")
@@ -229,10 +229,10 @@ async def job_street_scraper():
 
 
 
-            job_street_df = job_street_df.append({"Job Title":title, "Job Link": link,
-                                                    "Company Name": company, "Location": location,
-                                                    "Work Type": work_type,"Salary":salary,
-                                                    "Date Posted": date_posted_text, "Description": description}, ignore_index=True)
+            job_street_df = job_street_df.append({"Job Title":title, "Job URL": link,
+                                                    "Company": company, "Location": location,
+                                                    "Job Employment Type": work_type,"Job Salary Range":salary,
+                                                    "Job Posting Date": date_posted_text, "Job Description": description}, ignore_index=True)
             card_count += 1
         
 
