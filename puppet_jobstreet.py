@@ -7,7 +7,6 @@ import pandas as pd
 from datetime import datetime, timedelta
 import re
 import os
-import traceback
 
 current_datetime = datetime.now()
 csvfile = "job_street_scrape.csv"
@@ -32,13 +31,21 @@ async def calculate_date(date_extracted):
     else:
         raise ValueError("Unsupported relative time format")
 
+
+
+
     print(calculated_date.date())
     return calculated_date.date()
+
+
+
 
 async def print_html_content(page, element):
 
     html_content = await page.evaluate('''(element) => element.outerHTML''', element)
     print(html_content)
+
+
 
 async def get_element_content(card, selector):
 
@@ -50,6 +57,7 @@ async def get_element_content(card, selector):
     #print(content)
     return content
 
+
 def write_to_csv(new_scrape_df, csvfile):
 
     # check if csv file exist
@@ -59,7 +67,13 @@ def write_to_csv(new_scrape_df, csvfile):
     else:
         new_scrape_df.to_csv(csvfile, index=False)
 
+
+
+
+
 async def job_street_scraper():
+
+
     urls = ["https://sg.jobstreet.com/jobs-in-information-communication-technology",
             "https://sg.jobstreet.com/jobs-in-engineering",
             "https://sg.jobstreet.com/jobs-in-banking-financial-services",
@@ -69,12 +83,10 @@ async def job_street_scraper():
     """
     testing url 
     urls = ["https://sg.jobstreet.com/jobs-in-engineering",
+
+
             ]
     """
-    # run in non headless
-    # browser = await launch({"headless": False, "args": ['--start-maximized']},
-    #                        executablePath='Win_x64_1181217_chrome-win/chrome-win/chrome.exe')
-
     browser = await launch({
     'headless': True,
     'args': [
@@ -83,7 +95,6 @@ async def job_street_scraper():
     ],
     'executablePath': '/usr/bin/chromium-browser',  # Ensure this path is correct
     })
-
 
     page = await browser.newPage()
 
@@ -119,13 +130,10 @@ async def job_street_scraper():
         print("side detected")
 
         while current_page <= page_count:
-
             #cards = await page.querySelectorAll("[data-automation='normalJob']")
             cards = await page.querySelectorAll("[data-automation='jobTitle']")
-
             #html_content = await page.evaluate('''(element) => element.outerHTML''', first_card[0])
             #print(html_content)
-
             card_count = 0
 
             for card in cards:
@@ -289,12 +297,5 @@ async def job_street_scraper():
     write_to_csv(job_street_df, csvfile)
     return "success"
 
-if __name__ == '__main__':
-    try:
-        asyncio.run(job_street_scraper())
-    except Exception as e:
-        print(f"Error: {e}")
-        traceback.print_exc()  # This will give you a full traceback of the error
-    finally:
-        if not asyncio.get_event_loop().is_closed():
-            asyncio.get_event_loop().close()
+response = asyncio.run(job_street_scraper())
+print(response)
