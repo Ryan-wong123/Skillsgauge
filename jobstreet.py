@@ -12,17 +12,14 @@ async def calculate_date(date_extracted):
     match = re.match(r"Posted (\d+)([dhm]) ago", date_extracted)
 
     if match:
-        # Extract the number and unit (days or hours)
         number = int(match.group(1))
         unit = match.group(2)
 
-        # Calculate the date based on the unit
-        if unit == 'd':  # Days ago
+        if unit == 'd':
             calculated_date = current_datetime - timedelta(days=number)
-        elif unit == 'h':  # Hours ago
+        elif unit == 'h':
             calculated_date = current_datetime - timedelta(hours=number)
-
-        elif unit == 'm':  # Minutes ago
+        elif unit == 'm':
             calculated_date = current_datetime
         else:
             raise ValueError("Unsupported unit in relative time format")
@@ -61,7 +58,7 @@ async def job_street_scraper():
             '--disable-gpu',
             '--remote-debugging-port=9222'
         ],
-        'executablePath': '/usr/bin/chromium-browser',  # Ensure this path is correct
+        'executablePath': '/usr/bin/chromium-browser',
     })
 
     page = await browser.newPage()
@@ -185,3 +182,7 @@ if __name__ == '__main__':
         asyncio.run(job_street_scraper())
     except Exception as e:
         print(f"Error: {e}")
+    finally:
+        # Ensure that we close the event loop cleanly
+        if not asyncio.get_event_loop().is_closed():
+            asyncio.get_event_loop().close()
