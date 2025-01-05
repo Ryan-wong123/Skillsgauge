@@ -1,6 +1,3 @@
-# add requirement when success
-# pyppeteer
-
 import asyncio
 from pyppeteer import launch
 import pandas as pd
@@ -31,21 +28,13 @@ async def calculate_date(date_extracted):
     else:
         raise ValueError("Unsupported relative time format")
 
-
-
-
     print(calculated_date.date())
     return calculated_date.date()
-
-
-
 
 async def print_html_content(page, element):
 
     html_content = await page.evaluate('''(element) => element.outerHTML''', element)
     print(html_content)
-
-
 
 async def get_element_content(card, selector):
 
@@ -57,7 +46,6 @@ async def get_element_content(card, selector):
     #print(content)
     return content
 
-
 def write_to_csv(new_scrape_df, csvfile):
 
     # check if csv file exist
@@ -67,13 +55,7 @@ def write_to_csv(new_scrape_df, csvfile):
     else:
         new_scrape_df.to_csv(csvfile, index=False)
 
-
-
-
-
 async def job_street_scraper():
-
-
     urls = ["https://sg.jobstreet.com/jobs-in-information-communication-technology",
             "https://sg.jobstreet.com/jobs-in-engineering",
             "https://sg.jobstreet.com/jobs-in-banking-financial-services",
@@ -83,7 +65,6 @@ async def job_street_scraper():
     """
     testing url 
     urls = ["https://sg.jobstreet.com/jobs-in-engineering",
-
 
             ]
     """

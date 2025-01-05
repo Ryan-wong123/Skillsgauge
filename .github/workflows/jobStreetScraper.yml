@@ -28,12 +28,34 @@ jobs:
 
       - name: Run Scraper
         run: |
-          python puppet_jobstreet.py 
+          python puppeteer_jobstreet.py
 
-      - name: Commit and push results (if necessary)
+          - name: Configure git
         run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          git add job_street_scrape.csv
-          git commit -m "Update job scrape results"
-          git push origin main  
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      # Stash any unstaged changes before pulling
+      - name: Stash unstaged changes
+        run: |
+          git stash
+
+      # Pull the latest changes from GitHub with rebase
+      - name: Pull latest changes from GitHub
+        run: |
+          git pull origin main --rebase
+
+      # Apply stashed changes
+      - name: Apply stashed changes
+        run: |
+          git stash pop || echo "No changes to apply"
+      
+      # Commit and push the new data
+      - name: Commit and push changes
+        run: |
+          git add .
+          git commit -m "scraped job street" || echo "No changes to commit"
+          git push origin main
+        env:
+          # This GITHUB_TOKEN is automatically provided by GitHub Actions
+          TEST_TOKEN: ${{ secrets.TEST_TOKEN }}
