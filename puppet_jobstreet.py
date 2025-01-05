@@ -75,10 +75,14 @@ async def job_street_scraper():
     #                        executablePath='Win_x64_1181217_chrome-win/chrome-win/chrome.exe')
 
     browser = await launch({
-        'headless': True,
-        'args': ['--no-sandbox', '--disable-dev-shm-usage'],
-        'executablePath': '/usr/bin/chromium-browser',  # Update with the correct path
+    'headless': True,
+    'args': [
+        '--no-sandbox',
+        '--disable-dev-shm-usage'
+    ],
+    'executablePath': '/usr/bin/chromium-browser',  # Ensure this path is correct
     })
+
 
     page = await browser.newPage()
 
@@ -285,4 +289,7 @@ async def job_street_scraper():
     return "success"
 
 if __name__ == '__main__':
-    asyncio.run(job_street_scraper())
+    try:
+        asyncio.run(job_street_scraper())
+    except Exception as e:
+        print(f"Error: {e}")
