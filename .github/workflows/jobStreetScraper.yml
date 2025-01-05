@@ -1,13 +1,9 @@
 name: JobStreet Scraper Automation
 
 on:
-  # Triggers the workflow on push to the repository
-  push:
-    branches:
-      - main
-  # Triggers the workflow on a schedule (daily at midnight UTC)
   schedule:
-    - cron: "0 0 * * *"  # This runs every day at midnight UTC
+    - cron: '0 0 * * *'  # Runs everyday
+  workflow_dispatch:  # Allow manual triggering
 
 jobs:
   scraper:
@@ -28,7 +24,7 @@ jobs:
 
       - name: Run Scraper
         run: |
-          python puppeteer_jobstreet.py
+          python job_street_scraper.py
 
       - name: Configure git
         run: |
