@@ -11,7 +11,7 @@ import os
 current_datetime = datetime.now()
 csvfile = "job_street_scrape.csv"
 async def calculate_date(date_extracted):
-    match = re.match(r"Posted (\d+)([dh]) ago", date_extracted)
+    match = re.match(r"Posted (\d+)([dhm]) ago", date_extracted)
 
     if match:
         # Extract the number and unit (days or hours)
@@ -23,6 +23,9 @@ async def calculate_date(date_extracted):
             calculated_date = current_datetime - timedelta(days=number)
         elif unit == 'h':  # Hours ago
             calculated_date = current_datetime - timedelta(hours=number)
+
+        elif unit == 'm':  # Hours ago
+            calculated_date = current_datetime
         else:
             raise ValueError("Unsupported unit in relative time format")
     else:
@@ -105,7 +108,7 @@ async def job_street_scraper():
         await page.goto(url)
         await page.setViewport({"width": 1920, "height": 1080})
         current_page = 1
-        page_count = 2
+        page_count = 4
         total_scrape_count = 0
         total_cards = 0
 
