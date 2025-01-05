@@ -57,13 +57,19 @@ async def get_element_content(card, selector):
 
 
 async def job_street_scraper():
-
+    urls = ["https://sg.jobstreet.com/jobs-in-information-communication-technology",
+            "https://sg.jobstreet.com/jobs-in-engineering",
+            "https://sg.jobstreet.com/jobs-in-banking-financial-services",
+            "https://sg.jobstreet.com/jobs-in-administration-office-support",
+            "https://sg.jobstreet.com/jobs-in-healthcare-medical"
+            ]
 
 
 
     # setup section
     url = "https://sg.jobstreet.com/jobs-in-information-communication-technology"
-    browser = await launch({"headless": False, "args" :['--start-maximized']}, executablePath='Win_x64_1181217_chrome-win/chrome-win/chrome.exe')
+    browser = await launch({"headless": False, "args" :['--start-maximized']},
+                           executablePath='Win_x64_1181217_chrome-win/chrome-win/chrome.exe')
 
     page = await browser.newPage()
     await page.goto(url)
@@ -77,8 +83,9 @@ async def job_street_scraper():
 
     # setup pandas
 
-    job_street_df = pd.DataFrame(columns=["Job Id", "Job URL", "Job Title", "Company", "Job Industry", "Job Description", "Job Employment Type",
-                                          "Job Minimum Experience", "Job Salary Range", "Skills", "Job Posting Date", "Location"])
+    job_street_df = pd.DataFrame(columns=["Job Id", "Job URL", "Job Title", "Company", "Job Industry", "Job Sub Industry",
+                                          "Job Description", "Job Employment Type","Job Minimum Experience", "Job Salary Range",
+                                          "Skills", "Job Posting Date", "Location"])
 
 
 
@@ -143,6 +150,7 @@ async def job_street_scraper():
 
             except Exception as e:
                 print(f"An error occurred: {str(e)}")
+                title = None
 
             try:
                 # link section
@@ -156,7 +164,7 @@ async def job_street_scraper():
 
             except Exception as e:
                 print(f"An error occurred: {str(e)}")
-
+                link = None
 
 
             try:
@@ -166,6 +174,7 @@ async def job_street_scraper():
 
             except Exception as e:
                 print(f"An error occurred : {str(e)}")
+                company = None
 
             try:
                 # location section
@@ -174,10 +183,25 @@ async def job_street_scraper():
 
             except Exception as e:
                 print(f"An error occurred with location: {str(e)}")
+                location = None
 
+            try:
+                industry_all = await get_element_content(detail_card, "span[data-automation='job-detail-classifications'] > a")
+                print(industry_all)
 
+                # re to extract sub industry and industry
 
+                industry = re.search(r"\((.*?)\)" , industry_all)
 
+                sub_industry = industry_all.strip(industry.group(0))
+                industry = industry.group(0)
+                print(sub_industry)
+                print(industry)
+
+            except Exception as e:
+                print(f"An error occurred with industry: {str(e)}")
+                industry = None
+                sub_industry = None
 
             try:
                 # work type section
@@ -187,7 +211,7 @@ async def job_street_scraper():
 
             except Exception as e:
                 print(f"An error occurred with work type: {str(e)}")
-
+                work_type = None
 
             try:
                 # salary section
@@ -197,7 +221,7 @@ async def job_street_scraper():
             except Exception as e:
                 print(f"An error occurred with salary: {str(e)}")
                 salary = None
-                #print(salary)
+
 
 
             try:
@@ -217,6 +241,7 @@ async def job_street_scraper():
 
             except Exception as e:
                 print(f"An error occurred with date posted: {str(e)}")
+                date_posted_text = None
 
 
             try:
@@ -226,11 +251,12 @@ async def job_street_scraper():
 
             except Exception as e:
                 print(f"An error occurred desc: {str(e)}")
+                description = None
 
 
 
             job_street_df = job_street_df.append({"Job Title":title, "Job URL": link,
-                                                    "Company": company, "Location": location,
+                                                    "Company": company, "Location": location, "Job Industry": industry, "Job Sub Industry": sub_industry,
                                                     "Job Employment Type": work_type,"Job Salary Range":salary,
                                                     "Job Posting Date": date_posted_text, "Job Description": description}, ignore_index=True)
             card_count += 1
