@@ -1,0 +1,68 @@
+# Automates the github actions for webscraper
+
+name: pupeteer job street Web Scraper Automation
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Runs everyday
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  run-scraper:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'  # Specify your Python version
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r jobStreet_Scraper_requirement.txt 
+
+      - name: Install Puppeteer dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libx11-xcb1 libxcomposite1 libxi6 libxtst6 libnss3 libatk1.0-0 libcups2 libxrandr2 libasound2 libpangocairo-1.0-0 libgdk-pixbuf2.0-0 libgtk-3-0 libxdamage1 libxss1 libgbm1 libpangoft2-1.0-0
+
+      - name: Run puppeteer Script
+        env:
+          DISPLAY: ":99"  # Set up an Xvfb display
+        run: |
+          Xvfb :99 &  # Start Xvfb in the background
+          python puppet_jobstreet.py 
+
+      - name: Configure git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      # Stash any unstaged changes before pulling
+      - name: Stash unstaged changes
+        run: |
+          git stash
+
+      # Pull the latest changes from GitHub with rebase
+      - name: Pull latest changes from GitHub
+        run: |
+          git pull origin main --rebase
+
+      # Apply stashed changes
+      - name: Apply stashed changes
+        run: |
+          git stash pop || echo "No changes to apply"
+      
+      # Commit and push the new data
+      - name: Commit and push changes
+        run: |
+          git add .
+          git commit -m "Scraped job street" || echo "No changes to commit"
+          git push origin main
+        env:
+          # This GITHUB_TOKEN is automatically provided by GitHub Actions
+          TEST_TOKEN: ${{ secrets.TEST_TOKEN }}
