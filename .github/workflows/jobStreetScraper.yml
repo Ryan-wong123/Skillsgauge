@@ -53,7 +53,9 @@ jobs:
 
       - name: Run Puppeteer Script
         run: |
-          python jobstreet.py
+          python puppet_jobstreet.py
+        env:
+          DISPLAY: :99  # If you need to simulate a display for pyppeteer
 
       - name: Configure git
         run: |
