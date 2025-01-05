@@ -20,19 +20,45 @@ jobs:
         with:
           python-version: '3.9'  # Specify your Python version
 
-      - name: Update apt and install dependencies
+      # Install system dependencies and Chromium
+      - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            libx11-xcb1 libxcomposite1 libxi6 libxtst6 libnss3 libatk1.0-0 libcups2 libxrandr2 \
-            liboss4-salsa-asound2 libpangocairo-1.0-0 libgdk-pixbuf2.0-0 libgtk-3-0 libxdamage1 \
-            libxss1 libgbm1 libpangoft2-1.0-0
+            chromium-browser \
+            fonts-liberation \
+            libappindicator3-1 \
+            libatk-bridge2.0-0 \
+            libatk1.0-0 \
+            libcups2 \
+            libdbus-1-3 \
+            libgdk-pixbuf2.0-0 \
+            libnspr4 \
+            libnss3 \
+            libx11-xcb1 \
+            libxcomposite1 \
+            libxdamage1 \
+            libxrandr2 \
+            xdg-utils
+
+      - name: Install Pyppeteer
+        run: |
+          python -m pip install pyppeteer
+
+      - name: Install Chromium using Pyppeteer
+        run: |
+          python -m pyppeteer.install
 
       # Step 4: Install Python dependencies with specific versions
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r jobStreet_Scraper_requirement.txt 
+
+      - name: Check Chromium Path
+        run: |
+          which chromium-browser || echo "Chromium not found"
+          whereis chromium || echo "Chromium not found"
 
       # Step 5: Install Xvfb (for headless mode)
       - name: Install Xvfb
