@@ -31,21 +31,13 @@ async def calculate_date(date_extracted):
     else:
         raise ValueError("Unsupported relative time format")
 
-
-
-
     print(calculated_date.date())
     return calculated_date.date()
-
-
-
 
 async def print_html_content(page, element):
 
     html_content = await page.evaluate('''(element) => element.outerHTML''', element)
     print(html_content)
-
-
 
 async def get_element_content(card, selector):
 
@@ -57,7 +49,6 @@ async def get_element_content(card, selector):
     #print(content)
     return content
 
-
 def write_to_csv(new_scrape_df, csvfile):
 
     # check if csv file exist
@@ -67,13 +58,7 @@ def write_to_csv(new_scrape_df, csvfile):
     else:
         new_scrape_df.to_csv(csvfile, index=False)
 
-
-
-
-
 async def job_street_scraper():
-
-
     urls = ["https://sg.jobstreet.com/jobs-in-information-communication-technology",
             "https://sg.jobstreet.com/jobs-in-engineering",
             "https://sg.jobstreet.com/jobs-in-banking-financial-services",
@@ -83,8 +68,6 @@ async def job_street_scraper():
     """
     testing url 
     urls = ["https://sg.jobstreet.com/jobs-in-engineering",
-
-
             ]
     """
     # run in non headless
@@ -94,7 +77,7 @@ async def job_street_scraper():
     browser = await launch({
         'headless': True,
         'args': ['--no-sandbox', '--disable-dev-shm-usage'],
-        'executablePath': '/usr/bin/chromium-browser'  # Use the apt-installed Chromium
+        'executablePath': '/usr/bin/chromium-browser',  # Update with the correct path
     })
 
     page = await browser.newPage()
@@ -104,8 +87,6 @@ async def job_street_scraper():
     job_street_df = pd.DataFrame(columns=["Job Id", "Job URL", "Job Title", "Company", "Job Industry", "Job Sub Industry",
                                           "Job Description", "Job Employment Type","Job Minimum Experience", "Job Salary Range",
                                           "Skills", "Job Posting Date", "Location"])
-
-
 
     for url in urls:
 
@@ -119,33 +100,26 @@ async def job_street_scraper():
         total_scrape_count = 0
         total_cards = 0
 
-
-
         ## get HTML
         #htmlContent = await page.content()
 
         #wait for detail page to open
         side_page = await page.waitForSelector("[data-automation='splitViewJobDetailsWrapper']", {"visible": True})
 
-
         if side_page == None:
             print(" side page not found ")
             await browser.close()
             return None
 
-
         print("side detected")
 
         while current_page <= page_count:
 
-
             #cards = await page.querySelectorAll("[data-automation='normalJob']")
             cards = await page.querySelectorAll("[data-automation='jobTitle']")
 
-
             #html_content = await page.evaluate('''(element) => element.outerHTML''', first_card[0])
             #print(html_content)
-
 
             card_count = 0
 
@@ -171,7 +145,6 @@ async def job_street_scraper():
                     print(" detail page not open")
                     continue
 
-
                 print("detail page open")
 
                 try:
@@ -193,17 +166,13 @@ async def job_street_scraper():
                     link = await link_js.jsonValue()
                     #print(link)
 
-
                     job_id = re.search(r"(?<=job\/)(\d+)(?=\?)", link)
                     job_id = job_id.group(1)
                     print(job_id)
 
-
-
                 except Exception as e:
                     print(f"An error occurred: {str(e)}")
                     link = None
-
 
                 try:
                     # company name section
@@ -247,7 +216,6 @@ async def job_street_scraper():
                     work_type = await get_element_content(detail_card,"span[data-automation='job-detail-work-type']")
                     #print(work_type)
 
-
                 except Exception as e:
                     print(f"An error occurred with work type: {str(e)}")
                     work_type = None
@@ -261,13 +229,10 @@ async def job_street_scraper():
                     print(f"An error occurred with salary: {str(e)}")
                     salary = None
 
-
-
                 try:
                     # date posted section
                     #date_posted = await get_element_content(detail_card,"span[data-automation='jobListingDate']")
                     #print(date_posted)
-
 
                     date_posted = await detail_card.xpath("//span[contains(text(), 'Posted')]")
                     date_posted_text = await page.evaluate('(element) => element.textContent', date_posted[0])
@@ -275,13 +240,9 @@ async def job_street_scraper():
 
                     date_posted_text = await calculate_date(date_posted_text)
 
-
-
-
                 except Exception as e:
                     print(f"An error occurred with date posted: {str(e)}")
                     date_posted_text = None
-
 
                 try:
                     # description section
@@ -292,15 +253,11 @@ async def job_street_scraper():
                     print(f"An error occurred desc: {str(e)}")
                     description = None
 
-
-
                 job_street_df = job_street_df.append({"Job Id": job_id ,"Job Title":title, "Job URL": link,
                                                         "Company": company, "Location": location, "Job Industry": industry, "Job Sub Industry": sub_industry,
                                                         "Job Employment Type": work_type,"Job Salary Range":salary,
                                                         "Job Posting Date": date_posted_text, "Job Description": description}, ignore_index=True)
                 card_count += 1
-
-
 
             # page scrape analysis ====================
             print("===============================PAGE ANAlYSIS =============================================")
@@ -318,33 +275,14 @@ async def job_street_scraper():
             await page.waitFor(2000)
             print("next paged")
 
-
-
-
         # full scrape analysis
         print("=============================== FULL ANAlYSIS =============================================")
         print("total card: ", total_cards)
         print("total scrape:", total_scrape_count)
 
-
-
-
     await browser.close()
-
-
     write_to_csv(job_street_df, csvfile)
-
-
-
     return "success"
 
-
-
-
-response = asyncio.run(job_street_scraper())
-print(response)
-
-
-
-
-
+if __name__ == '__main__':
+    asyncio.run(job_street_scraper())
