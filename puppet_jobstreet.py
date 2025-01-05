@@ -7,6 +7,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 import re
 import os
+import traceback
 
 current_datetime = datetime.now()
 csvfile = "job_street_scrape.csv"
@@ -293,3 +294,7 @@ if __name__ == '__main__':
         asyncio.run(job_street_scraper())
     except Exception as e:
         print(f"Error: {e}")
+        traceback.print_exc()  # This will give you a full traceback of the error
+    finally:
+        if not asyncio.get_event_loop().is_closed():
+            asyncio.get_event_loop().close()
