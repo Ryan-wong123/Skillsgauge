@@ -20,7 +20,6 @@ jobs:
         with:
           python-version: '3.9'  # Specify your Python version
 
-      # Install system dependencies and Chromium
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -39,7 +38,8 @@ jobs:
             libxcomposite1 \
             libxdamage1 \
             libxrandr2 \
-            xdg-utils
+            xdg-utils \
+            xserver-xorg-video-dummy  # Add this if necessary
 
       - name: Install Pyppeteer
         run: |
@@ -51,21 +51,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r jobStreet_Scraper_requirement.txt 
 
-      - name: Check Chromium Path
-        run: |
-          which chromium-browser || echo "Chromium not found"
-          whereis chromium || echo "Chromium not found"
-
-      # Step 5: Install Xvfb (for headless mode)
-      - name: Install Xvfb
-        run: |
-          sudo apt-get install -y xvfb
-
-      - name: Run puppeteer Script
+      - name: Run Puppeteer Script
         run: |
           Xvfb :99 -screen 0 1280x1024x24 &  # Start Xvfb in the background
-          export DISPLAY=:99  # Set the DISPLAY variable
-          python puppet_jobstreet.py 
+          export DISPLAY=:99
+          export PYPPETEER_HEADLESS=0  # Enable debugging
+          export PYPPETEER_LOG_LEVEL=DEBUG
+          python puppet_jobstreet.py
 
       - name: Configure git
         run: |
