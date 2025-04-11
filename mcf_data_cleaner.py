@@ -1,5 +1,4 @@
 import pandas as pd
-import re
 import spacy
 import yake
 
@@ -23,18 +22,31 @@ def combined_spacy_yake_cleaner(text):
 
     doc = nlp(text)
 
-    # Step 1: Try spaCy noun chunks
-    for chunk in doc.noun_chunks:
-        if 1 <= len(chunk.text.strip().split()) <= 6:
-            return chunk.text.strip()
+    # Step 1: Extract noun chunks likely to be job roles
+    noun_chunks = [
+        chunk.text.strip()
+        for chunk in doc.noun_chunks
+        if 1 <= len(chunk.text.strip().split()) <= 6  # Avoid long or too short chunks
+    ]
 
-    # Step 2: Fallback to YAKE
+    # Step 2: Prefer noun chunks that contain proper nouns or job-like compound nouns
+    prioritized = []
+    for chunk in noun_chunks:
+        tokens = nlp(chunk)
+        if any(tok.pos_ in {"PROPN", "NOUN"} for tok in tokens) and not any(tok.pos_ == "VERB" for tok in tokens):
+            prioritized.append(chunk)
+
+    if prioritized:
+        return prioritized[0].title()
+
+    # Step 3: Fallback to YAKE if no good noun chunks
     keywords = kw_extractor.extract_keywords(text)
     if keywords:
-        return keywords[0][0].strip()
+        return keywords[0][0].title().strip()
 
-    # Final fallback
-    return text.strip()
+    # Step 4: Final fallback – return cleaned title-cased version
+    return text.title()
+
 
 # Apply to DataFrame
 df['Cleaned Job Title (spaCy + YAKE)'] = df['Job Title'].astype(str).apply(combined_spacy_yake_cleaner)
@@ -73,4 +85,4 @@ df = df.drop_duplicates()
 df = df.drop_duplicates(subset=['Job Id'])
 
 # Save the cleaned dataset
-df.to_csv("mcf_Scraped_cleaned_final.csv", index=False)
+df.to_csv("mcf_Scraped_cleaned.csv", index=False)
