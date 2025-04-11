@@ -1,6 +1,7 @@
 import pandas as pd
 import re
 import spacy
+import yake
 
 # Load the CSV
 file_path = "mcf_Scraped.csv"
@@ -12,21 +13,31 @@ nlp = spacy.load("en_core_web_sm")
 # Strip whitespace from all string columns
 df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
 
-# Pure NLP cleaner using noun chunks (no hardcoded filters)
-def extract_noun_chunk_job_title(text):
-    doc = nlp(text)
-    noun_chunks = [chunk.text.strip() for chunk in doc.noun_chunks if 2 <= len(chunk.text.split()) <= 6]
-    
-    # Return longest meaningful chunk
-    if noun_chunks:
-        return max(noun_chunks, key=len)
-    
-    # Fallback to top 5 words with NOUN/PROPN/ADJ tags
-    tokens = [token.text for token in doc if token.pos_ in {"NOUN", "PROPN", "ADJ"}]
-    return ' '.join(tokens[:5]) if tokens else text.strip()
+# Initialize YAKE extractor
+kw_extractor = yake.KeywordExtractor(lan="en", n=2, top=1)
 
-# Apply to job titles
-df['Cleaned Job Title (SpaCy SM)'] = df['Job Title'].astype(str).apply(extract_noun_chunk_job_title)
+# Combined method: spaCy noun chunk first, YAKE fallback
+def combined_spacy_yake_cleaner(text):
+    if not isinstance(text, str) or not text.strip():
+        return ""
+
+    doc = nlp(text)
+
+    # Step 1: Try spaCy noun chunks
+    for chunk in doc.noun_chunks:
+        if 2 <= len(chunk.text.strip().split()) <= 6:
+            return chunk.text.strip()
+
+    # Step 2: Fallback to YAKE
+    keywords = kw_extractor.extract_keywords(text)
+    if keywords:
+        return keywords[0][0].strip()
+
+    # Final fallback
+    return text.strip()
+
+# Apply to DataFrame
+df['Cleaned Job Title (spaCy + YAKE)'] = df['Job Title'].astype(str).apply(combined_spacy_yake_cleaner)
 
 
 # Convert 'Job Posting Date' to datetime format
