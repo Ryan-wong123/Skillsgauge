@@ -14,7 +14,7 @@ nlp = spacy.load("en_core_web_sm")
 df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
 
 # Initialize YAKE extractor
-kw_extractor = yake.KeywordExtractor(lan="en", n=2, top=1)
+kw_extractor = yake.KeywordExtractor(lan="en", n=5, top=1)
 
 # Combined method: spaCy noun chunk first, YAKE fallback
 def combined_spacy_yake_cleaner(text):
@@ -25,7 +25,7 @@ def combined_spacy_yake_cleaner(text):
 
     # Step 1: Try spaCy noun chunks
     for chunk in doc.noun_chunks:
-        if 2 <= len(chunk.text.strip().split()) <= 6:
+        if 1 <= len(chunk.text.strip().split()) <= 6:
             return chunk.text.strip()
 
     # Step 2: Fallback to YAKE
