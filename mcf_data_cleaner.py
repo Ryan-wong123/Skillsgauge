@@ -16,7 +16,7 @@ df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
 kw_extractor = yake.KeywordExtractor(lan="en", n=5, top=1)
 
 # Combined method: spaCy noun chunk first, YAKE fallback
-def combined_spacy_yake_cleaner(text):
+def jobTitleCleaner(text):
     if not isinstance(text, str) or not text.strip():
         return ""
 
@@ -47,10 +47,8 @@ def combined_spacy_yake_cleaner(text):
     # Step 4: Final fallback – return cleaned title-cased version
     return text.title()
 
-
 # Apply to DataFrame
-df['Cleaned Job Title (spaCy + YAKE)'] = df['Job Title'].astype(str).apply(combined_spacy_yake_cleaner)
-
+df['Job Title'] = df['Job Title'].astype(str).apply(jobTitleCleaner)
 
 # Convert 'Job Posting Date' to datetime format
 df['Job Posting Date'] = pd.to_datetime(
