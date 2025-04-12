@@ -34,13 +34,11 @@ jobs:
 
       - name: Run Selenium Script
         run: |
-          python mcf_webscraper.py
-          working-directory: mcf_scraper
+          python mcf_scraper/mcf_webscraper.py
 
       - name: Run Processor Script
         run: |
-          python mcf_data_cleaner.py
-          working-directory: mcf_scraper
+          python mcf_scraper/mcf_data_cleaner.py
 
       - name: Configure git
         run: |
