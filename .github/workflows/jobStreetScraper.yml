@@ -24,8 +24,7 @@ jobs:
 
       - name: Run Scraper
         run: |
-          python job_street_scraper.py
-          working-directory: job_street_scraper
+          python job_street_scraper/job_street_scraper.py
 
       - name: Configure git
         run: |
