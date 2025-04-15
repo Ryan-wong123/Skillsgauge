@@ -211,16 +211,17 @@ async def job_street_scraper():
                     location = None
 
                 try:
-                    #TODO: sub industry having issue extracting
+
                     industry_all = await get_element_content(detail_card, "span[data-automation='job-detail-classifications'] > a")
                     print(industry_all)
 
                     # re to extract sub industry and industry
 
-                    industry = re.search(r"\((.*?)\)" , industry_all)
+                    industry_match = re.search(r"\((.*?)\)" , industry_all)
 
-                    sub_industry = industry_all.strip(industry.group(0))
-                    industry = industry.group(0)
+                    industry = industry_match.group(1)  # remove parentheses
+                    sub_industry = industry_all.replace(f"({industry})", "").strip()
+
                     print(sub_industry)
                     print(industry)
 
