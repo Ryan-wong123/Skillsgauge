@@ -79,9 +79,9 @@ async def job_street_scraper():
         '--no-sandbox',
         '--disable-dev-shm-usage'
     ],
-    #'executablePath': '/usr/bin/chromium-browser',  # on back when deployed
+    'executablePath': '/usr/bin/chromium-browser',  # on back when deployed
 
-    'executablePath': 'C:/Users/User/Downloads/chrome-win/chrome.exe'
+    #'executablePath': 'C:/Users/User/Downloads/chrome-win/chrome.exe'
 
     })
 
