@@ -64,12 +64,12 @@ async def job_street_scraper():
             "https://sg.jobstreet.com/jobs-in-administration-office-support",
             "https://sg.jobstreet.com/jobs-in-healthcare-medical"
             ]
-
+    """
     # testing url
     urls = ["https://sg.jobstreet.com/jobs-in-engineering",
 
             ]
-
+    """
 
 
     # delployed settings
@@ -125,7 +125,7 @@ async def job_street_scraper():
         #htmlContent = await page.content()
 
         #wait for detail page to open
-        side_page = await page.waitForSelector("[data-automation='splitViewJobDetailsWrapper']", {"visible": True})
+        side_page = await page.waitForSelector("[data-automation='splitViewJobDetailsWrapper']", {"visible": True, 'timeout': 10000})
 
         if side_page == None:
             print(" side page not found ")
