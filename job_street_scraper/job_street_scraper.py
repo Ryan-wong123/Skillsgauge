@@ -5,6 +5,8 @@ from datetime import datetime, timedelta
 import re
 import os
 
+debug_flag = False
+
 current_datetime = datetime.now()
 csvfile = "job_street_scrape.csv"
 async def calculate_date(date_extracted):
@@ -62,22 +64,47 @@ async def job_street_scraper():
             "https://sg.jobstreet.com/jobs-in-administration-office-support",
             "https://sg.jobstreet.com/jobs-in-healthcare-medical"
             ]
-    """
-    testing url 
+
+    # testing url
     urls = ["https://sg.jobstreet.com/jobs-in-engineering",
 
             ]
-    """
+
+
+
+    # delployed settings
     browser = await launch({
     'headless': True,
     'args': [
         '--no-sandbox',
         '--disable-dev-shm-usage'
     ],
-    'executablePath': '/usr/bin/chromium-browser',  # Ensure this path is correct
+    'executablePath': '/usr/bin/chromium-browser',  # on back when deployed
+
+    #'executablePath': 'C:/Users/User/Downloads/chrome-win/chrome.exe'
+
     })
 
+    """
+    # test mode settings
+    browser = await launch({
+    'headless': False,
+    'args': [
+        '--no-sandbox',
+        '--disable-dev-shm-usage'
+    ],
+    'executablePath': 'C:/Users/User/Downloads/chrome-win/chrome.exe'
+
+    })
+    """
+    if debug_flag == True: print("browser loaded")
+
+
+
     page = await browser.newPage()
+    # spoof agent
+    await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36")
+    await page.setViewport({"width": 1920, "height": 1080})
 
     # setup pandas
 
@@ -87,11 +114,8 @@ async def job_street_scraper():
 
     for url in urls:
 
-        # setup section
-        #url = "https://sg.jobstreet.com/jobs-in-information-communication-technology"
-
         await page.goto(url)
-        await page.setViewport({"width": 1920, "height": 1080})
+
         current_page = 1
         page_count = 4
         total_scrape_count = 0
