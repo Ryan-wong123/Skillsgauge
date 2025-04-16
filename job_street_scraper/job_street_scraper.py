@@ -57,6 +57,49 @@ def write_to_csv(new_scrape_df, csvfile):
     else:
         new_scrape_df.to_csv(csvfile, index=False)
 
+    #clear away invalid entry and duplicates
+    RemoveExtraHeaderRows(csvfile)
+
+
+def RemoveExtraHeaderRows(csvfile):
+    # Load the CSV file
+    df = pd.read_csv(csvfile)
+
+    # Define the list of values to remove rows if any cell contains these values
+    values_to_remove = [
+        "Job URL",
+        "Job Title",
+        "Company",
+        "Job Industry",
+        "Job Sub Industry",
+        "Job Description",
+        "Job Employment Type",
+        "Job Minimum Experience",
+        "Job Salary Range",
+        "Skills",
+        "Job Posting Date",
+        "Location",
+        ">>>>>>> Stashed changes",
+        "<<<<<<< Updated upstream",
+        "======="
+    ]
+
+    # Column to check for duplicate id
+    id_column = 'Job Id'
+
+    # Remove duplicate rows based on the ID column
+    df_cleaned = df.drop_duplicates(subset=id_column, keep='first')
+
+    # Remove header rows
+    df_cleaned = df_cleaned[~df_cleaned.isin(values_to_remove).any(axis=1)]
+
+    # Remove rows that have fewer than 10 non-empty columns~
+    #df_cleaned = df_cleaned[df_cleaned.count(axis=1) >= 10]
+
+    # Save the cleaned DataFrame back to the CSV file
+    df_cleaned.to_csv(csvfile, index=False)
+
+
 async def job_street_scraper():
     urls = ["https://sg.jobstreet.com/jobs-in-information-communication-technology",
             "https://sg.jobstreet.com/jobs-in-engineering",
