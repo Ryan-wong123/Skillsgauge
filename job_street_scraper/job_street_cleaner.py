@@ -144,11 +144,11 @@ def clean_df(df):
 
     #df["Job Salary Range"] = df["Job Salary Range"].astype(str)
 
-    find_unique_values(df_copy, "Salary High")
+    find_unique_values(df_copy, "Job Salary Range")
     print("\n\n")
-    find_unique_values(df_copy, "Salary Low")
+    #find_unique_values(df_copy, "Salary Low")
 
-    df_copy.to_csv(clean_path)
+    #df_copy.to_csv(clean_path)
 
 clean_df(df)
 
