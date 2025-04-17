@@ -9,6 +9,8 @@ debug_flag = False
 
 current_datetime = datetime.now()
 csvfile = "job_street_scrape.csv"
+
+salary_accepted_keywords = ["per month", "p.m", "per hour", "p.a", "p.a.", "$", "p.m.", "k", "-"]
 async def calculate_date(date_extracted):
     match = re.match(r"Posted (\d+)([dhm]) ago", date_extracted)
 
@@ -285,7 +287,11 @@ async def job_street_scraper():
                 try:
                     # salary section
                     salary = await get_element_content(detail_card,"span[data-automation='job-detail-salary']")
-                    #print(salary)
+                    #print("before sal: " + salary)
+                    # add check for salary
+                    salary = salary if any(keyword in salary for keyword in salary_accepted_keywords) else None
+
+                    #print("after: " + salary)
 
                 except Exception as e:
                     print(f"An error occurred with salary: {str(e)}")
