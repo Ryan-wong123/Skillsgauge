@@ -17,6 +17,7 @@ clean_path = "job_street_cleaned.csv"
 df = pd.read_csv(file_path, encoding="utf-8")
 
 nlp = spacy.load("en_core_web_sm")
+#nlp = spacy.load("output/model-best")
 # Initialize YAKE extractor
 kw_extractor = yake.KeywordExtractor(lan="en", n=5, top=1)
 
