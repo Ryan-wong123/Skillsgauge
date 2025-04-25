@@ -22,7 +22,7 @@ nlp = spacy.load("output/model-best")  # load base model
 def extract_entities(text):
     doc = nlp(text)
 
-    return [ent.text for ent in doc.ents]
+    return ", ".join(ent.text for ent in doc.ents)
 
 df["Job Title Clean 2"] = df["Job Title"].apply(extract_entities)
 
