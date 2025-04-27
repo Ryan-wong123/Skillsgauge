@@ -6,7 +6,9 @@ from spacy.cli.train import train
 import json
 
 # Load your CSV
-df = pd.read_csv("job_title_dev.csv")
+#df = pd.read_csv("job_title_dev.csv")
+
+df = pd.read_csv("job_title_trainv3.csv")
 
 #df = pd.read_csv("job_street_cleaned.csv")
 
@@ -16,18 +18,32 @@ df = pd.read_csv("job_title_dev.csv")
 
 #
 # nlp = spacy.load("en_core_web_sm")  # load base model
-nlp = spacy.load("output/model-best")  # load base model
+#nlp = spacy.load("output/model-best")  # load trained model
 
+
+def clr_special_name(df):
+    df["Job Title"] = df["Job Title"].astype(str).str.strip().str.lower()
+    df["Job Title"] = df["Job Title"].replace({"#name?": pd.NA})
+    df = df.dropna(subset=["Job Title"])
+
+    print(df)
+    df.to_csv("job_title_trainv3.csv", index=False)
+
+clr_special_name(df)
 
 def extract_entities(text):
     doc = nlp(text)
 
     return ", ".join(ent.text for ent in doc.ents)
 
-df["Job Title Clean 2"] = df["Job Title"].apply(extract_entities)
+#df["Job Title Clean 2"] = df["Job Title"].apply(extract_entities)
 
 
-df.to_csv("clean_check.csv", index=False)
+#df.to_csv("clean_check.csv", index=False)
+
+
+
+
 # ner = nlp.get_pipe("ner")
 #
 # # Add new labels
