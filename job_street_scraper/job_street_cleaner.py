@@ -2,7 +2,7 @@ import pandas as pd
 import spacy
 import yake
 import re
-import numpy as np
+import datetime
 
 #TODO: settle business #name issue
 
@@ -60,25 +60,10 @@ def clean_setup(df):
     #set order
     df_copy = df_copy[new_order]
 
-    #
-    # all_cols = list(df_copy.columns)
-    # insert_after = "Job Salary Range"
-    # insert_pos = all_cols.index(insert_after)
-    #
-    # # Remove new columns from current position
-    # for col in new_columns:
-    #     all_cols.remove(col)
-    #
-    # for col in reversed(list(new_columns.keys())):
-    #     all_cols.insert(insert_pos + 1, col)
-    #
-    # df_copy = df_copy[all_cols]
-    # #print(df_copy.head())
-
     return df_copy
 
 
-
+# clean salary portion
 def normalize_salary_text(s):
     if pd.isna(s):
         return ""
@@ -113,8 +98,6 @@ def extract_salary_info(salary_str):
         unit = "unknown"
         multiplier = 1
 
-
-
     # Extract raw number strings
     raw_numbers = re.findall(r"[\d.]+k?", s)
 
@@ -133,6 +116,9 @@ def extract_salary_info(salary_str):
     return pd.Series([ low, high, avg])
 
 
+
+
+# clean job title portion potentially using trained spacy model
 def extract_job_title(text):
     if pd.isna(text):
         return ""
@@ -186,66 +172,51 @@ def jobTitleCleaner(text):
     return text.title()
 
 
+def clean_posting_date(df):
+    # convert str to data time format
+    df["Job Posting Date"] = pd.to_datetime(df["Job Posting Date"], format="%d/%m/%Y" ,errors='coerce')
 
+    # if NA set today date
+    today = pd.Timestamp.today().normalize()
+    df["Job Posting Date"] = df["Job Posting Date"].fillna(today)
 
+    return df
 
 def clean_df(df):
 
 
     df_copy = clean_setup(df)
     # extract salary values to int values
-    #df_copy[["Salary Low", "Salary High", "Salary Avg"]] = df_copy["Job Salary Range"].apply(extract_salary_info)
-    #df_copy["Clean Job Title"] = df_copy["Job Title"].apply(extract_job_title)
+    df_copy[["Salary Low", "Salary High", "Salary Avg"]] = df_copy["Job Salary Range"].apply(extract_salary_info)
+    df_copy["Clean Job Title"] = df_copy["Job Title"].apply(extract_job_title)
 
-    df_copy["Job Title Clean"] = df_copy["Job Title"].astype(str).apply(jobTitleCleaner)
+    # clean job title
+    #df_copy["Job Title Clean"] = df_copy["Job Title"].astype(str).apply(jobTitleCleaner)
 
 
-    print("job title clean complete")
+    #print("job title clean complete")
 
-    # for col in df.columns:
-    #     unique_types = df[col].map(type).nunique()
-    #     if unique_types > 1:
-    #         print(f"Column '{col}' has mixed types")
-    #
-    # print("======================")
-    # print(df["Job Salary Range"].map(type).value_counts())
-    # print(df["Job Posting Date"].map(type).value_counts())
 
-    #bad_rows = df[~df["Job Salary Range"].map(type).isin([str])]
-    #print(bad_rows["Job Salary Range"])
+    # clean job posting date
+    df_copy = clean_posting_date(df_copy)
 
 
 
-    #df["Job Salary Range"] = df["Job Salary Range"].astype(str)
 
-    #find_unique_values(df_copy, "Job Id")
+    #print(df_copy["Job Posting Date"])
+
 
     #find_unique_values(df_copy, "Job Title")
     print("\n\n")
-    find_unique_values(df_copy, "Job Title Clean")
+    #find_unique_values(df_copy, "Job Title Clean")
 
-    df_copy.to_csv(clean_path, index=False)
+    #df_copy.to_csv(clean_path, index=False)
 
 clean_df(df)
 
 
 
 
-
-
-
-
-
-
-
-# Load spaCy NLP model
-#
-
-# # Strip whitespace from all string columns
-# df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
-#
-# # Initialize YAKE extractor
-# kw_extractor = yake.KeywordExtractor(lan="en", n=5, top=1)
 
 
 
