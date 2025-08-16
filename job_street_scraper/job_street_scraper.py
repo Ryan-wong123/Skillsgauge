@@ -8,7 +8,21 @@ import os
 debug_flag = False
 
 current_datetime = datetime.now()
-csvfile = "job_street_scrape.csv"
+month = current_datetime.month
+year = current_datetime.year
+
+
+log_file = "raw_datasets/JS/js_scraper_log.txt"
+
+scrape_path = "raw_datasets/JS/"
+file_name = "js_"+ str(month) +"_" +  str(year) + ".csv"
+full_path = scrape_path + file_name
+
+
+
+
+
+
 
 salary_accepted_keywords = ["per month", "p.m", "per hour", "p.a", "p.a.", "$", "p.m.", "k", "-"]
 async def calculate_date(date_extracted):
@@ -353,7 +367,7 @@ async def job_street_scraper():
         print("total scrape:", total_scrape_count)
 
     await browser.close()
-    write_to_csv(job_street_df, csvfile)
+    write_to_csv(job_street_df, full_path)
     return "success"
 
 response = asyncio.run(job_street_scraper())
