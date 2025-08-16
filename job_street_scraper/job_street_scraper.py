@@ -5,7 +5,16 @@ from datetime import datetime, timedelta
 import re
 import os
 
+
+
+
+# settings variables
 debug_flag = False
+TOTAL_SCRAPE_PAGE = 5
+
+
+
+
 
 current_datetime = datetime.now()
 month = current_datetime.month
@@ -176,7 +185,7 @@ async def job_street_scraper():
         await page.goto(url)
 
         current_page = 1
-        page_count = 4
+        page_count = TOTAL_SCRAPE_PAGE
         total_scrape_count = 0
         total_cards = 0
 
