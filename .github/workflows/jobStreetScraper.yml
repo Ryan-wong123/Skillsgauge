@@ -2,7 +2,7 @@ name: JobStreet Scraper Automation
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Runs everyday
+    - cron: '0 0 * * 0'  # Runs every sun 
   workflow_dispatch:  # Allow manual triggering
 
 jobs:
