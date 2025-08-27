@@ -8,7 +8,7 @@ import logging
 from pathlib import Path
 
 
-#TODO: not tested
+
 
 # settings variables
 debug_flag = False
