@@ -17,7 +17,7 @@ UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Data set file path
-file_path = r'raw_datasets\\sg_job_data_cleaned.csv'
+file_path = r'bronze_datasets\\sg_job_data_cleaned.csv'
 
 industry_list = []
 
@@ -121,7 +121,7 @@ def industry_details():
     industry_name = industry_name_orig.replace(" ", "_")
 
     # Path to the dataset for the specific industry 
-    industry_path = "raw_datasets/(Final)_past_" + industry_name + ".csv"
+    industry_path = "bronze_datasets/(Final)_past_" + industry_name + ".csv"
 
     with open(industry_path , encoding='utf-8') as csvfile:
         df = pd.read_csv(csvfile, index_col=False)
@@ -232,7 +232,7 @@ def expanded_job_roles(job_title):
         # If the industry is not found in the session, redirect the user to the "Industries" page to select an industry
         return redirect(url_for("Industries"))
 
-    with open("raw_datasets/(Final)_past_"+ industry_name +".csv" , encoding="utf-8") as file:
+    with open("bronze_datasets/(Final)_past_"+ industry_name +".csv" , encoding="utf-8") as file:
         df = pd.read_csv(file, index_col=False)
         job_df = filter_df_by_job_role(df, job_title)
 
