@@ -28,19 +28,56 @@ jobs:
         uses: openai/codex-action@v1
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
-          prompt-file: .github/codex/prompts/issue-fix.md
+          prompt: |
+            You are Codex working on the repository: ${{ github.repository }}
+
+            A GitHub issue has been labeled for automation.
+
+            Issue number: ${{ github.event.issue.number }}
+            Issue URL: ${{ github.event.issue.html_url }}
+
+            Issue title:
+            ${{ github.event.issue.title }}
+
+            Issue body:
+            ${{ github.event.issue.body }}
+
+            Follow AGENTS.md if present.
+
+            Important rules:
+            - Work on the actual application code, not the automation files, unless the issue is explicitly about GitHub Actions, workflows, prompts, or CI/CD.
+            - Do not modify files under .github/ unless the issue is explicitly about automation or repository configuration.
+            - Keep changes scoped to the issue.
+            - Avoid unrelated refactors.
+            - Prefer minimal, reviewable changes.
+            - If the issue is ambiguous, make the safest minimal assumption and state it in the summary.
+
+            Project hints for SkillGauge:
+            - Main Flask app entry point: app.py
+            - Resume extraction logic likely involves resume_skills_extractor.py
+            - Analysis logic is likely in data_analysis.py
+            - Charts/visualisations are likely in Analysis_Visualisation.py
+            - HTML templates are in templates/
+            - Static assets are in static/
+            - Uploaded resumes are handled through uploads/
+
+            Your task:
+            1. Read the issue carefully.
+            2. Inspect the repository.
+            3. Implement the requested feature or bug fix in the app code.
+            4. Do not edit workflow or prompt files unless the issue explicitly asks for it.
+            5. Stop after making the changes needed for a pull request.
+
+            At the end, summarize:
+            - what changed
+            - which files changed
+            - any assumptions made
+            - any follow-up work still needed
           output-file: codex-output.md
           safety-strategy: drop-sudo
           sandbox: workspace-write
           codex-args: >-
             ["--full-auto"]
-
-        env:
-          ISSUE_TITLE: ${{ github.event.issue.title }}
-          ISSUE_BODY: ${{ github.event.issue.body }}
-          ISSUE_NUMBER: ${{ github.event.issue.number }}
-          ISSUE_URL: ${{ github.event.issue.html_url }}
-          REPO_NAME: ${{ github.repository }}
 
       - name: Create pull request from Codex changes
         id: cpr
