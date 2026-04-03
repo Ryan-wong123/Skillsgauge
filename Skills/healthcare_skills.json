@@ -1,0 +1,16 @@
+{
+    "nursing": ["nursing", "rn", "registered nurse"],
+    "medicine": ["medicine", "md"],
+    "pharmacy": ["pharmacy", "pharmacist"],
+    "physical therapy": ["physical therapy", "pt"],
+    "occupational therapy": ["occupational therapy", "ot"],
+    "medical coding": ["medical coding", "cpc"],
+    "healthcare management": ["healthcare management"],
+    "patient care": ["patient care"],
+    "emr": ["emr", "electronic medical records"],
+    "ehr": ["ehr", "electronic health records"],
+    "hipaa": ["hipaa"],
+    "cpr": ["cpr", "bls"],
+    "first aid": ["first aid"],
+    "clinical research": ["clinical research"]
+}

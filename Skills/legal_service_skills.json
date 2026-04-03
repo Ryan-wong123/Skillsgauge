@@ -1,0 +1,14 @@
+{
+    "corporate law": ["corporate law"],
+    "contract law": ["contract law", "contracts"],
+    "intellectual property": ["intellectual property", "ip"],
+    "patent law": ["patent law", "patents"],
+    "trademark": ["trademark", "trademark law"],
+    "litigation": ["litigation"],
+    "legal research": ["legal research"],
+    "legal writing": ["legal writing"],
+    "due diligence": ["due diligence"],
+    "compliance": ["compliance"],
+    "regulation": ["regulation", "regulatory"],
+    "board governance": ["board governance"]
+}
