@@ -1,15 +1,15 @@
-You are Codex working on the repository: {{REPO_NAME}}
+You are Codex working on the repository: ${REPO_NAME}
 
 A GitHub issue has been labeled for automation.
 
-Issue number: {{ISSUE_NUMBER}}
-Issue URL: {{ISSUE_URL}}
+Issue number: ${ISSUE_NUMBER}
+Issue URL: ${ISSUE_URL}
 
 Issue title:
-{{ISSUE_TITLE}}
+${ISSUE_TITLE}
 
 Issue body:
-{{ISSUE_BODY}}
+${ISSUE_BODY}
 
 Repository instructions:
 - Read and follow AGENTS.md if present
