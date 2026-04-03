@@ -1,0 +1,15 @@
+{
+    "mechanical engineering": ["mechanical engineering", "mechanical"],
+    "electrical engineering": ["electrical engineering", "electrical"],
+    "civil engineering": ["civil engineering", "civil"],
+    "software engineering": ["software engineering", "software"],
+    "chemical engineering": ["chemical engineering", "chemical"],
+    "structural analysis": ["structural analysis"],
+    "cad": ["cad", "autocad", "solidworks"],
+    "matlab": ["matlab"],
+    "simulink": ["simulink"],
+    "autocad": ["autocad"],
+    "solidworks": ["solidworks"],
+    "revit": ["revit"],
+    "bluebeam": ["bluebeam"]
+}

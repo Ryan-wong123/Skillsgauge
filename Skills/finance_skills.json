@@ -1,0 +1,18 @@
+{
+    "accounting": ["accounting", "bookkeeping"],
+    "financial analysis": ["financial analysis", "finance analysis"],
+    "financial modeling": ["financial modeling"],
+    "excel": ["excel", "microsoft excel"],
+    "excel VBA": ["vba", "excel vba"],
+    "quickbooks": ["quickbooks"],
+    "xero": ["xero"],
+    "tax preparation": ["tax preparation", "tax"],
+    "auditing": ["auditing", "audit"],
+    "budgeting": ["budgeting", "budget"],
+    "forecasting": ["forecasting", "financial forecasting"],
+    "risk management": ["risk management"],
+    "investment": ["investment", "investing"],
+    "portfolio management": ["portfolio management"],
+    "valuation": ["valuation", "business valuation"],
+    "corporate finance": ["corporate finance"]
+}
