@@ -1,0 +1,73 @@
+name: Refactor request
+description: Request a scoped refactor in SkillGauge
+title: "[Refactor] "
+labels: ["refactor"]
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Refactor goal
+      description: What should be improved?
+      placeholder: Describe the code structure or technical issue to improve.
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Current problem
+      description: What is wrong with the current implementation?
+      placeholder: |
+        - duplicate logic
+        - hard to maintain
+        - unclear structure
+        - performance issue
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: Which files or modules should be touched?
+      placeholder: |
+        - app.py
+        - data_analysis.py
+        - Analysis_Visualisation.py
+        - templates/...
+    validations:
+      required: true
+
+  - type: textarea
+    id: non_scope
+    attributes:
+      label: Out of scope
+      description: What should not be changed?
+      placeholder: |
+        - do not redesign UI
+        - do not change route names
+        - do not modify scraper logic
+        - do not change dataset schema
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: What must be true for this refactor to be considered done?
+      placeholder: |
+        - behavior remains the same
+        - code is cleaner and easier to maintain
+        - no unrelated files changed
+        - app still runs successfully
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: validation
+    attributes:
+      label: Validation expectations
+      options:
+        - label: Existing user-facing behavior should remain unchanged unless explicitly stated
+        - label: App should still start successfully
+        - label: Changed routes/pages should still render correctly if affected
+        - label: No unrelated refactors should be included

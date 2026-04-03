@@ -1,0 +1,56 @@
+name: Feature request
+description: Request a scoped feature for SkillGauge
+title: "[Feature] "
+labels: ["feature"]
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What should be built?
+      placeholder: Describe the feature in one clear sentence.
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Which part of the app is affected?
+      placeholder: e.g. resume upload flow, job-role matching, industry details page
+    validations:
+      required: true
+
+  - type: textarea
+    id: requirements
+    attributes:
+      label: Requirements
+      description: List the required behavior
+      placeholder: |
+        - Requirement 1
+        - Requirement 2
+        - Requirement 3
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: What must be true for this issue to be done?
+      placeholder: |
+        - Acceptance criterion 1
+        - Acceptance criterion 2
+        - Acceptance criterion 3
+    validations:
+      required: true
+
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints
+      description: What should not be changed?
+      placeholder: |
+        - Do not refactor unrelated code
+        - Preserve current Flask routes
+        - Add minimal changes only

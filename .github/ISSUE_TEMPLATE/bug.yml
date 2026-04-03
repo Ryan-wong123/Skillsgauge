@@ -1,0 +1,74 @@
+name: Bug report
+description: Report a bug in SkillGauge
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Bug summary
+      description: What is broken?
+      placeholder: Describe the bug clearly.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: How can the bug be reproduced?
+      placeholder: |
+        1. Go to ...
+        2. Click ...
+        3. Upload/select ...
+        4. Observe error ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should have happened?
+      placeholder: Describe the expected result.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What actually happened?
+      placeholder: Describe the actual result or error.
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Suspected files or modules
+      description: Which files or areas are likely involved?
+      placeholder: |
+        - app.py
+        - templates/...
+        - data_analysis.py
+        - resume_skills_extractor.py
+
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints
+      description: What should not be changed while fixing this bug?
+      placeholder: |
+        - Fix only the bug
+        - Avoid unrelated cleanup
+        - Preserve current user flow where possible
+
+  - type: checkboxes
+    id: validation
+    attributes:
+      label: Validation expectations
+      options:
+        - label: Fix should not break existing routes
+        - label: Fix should include manual validation notes in the PR
+        - label: No unrelated refactors should be included
