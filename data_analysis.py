@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import plotly.graph_objects as go
 import ast
@@ -327,3 +328,187 @@ def get_job_detail_url(job_df):
     except Exception as e:
         print("something went wrong in get job detail url")
         print(f"Details: {e}")
+
+
+# ============================    Cross-Industry Job Matching      ==============================================================
+
+# Import resume skills extractor for skill extraction from job descriptions
+import resume_skills_extractor
+
+
+def get_all_industry_csv_files():
+    """Get list of all industry CSV files in bronze_datasets."""
+    import glob
+    # Look for JobStreet CSV files in bronze_datasets/JS/
+    pattern = os.path.join('bronze_datasets', 'JS', 'js_*.csv')
+    files = glob.glob(pattern)
+    
+    # Also check root directory for main CSV files
+    root_pattern = os.path.join('.', '*.csv')
+    root_files = glob.glob(root_pattern)
+    
+    # Combine both
+    all_files = files + [f for f in root_files if 'job_street' in f.lower() or 'mcf' in f.lower()]
+    return all_files
+
+
+def _extract_skills_from_job_description(description, industry_files, general_skills_file):
+    """Extract skills from job description text using the resume_skills_extractor logic.
+    
+    Args:
+        description: Job description text
+        industry_files: List of industry skill JSON files
+        general_skills_file: Path to general skills JSON file
+        
+    Returns:
+        List of extracted skills
+    """
+    if not description or pd.isna(description):
+        return []
+    
+    text = resume_skills_extractor._normalize_text(description)
+    
+    # Load all industry skills and general skills
+    all_skills = {}
+    for industry_file in industry_files:
+        industry_skills = resume_skills_extractor._load_skills(industry_file)
+        all_skills.update(industry_skills)
+    
+    general_skills = resume_skills_extractor._load_skills(general_skills_file)
+    all_skills.update(general_skills)
+    
+    # Extract matching skills
+    extracted_skills = set()
+    for skill, aliases in all_skills.items():
+        variants = [skill] + resume_skills_extractor._alias_list(aliases)
+        normalized_variants = {resume_skills_extractor._normalize_text(str(v)) for v in variants}
+        
+        if any(resume_skills_extractor._contains_skill(text, v) for v in normalized_variants):
+            extracted_skills.add(skill.lower().strip())
+    
+    return sorted(extracted_skills)
+
+
+def load_all_industry_data():
+    """Load and combine data from all industry CSV files with extracted skills."""
+    try:
+        files = get_all_industry_csv_files()
+        all_data = []
+        
+        for file_path in files:
+            try:
+                # Use on_bad_lines='skip' to handle malformed rows
+                df = pd.read_csv(file_path, index_col=False, on_bad_lines='skip')
+                
+                # Only process files that don't have Skills column or have empty Skills
+                if 'Skills' not in df.columns:
+                    # No Skills column - need to extract from Job Description
+                    if 'Job Description' in df.columns:
+                        df['Skills'] = df['Job Description'].apply(
+                            lambda desc: _extract_skills_from_job_description(
+                                desc,
+                                resume_skills_extractor.industry_files,
+                                resume_skills_extractor.general_skills_file
+                            ) if pd.notna(desc) else []
+                        )
+                
+                all_data.append(df)
+            except Exception as e:
+                print(f"Error loading {file_path}: {e}")
+        
+        if all_data:
+            combined_df = pd.concat(all_data, ignore_index=True)
+            return combined_df
+        return None
+        
+    except Exception as e:
+        print(f"Error in load_all_industry_data: {e}")
+        return None
+
+
+def get_all_job_roles():
+    """Get all unique job roles across all industries."""
+    try:
+        df = load_all_industry_data()
+        if df is None or df.empty:
+            return {}
+        
+        # Ensure skills column is properly converted
+        # The column might be 'Skills' (string) or 'skills' (list)
+        skill_col = 'Skills' if 'Skills' in df.columns else 'skills'
+        
+        def parse_skills(skill_val):
+            """Parse skills from various formats."""
+            if pd.isna(skill_val):
+                return []
+            if isinstance(skill_val, list):
+                return skill_val
+            try:
+                # Try to parse as list
+                return ast.literal_eval(skill_val)
+            except:
+                # If it's a string, return as single item list
+                return [skill_val] if skill_val else []
+        
+        df['parsed_skills'] = df[skill_col].apply(parse_skills)
+        
+        # Group by Job Title and collect skills
+        job_roles_dict = {}
+        for job_title in df['Job Title'].unique():
+            job_df = df[df['Job Title'] == job_title]
+            # Get top skills for this job from parsed skills
+            all_skills = job_df['parsed_skills'].explode()
+            # Filter out empty strings
+            all_skills = all_skills[all_skills != '']
+            skill_counts = all_skills.value_counts()
+            job_roles_dict[job_title] = skill_counts.head(15).index.tolist()
+        
+        return job_roles_dict
+        
+    except Exception as e:
+        print(f"Error in get_all_job_roles: {e}")
+        return {}
+
+
+def match_user_skills_to_all_jobs(user_skills, job_roles_dict=None):
+    """Match user skills to all job roles across industries.
+    
+    Args:
+        user_skills: List of user skills
+        job_roles_dict: Optional pre-loaded job roles dict
+        
+    Returns:
+        List of tuples (job_title, match_percentage, industry) sorted by match
+    """
+    try:
+        if job_roles_dict is None:
+            job_roles_dict = get_all_job_roles()
+        
+        if not job_roles_dict:
+            return []
+        
+        # Normalize user skills to uppercase for comparison
+        user_skills_upper = [skill.upper() for skill in user_skills]
+        
+        matches = []
+        
+        for job_title, required_skills in job_roles_dict.items():
+            # Normalize job skills to uppercase
+            job_skills_upper = [skill.upper() for skill in required_skills]
+            
+            # Find matching skills
+            matched = set(user_skills_upper) & set(job_skills_upper)
+            
+            if matched:
+                # Calculate match percentage
+                percentage = (len(matched) / len(set(job_skills_upper))) * 100
+                matches.append((job_title, round(percentage), len(matched), list(matched)))
+        
+        # Sort by match percentage (highest first), then by number of matched skills
+        matches.sort(key=lambda x: (x[1], x[2]), reverse=True)
+        
+        return matches[:20]  # Return top 20 matches
+        
+    except Exception as e:
+        print(f"Error in match_user_skills_to_all_jobs: {e}")
+        return []

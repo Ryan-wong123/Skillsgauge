@@ -1,11 +1,17 @@
 
-from flask import Flask, render_template, request, redirect, url_for,session
-from Analysis_Visualisation import load_data, analyse_industry_distribution, create_job_title_bubble_chart,create_salary_variation_chart, skills_comparison,generate_wordcloud,create_salary_growth_chart,create_salary_trend_chart,skill_in_demand
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from Analysis_Visualisation import load_data, analyse_industry_distribution, create_job_title_bubble_chart, create_salary_variation_chart, skills_comparison, generate_wordcloud, create_salary_growth_chart, create_salary_trend_chart, skill_in_demand
 import resume_skills_extractor
 import os
 import pandas as pd
-import Course_Url_Coursera 
-from data_analysis import industry_job_trend , industry_general_skills, pull_industry_skills , industry_hiring_trend , skill_match_analysis , match_user_to_job_role, filter_df_by_job_role,industry_job,pull_in_job_trend,  pull_in_hiring_trend , get_job_detail_url
+import Course_Url_Coursera
+from data_analysis import (
+    industry_job_trend, industry_general_skills, pull_industry_skills,
+    industry_hiring_trend, skill_match_analysis, match_user_to_job_role,
+    filter_df_by_job_role, industry_job, pull_in_job_trend,
+    pull_in_hiring_trend, get_job_detail_url,
+    load_all_industry_data, get_all_job_roles, match_user_skills_to_all_jobs
+)
 import threading
 import copy
 
@@ -311,7 +317,34 @@ def update_skills():
         file_path = os.path.join(UPLOAD_FOLDER, filename)
         if os.path.isfile(file_path):
             os.remove(file_path)
-    return redirect(url_for('Job_roles'))
+    
+    # NEW: Show matched jobs across all industries based on extracted skills
+    return redirect(url_for('matched_jobs'))
+
+
+# Show matched jobs based on user skills across all industries
+@app.route('/matched_jobs')
+def matched_jobs():
+    # Retrieve the user's skills from the session
+    if 'userSkills' not in session or not session['userSkills']:
+        # If no skills in session, redirect to resume upload
+        return redirect(url_for('Resume'))
+    
+    user_skills = session['userSkills']
+    
+    # Get all job roles and match with user skills
+    job_roles_dict = get_all_job_roles()
+    matched_jobs = match_user_skills_to_all_jobs(user_skills, job_roles_dict)
+    
+    # Create JobRole objects for the matched jobs
+    job_role_list = []
+    for job_title, percentage, matched_count, matched_skill_list in matched_jobs:
+        # Get skills for this job from the dict
+        skills = job_roles_dict.get(job_title, [])
+        job_object = JobRole(job_title, skills, percentage)
+        job_role_list.append(job_object)
+    
+    return render_template('matched_jobs.html', job_role=job_role_list, user_skills=user_skills)
 
 if __name__ == '__main__':
     app.run(debug=True)

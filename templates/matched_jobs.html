@@ -1,0 +1,106 @@
+{% extends "index.html" %}
+
+{% block title %} Matched Jobs {% endblock %}
+
+{% block content %}
+
+<div>
+    <div class="container">
+        <div class="container-fluid ">
+            {% set counter = namespace(value=0) %}
+            
+            <!-- Display user skills and total number of matching job roles -->
+            <h2 class="text-secondary">Jobs Matching Your Skills ({{ job_role | length }})</h2>
+            <div class="alert alert-info">
+                <h5>Your Skills:</h5>
+                <p>{% for skill in user_skills %}<span class="badge bg-primary">{{ skill }}</span> {% endfor %}</p>
+            </div>
+            
+            <div class="row justify-content-center">
+
+                <!-- Loop through each job role in the job_role list -->
+                {% for x in job_role %}
+
+                <!-- If counter is less than 3, continue adding job cards to the same row -->
+                {% if counter.value < 3 %}
+                <!-- Increment the counter -->
+                {% set counter.value = counter.value + 1 %}
+
+                <!-- Job role card -->
+                <div class="col-sm-3 border-b p-3 m-3 shadow-sm bg-white rounded">
+
+                    <!-- Display the job title -->
+                    <h4> {{x.title}} </h4>
+
+                    <!-- Display the list of skills required for this job -->
+                    <b>Skills:</b>
+                    <p> {% for skill in x.skill[:10] %} {{skill}}, {% endfor %}</p>
+
+                    <!-- Display match percentage with different color indicators based on the value -->
+                    {% if x.match_percent >= 70 %}
+                    <div class="text-success" style="position: absolute; bottom:5; right:5; font-size:2em;">
+                        {{ x.match_percent }}%
+                    </div>
+
+                    {% elif x.match_percent >= 50 and x.match_percent < 70 %}
+                    <div class="text-warning" style="position: absolute; bottom:5; right:5; font-size:2em;">
+                        {{ x.match_percent }}%
+                    </div>
+
+                    {% else %}
+                    <div class="text-danger" style="position: absolute; bottom:5; right:5; font-size:2em;">
+                        {{ x.match_percent }}%
+                    </div>
+
+                    {% endif %}
+                </div>
+
+                <!-- If 3 job cards are added to the row, reset the counter and start a new row -->
+                {% else %}
+                {% set counter.value = 1 %}
+            </div>
+
+            <!-- Job role cards -->
+            <div class="row justify-content-center">
+                <div class="col-sm-3 border-b p-3 m-3 shadow-sm bg-white rounded">
+
+                    <!-- Display the job title -->
+                    <h4> {{x.title}} </h4>
+
+                    <!-- Display the list of skills required for this job -->
+                    <b>Skills:</b>
+                    <p> {% for skill in x.skill[:10] %} {{skill}}, {% endfor %}</p>
+
+                    <!-- Display match percentage with different color indicators based on the value -->
+                    {% if x.match_percent >= 70 %}
+                    <div class="text-success" style="position: absolute; bottom:5; right:5; font-size:2em;">
+                        {{ x.match_percent }}%
+                    </div>
+
+                    {% elif x.match_percent >= 50 and x.match_percent < 70 %}
+                    <div class="text-warning" style="position: absolute; bottom:5; right:5; font-size:2em;">
+                        {{ x.match_percent }}%
+                    </div>
+
+                    {% else %}
+                    <div class="text-danger" style="position: absolute; bottom:5; right:5; font-size:2em;">
+                        {{ x.match_percent }}%
+                    </div>
+
+                    {% endif %}
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+            
+            {% if job_role | length == 0 %}
+            <div class="alert alert-warning">
+                <h4>No matching jobs found</h4>
+                <p>Try adding more skills or different skills to find matching jobs.</p>
+                <a href="{{ url_for('Resume') }}" class="btn btn-primary">Update Your Skills</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
