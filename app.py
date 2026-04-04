@@ -40,6 +40,45 @@ class JobRole:
         self.skill = skill
         self.match_percent = match_percent
 
+def build_skill_roadmap(match_skills, skills_lacking, courses):
+    roadmap_steps = []
+
+    current_strengths = match_skills[:5]
+    if current_strengths:
+        roadmap_steps.append({
+            "title": "Build on your current strengths",
+            "description": "Start with the skills you already have so you can connect new learning to what you know.",
+            "skills": current_strengths,
+            "courses": []
+        })
+
+    for index, skill in enumerate(skills_lacking, start=1):
+        related_courses = []
+        for course in courses:
+            course_name = course.get("name", "").lower()
+            if skill.lower() in course_name:
+                related_courses.append(course)
+
+        if not related_courses:
+            related_courses = courses[:2]
+
+        roadmap_steps.append({
+            "title": f"Step {index}: Learn {skill.title()}",
+            "description": f"Focus on {skill.title()} next to improve your fit for this role.",
+            "skills": [skill],
+            "courses": related_courses[:2]
+        })
+
+    if not roadmap_steps:
+        roadmap_steps.append({
+            "title": "You are ready to apply",
+            "description": "No major skill gaps were identified for this role based on your current skill list.",
+            "skills": [],
+            "courses": []
+        })
+
+    return roadmap_steps
+
 @app.route('/')
 def Home():
     # Load the data and make copy of data
@@ -247,6 +286,7 @@ def expanded_job_roles(job_title):
     skillsDemandChart = skill_in_demand(job_df)
     # Show the courses link from coursera API
     urlCourses = Course_Url_Coursera.search_courses(skillsLacking)
+    roadmap_steps = build_skill_roadmap(match_skills, skillsLacking, urlCourses)
     # Retrieve detailed job data (e.g., job descriptions, requirements, etc.) from the job data (job_df)
     job_detail_data = get_job_detail_url(job_df)
 
@@ -254,6 +294,7 @@ def expanded_job_roles(job_title):
                            job_title = job_title,
                            job_role = job,
                            courses = urlCourses,
+                           roadmap_steps = roadmap_steps,
                            chart=skillComparisonChart,
                             skillsDemand_Chart = skillsDemandChart,
                            job_detail_data = job_detail_data)

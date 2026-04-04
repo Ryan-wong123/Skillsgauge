@@ -46,6 +46,47 @@
 
     <br>
 
+    <!-- skill road map section -->
+    <div>
+        <h3>Skill Road Map</h3>
+        <div class="row">
+            {% for step in roadmap_steps %}
+            <div class="col-md-6 mb-3">
+                <div class="card h-100">
+                    <div class="card-body text-left">
+                        <h5 class="card-title">{{ step.title }}</h5>
+                        <p class="card-text">{{ step.description }}</p>
+
+                        {% if step.skills %}
+                        <p><b>Focus skills:</b></p>
+                        <div class="d-flex flex-wrap mb-3">
+                            {% for skill in step.skills %}
+                            <div class="border rounded-pill d-inline p-1 m-1">
+                                {{ skill.title() }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        {% if step.courses %}
+                        <p><b>Suggested courses:</b></p>
+                        <ul>
+                            {% for course in step.courses %}
+                            <li>
+                                <a href="{{ course.url }}" target="_blank">{{ course.name }}</a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <br>
+
     <br>
     <!-- Skills in demand chart -->
     <div>
