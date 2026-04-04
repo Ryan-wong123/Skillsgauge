@@ -258,6 +258,26 @@ def expanded_job_roles(job_title):
                             skillsDemand_Chart = skillsDemandChart,
                            job_detail_data = job_detail_data)
 
+@app.route('/job_application/<job_title>', methods=['GET', 'POST'])
+def job_application(job_title):
+    submitted_application = None
+
+    if request.method == 'POST':
+        submitted_application = {
+            'full_name': request.form.get('full_name', '').strip(),
+            'email': request.form.get('email', '').strip(),
+            'phone': request.form.get('phone', '').strip(),
+            'linkedin_url': request.form.get('linkedin_url', '').strip(),
+            'availability': request.form.get('availability', '').strip(),
+            'why_fit': request.form.get('why_fit', '').strip()
+        }
+
+    return render_template(
+        'job_application.html',
+        job_title=job_title,
+        submitted_application=submitted_application
+    )
+
 # Resume upload page
 @app.route('/resume')
 def Resume():

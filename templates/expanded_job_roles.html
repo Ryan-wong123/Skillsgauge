@@ -7,6 +7,9 @@
 <div class="container">
     <!-- Job Title -->
     <h1><u>{{ job_title.title() }}</u> </h1>
+    <div class="mb-4">
+        <a href="{{ url_for('job_application', job_title=job_title) }}" class="btn btn-primary">Apply for This Role</a>
+    </div>
 
     <!-- skill section -->
     <h3>Skills:</h3>
