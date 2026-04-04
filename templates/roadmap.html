@@ -1,0 +1,81 @@
+{% extends "index.html" %}
+
+{% block title %} Skills Roadmap {% endblock %}
+
+{% block content %}
+<div class="roadmap-page">
+    <div class="roadmap-hero">
+        <div class="roadmap-hero-copy">
+            <p class="roadmap-eyebrow">Career Planning</p>
+            <h1>Skills Roadmap for {{ job_title.title() }}</h1>
+            <p class="roadmap-intro">
+                Focus on the most relevant gaps first, then turn those skills into proof you can use for applications.
+            </p>
+            <div class="roadmap-summary">
+                <div class="roadmap-stat">
+                    <span class="roadmap-stat-number">{{ match_skills | length }}</span>
+                    <span class="roadmap-stat-label">Matched skills</span>
+                </div>
+                <div class="roadmap-stat">
+                    <span class="roadmap-stat-number">{{ skills_lacking | length }}</span>
+                    <span class="roadmap-stat-label">Skills to build</span>
+                </div>
+            </div>
+        </div>
+        <div class="roadmap-hero-image">
+            <img src="{{ url_for('static', filename='Images/RoadMap.png') }}" alt="Skills roadmap illustration">
+        </div>
+    </div>
+
+    <div class="roadmap-steps">
+        {% for step in roadmap_steps %}
+        <div class="roadmap-step-card">
+            <span class="roadmap-phase">{{ step.phase }}</span>
+            <h3>{{ step.title }}</h3>
+            <p>{{ step.description }}</p>
+            {% if step.skills %}
+            <div class="roadmap-skill-pills">
+                {% for skill in step.skills %}
+                <span class="roadmap-skill-pill">{{ skill.title() }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-lg-6 mb-4">
+            <div class="roadmap-panel h-100">
+                <h3>Priority Skills</h3>
+                {% if skills_lacking %}
+                <div class="roadmap-skill-pills">
+                    {% for skill in skills_lacking %}
+                    <span class="roadmap-skill-pill roadmap-skill-pill-missing">{{ skill.title() }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="mb-0">You currently match the tracked top skills for this role.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-lg-6 mb-4">
+            <div class="roadmap-panel h-100">
+                <h3>Learning Links</h3>
+                {% if courses %}
+                <ul class="roadmap-course-list">
+                    {% for course in courses %}
+                    <li>
+                        <a href="{{ course.url }}" target="_blank">{{ course.name }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="mb-0">No course suggestions were generated for this roadmap yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

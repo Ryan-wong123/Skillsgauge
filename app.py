@@ -40,6 +40,61 @@ class JobRole:
         self.skill = skill
         self.match_percent = match_percent
 
+
+def build_skill_roadmap(job_title, matched_skills, missing_skills):
+    matched_skills = list(dict.fromkeys(matched_skills))
+    missing_skills = list(dict.fromkeys(missing_skills))
+
+    roadmap_steps = [
+        {
+            "phase": "Step 1",
+            "title": "Confirm your foundation",
+            "description": "Review the skills you already match and keep them interview-ready.",
+            "skills": matched_skills[:3]
+        }
+    ]
+
+    if missing_skills:
+        first_focus = missing_skills[:2]
+        second_focus = missing_skills[2:5]
+
+        roadmap_steps.append({
+            "phase": "Step 2",
+            "title": "Prioritize the biggest gaps",
+            "description": f"Start with the highest-impact skills for {job_title}.",
+            "skills": first_focus
+        })
+
+        roadmap_steps.append({
+            "phase": "Step 3",
+            "title": "Build practical experience",
+            "description": "Apply the missing skills in small projects or guided exercises.",
+            "skills": second_focus if second_focus else first_focus
+        })
+    else:
+        roadmap_steps.append({
+            "phase": "Step 2",
+            "title": "Deepen your specialization",
+            "description": f"You already cover the top tracked skills for {job_title}. Move into advanced examples and portfolio work.",
+            "skills": matched_skills[:3]
+        })
+
+    roadmap_steps.append({
+        "phase": "Step 4",
+        "title": "Show proof of ability",
+        "description": "Update your resume and portfolio with projects that demonstrate these skills.",
+        "skills": (matched_skills + missing_skills)[:4]
+    })
+
+    roadmap_steps.append({
+        "phase": "Step 5",
+        "title": "Reassess and apply",
+        "description": "Recheck your match, target live openings, and iterate on the remaining gaps.",
+        "skills": missing_skills[:2] if missing_skills else matched_skills[:2]
+    })
+
+    return roadmap_steps
+
 @app.route('/')
 def Home():
     # Load the data and make copy of data
@@ -253,10 +308,38 @@ def expanded_job_roles(job_title):
     return render_template("expanded_job_roles.html" ,
                            job_title = job_title,
                            job_role = job,
+                           skills_lacking = skillsLacking,
+                           match_skills = match_skills,
                            courses = urlCourses,
                            chart=skillComparisonChart,
                             skillsDemand_Chart = skillsDemandChart,
                            job_detail_data = job_detail_data)
+
+
+@app.route("/roadmap/<job_title>")
+def skill_roadmap(job_title):
+    if 'userSkills' in session:
+        userSkills = session['userSkills']
+    else:
+        userSkills = []
+
+    if 'industry' in session:
+        industry_name = session["industry"].replace(" ", "_")
+    else:
+        return redirect(url_for("Industries"))
+
+    _, skills_lacking, match_skills = skills_comparison(userSkills, job_title, industry_name)
+    courses = Course_Url_Coursera.search_courses(skills_lacking[:3]) if skills_lacking else []
+    roadmap_steps = build_skill_roadmap(job_title, match_skills, skills_lacking)
+
+    return render_template(
+        "roadmap.html",
+        job_title=job_title,
+        roadmap_steps=roadmap_steps,
+        skills_lacking=skills_lacking,
+        match_skills=match_skills,
+        courses=courses
+    )
 
 # Resume upload page
 @app.route('/resume')

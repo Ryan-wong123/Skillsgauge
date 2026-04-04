@@ -479,3 +479,137 @@ body {
 #scrollTopBtn:hover {
     background-color: #555; /* Darken background on hover */
 }
+
+.roadmap-page {
+    padding-bottom: 40px;
+}
+
+.roadmap-hero {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 30px;
+    background: linear-gradient(135deg, #f2f8ff 0%, #fff8e7 100%);
+    border-radius: 24px;
+    padding: 32px;
+    margin-bottom: 32px;
+}
+
+.roadmap-hero-copy {
+    flex: 1 1 320px;
+}
+
+.roadmap-eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #306088;
+    margin-bottom: 10px;
+}
+
+.roadmap-intro {
+    font-size: 1.05rem;
+    max-width: 640px;
+}
+
+.roadmap-hero-image {
+    flex: 1 1 280px;
+    text-align: center;
+}
+
+.roadmap-hero-image img {
+    width: 100%;
+    max-width: 420px;
+    height: auto;
+}
+
+.roadmap-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.roadmap-stat {
+    min-width: 170px;
+    background-color: rgba(255, 255, 255, 0.85);
+    border-radius: 16px;
+    padding: 16px 20px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+}
+
+.roadmap-stat-number {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #0b5ed7;
+}
+
+.roadmap-stat-label {
+    color: #4a5568;
+}
+
+.roadmap-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+}
+
+.roadmap-step-card,
+.roadmap-panel {
+    background-color: #ffffff;
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+}
+
+.roadmap-phase {
+    display: inline-block;
+    margin-bottom: 10px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #0b5ed7;
+    text-transform: uppercase;
+}
+
+.roadmap-skill-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.roadmap-skill-pill {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    background-color: #e7f1ff;
+    color: #184e8e;
+    padding: 8px 14px;
+    font-weight: 600;
+}
+
+.roadmap-skill-pill-missing {
+    background-color: #fff1d6;
+    color: #9a5b00;
+}
+
+.roadmap-course-list {
+    padding-left: 18px;
+    margin-bottom: 0;
+}
+
+.roadmap-course-list li + li {
+    margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+    .roadmap-hero {
+        padding: 24px;
+    }
+
+    .roadmap-stat {
+        width: 100%;
+    }
+}
