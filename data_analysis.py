@@ -327,3 +327,51 @@ def get_job_detail_url(job_df):
     except Exception as e:
         print("something went wrong in get job detail url")
         print(f"Details: {e}")
+
+# Get recent application links for an industry, deduplicated by company.
+def get_industry_application_links(industry_df, max_jobs=12, recency_days=30):
+    try:
+        required_columns = {"Job URL", "Job Title", "Company", "Job Posting Date"}
+        if not required_columns.issubset(industry_df.columns):
+            return []
+
+        filtered_df = industry_df.copy()
+        filtered_df["Job Posting Date"] = pd.to_datetime(
+            filtered_df["Job Posting Date"],
+            errors="coerce",
+            dayfirst=True
+        )
+        filtered_df = filtered_df.dropna(subset=["Job Posting Date", "Job URL"])
+
+        if filtered_df.empty:
+            return []
+
+        cutoff_date = pd.Timestamp.today().normalize() - pd.Timedelta(days=recency_days)
+        filtered_df = filtered_df[filtered_df["Job Posting Date"] >= cutoff_date]
+
+        if filtered_df.empty:
+            return []
+
+        filtered_df["Company"] = filtered_df["Company"].fillna("").astype(str).str.strip()
+        filtered_df["Job Title"] = filtered_df["Job Title"].fillna("").astype(str).str.strip()
+        filtered_df["Job URL"] = filtered_df["Job URL"].fillna("").astype(str).str.strip()
+        filtered_df = filtered_df[filtered_df["Job URL"] != ""]
+
+        filtered_df = filtered_df.sort_values("Job Posting Date", ascending=False)
+        filtered_df = filtered_df.drop_duplicates(subset=["Company"], keep="first")
+
+        application_links = []
+        for _, row in filtered_df.head(max_jobs).iterrows():
+            application_links.append({
+                "company": row["Company"] or "Unknown company",
+                "job_title": row["Job Title"] or "Untitled role",
+                "job_url": row["Job URL"],
+                "job_posting_date": row["Job Posting Date"].strftime("%Y-%m-%d"),
+            })
+
+        return application_links
+
+    except Exception as e:
+        print("something went wrong in get industry application links")
+        print(f"Details: {e}")
+        return []

@@ -5,7 +5,7 @@ import resume_skills_extractor
 import os
 import pandas as pd
 import Course_Url_Coursera 
-from data_analysis import industry_job_trend , industry_general_skills, pull_industry_skills , industry_hiring_trend , skill_match_analysis , match_user_to_job_role, filter_df_by_job_role,industry_job,pull_in_job_trend,  pull_in_hiring_trend , get_job_detail_url
+from data_analysis import industry_job_trend , industry_general_skills, pull_industry_skills , industry_hiring_trend , skill_match_analysis , match_user_to_job_role, filter_df_by_job_role,industry_job,pull_in_job_trend,  pull_in_hiring_trend , get_job_detail_url, get_industry_application_links
 import threading
 import copy
 
@@ -129,6 +129,9 @@ def industry_details():
     # analysis for job role skills
     skill_match_analysis(df,industry_name)
 
+    # recent application links to help users apply across multiple companies
+    application_links = get_industry_application_links(df)
+
     # pulling of all json data
     skill_list = pull_industry_skills( industry_name)
     job_trend_code = pull_in_job_trend(industry_name)
@@ -146,6 +149,7 @@ def industry_details():
                            other_industries=other_industries, 
                            job_trend_fig=job_trend_code,
                            skill_list = skill_list,
+                           application_links=application_links,
                            wordCloud = wordCloud,
                            hiring_trend_fig = hiring_trend_code,
                            salary_growth_chart = salary_growth_chart,
