@@ -1,0 +1,115 @@
+{% extends "index.html" %}
+
+{% block title %} Skill Database {% endblock %}
+
+{% block content %}
+<div class="mb-4">
+  <h1 class="font-weight-bold">Skill Database</h1>
+  <p class="text-muted mb-0">
+    Browse the skills already used by SkillGauge for resume matching and career exploration.
+  </p>
+</div>
+
+<div class="card shadow-sm mb-4">
+  <div class="card-body">
+    <form method="get" action="{{ url_for('skill_database') }}">
+      <div class="form-row align-items-end">
+        <div class="col-md-6 mb-3">
+          <label for="q">Search skills or aliases</label>
+          <input
+            type="search"
+            class="form-control"
+            id="q"
+            name="q"
+            value="{{ skill_catalog.search_query }}"
+            placeholder="Try python, project management, excel..."
+          >
+        </div>
+        <div class="col-md-4 mb-3">
+          <label for="category">Category</label>
+          <select class="form-control" id="category" name="category">
+            {% for category in skill_catalog.categories %}
+            <option value="{{ category }}" {% if category == skill_catalog.selected_category %}selected{% endif %}>
+              {{ category }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-2 mb-3">
+          <button type="submit" class="btn btn-primary btn-block">Apply</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2 class="h5 mb-0">Available Skills</h2>
+  <span class="badge badge-info p-2">{{ skill_catalog.total_skills }} skill{% if skill_catalog.total_skills != 1 %}s{% endif %}</span>
+</div>
+
+{% if skill_catalog.groups %}
+<div class="accordion" id="skillDatabaseAccordion">
+  {% for group in skill_catalog.groups %}
+  <div class="card mb-3">
+    <div class="card-header bg-white" id="heading{{ loop.index }}">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h3 class="h5 mb-1">{{ group.category }}</h3>
+          <small class="text-muted">{{ group.count }} skill{% if group.count != 1 %}s{% endif %}</small>
+        </div>
+        <button
+          class="btn btn-outline-secondary btn-sm"
+          type="button"
+          data-toggle="collapse"
+          data-target="#collapse{{ loop.index }}"
+          aria-expanded="{{ 'true' if loop.first else 'false' }}"
+          aria-controls="collapse{{ loop.index }}"
+        >
+          View
+        </button>
+      </div>
+    </div>
+
+    <div
+      id="collapse{{ loop.index }}"
+      class="collapse {% if loop.first %}show{% endif %}"
+      aria-labelledby="heading{{ loop.index }}"
+      data-parent="#skillDatabaseAccordion"
+    >
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-striped mb-0">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col">Skill</th>
+                <th scope="col">Aliases / Related Terms</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for skill in group.skills %}
+              <tr>
+                <td class="font-weight-semibold">{{ skill.name }}</td>
+                <td>
+                  {% if skill.aliases %}
+                    {{ skill.aliases | join(', ') }}
+                  {% else %}
+                    <span class="text-muted">None listed</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-light border">
+  No skills matched the current search or category filter.
+</div>
+{% endif %}
+{% endblock %}
