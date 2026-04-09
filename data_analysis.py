@@ -3,6 +3,8 @@ import plotly.graph_objects as go
 import ast
 import plotly.express as px
 import json
+import csv
+from io import StringIO
 
 
 #============================================       helper code     =============================================
@@ -327,3 +329,92 @@ def get_job_detail_url(job_df):
     except Exception as e:
         print("something went wrong in get job detail url")
         print(f"Details: {e}")
+
+
+def _first_available_value(row, columns, default=""):
+    for column in columns:
+        if column in row.index:
+            value = row[column]
+            if pd.notna(value):
+                return str(value)
+    return default
+
+
+def build_application_shortlist(job_df, max_jobs=20):
+    try:
+        if job_df is None or job_df.empty:
+            return []
+
+        working_df = job_df.copy()
+
+        if 'Job Posting Date' in working_df.columns:
+            working_df['Job Posting Date'] = pd.to_datetime(
+                working_df['Job Posting Date'],
+                format='%Y-%m-%d',
+                errors='coerce'
+            )
+            working_df = working_df.sort_values(
+                by='Job Posting Date',
+                ascending=False,
+                na_position='last'
+            )
+
+        shortlist = []
+        seen_jobs = set()
+
+        for _, row in working_df.iterrows():
+            job_title = _first_available_value(row, ['Job Title'], 'Unknown Role')
+            company = _first_available_value(row, ['Company', 'Company Name'], 'Unknown Company')
+            location = _first_available_value(
+                row,
+                ['Location', 'Area', 'Region', 'Job Location'],
+                'Location not provided'
+            )
+            posted_date = _first_available_value(row, ['Job Posting Date'], '')
+            job_url = _first_available_value(row, ['Job URL', 'URL'], '')
+
+            dedupe_key = (job_title, company, job_url)
+            if dedupe_key in seen_jobs:
+                continue
+
+            seen_jobs.add(dedupe_key)
+            shortlist.append({
+                'job_title': job_title,
+                'company': company,
+                'location': location,
+                'posted_date': posted_date,
+                'job_url': job_url,
+                'status': 'To Apply',
+                'notes': ''
+            })
+
+            if len(shortlist) >= max_jobs:
+                break
+
+        return shortlist
+
+    except Exception as e:
+        print("something went wrong in build application shortlist")
+        print(f"Details: {e}")
+        return []
+
+
+def create_application_shortlist_csv(shortlist):
+    fieldnames = [
+        'job_title',
+        'company',
+        'location',
+        'posted_date',
+        'job_url',
+        'status',
+        'notes'
+    ]
+
+    output = StringIO()
+    writer = csv.DictWriter(output, fieldnames=fieldnames)
+    writer.writeheader()
+
+    for job in shortlist:
+        writer.writerow({field: job.get(field, '') for field in fieldnames})
+
+    return output.getvalue()

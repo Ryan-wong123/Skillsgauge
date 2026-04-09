@@ -1,11 +1,11 @@
 
-from flask import Flask, render_template, request, redirect, url_for,session
+from flask import Flask, render_template, request, redirect, url_for, session, Response
 from Analysis_Visualisation import load_data, analyse_industry_distribution, create_job_title_bubble_chart,create_salary_variation_chart, skills_comparison,generate_wordcloud,create_salary_growth_chart,create_salary_trend_chart,skill_in_demand
 import resume_skills_extractor
 import os
 import pandas as pd
 import Course_Url_Coursera 
-from data_analysis import industry_job_trend , industry_general_skills, pull_industry_skills , industry_hiring_trend , skill_match_analysis , match_user_to_job_role, filter_df_by_job_role,industry_job,pull_in_job_trend,  pull_in_hiring_trend , get_job_detail_url
+from data_analysis import industry_job_trend , industry_general_skills, pull_industry_skills , industry_hiring_trend , skill_match_analysis , match_user_to_job_role, filter_df_by_job_role,industry_job,pull_in_job_trend,  pull_in_hiring_trend , get_job_detail_url, build_application_shortlist, create_application_shortlist_csv
 import threading
 import copy
 
@@ -133,6 +133,7 @@ def industry_details():
     skill_list = pull_industry_skills( industry_name)
     job_trend_code = pull_in_job_trend(industry_name)
     hiring_trend_code = pull_in_hiring_trend(industry_name)
+    application_shortlist = build_application_shortlist(df)
 
     # Generate a list of other industries for the sidebar, limited to 4 items
     other_industries = [ind.title for ind in industry_list if ind.title != industry_name_orig][:4]
@@ -146,12 +147,35 @@ def industry_details():
                            other_industries=other_industries, 
                            job_trend_fig=job_trend_code,
                            skill_list = skill_list,
+                           application_shortlist=application_shortlist,
                            wordCloud = wordCloud,
                            hiring_trend_fig = hiring_trend_code,
                            salary_growth_chart = salary_growth_chart,
                            job_title_chart=job_title_chart,
                            salary_chart=salary_chart,
                            salary_trend_chart = salary_trend_chart)    
+
+
+@app.route('/industry_applications/export')
+def export_industry_applications():
+    if 'industry' not in session:
+        return redirect(url_for("Industries"))
+
+    industry_name = session["industry"].replace(" ", "_")
+    industry_path = "bronze_datasets/(Final)_past_" + industry_name + ".csv"
+
+    with open(industry_path, encoding='utf-8') as csvfile:
+        df = pd.read_csv(csvfile, index_col=False)
+
+    shortlist = build_application_shortlist(df)
+    csv_content = create_application_shortlist_csv(shortlist)
+    download_name = f"{industry_name.lower()}_application_shortlist.csv"
+
+    return Response(
+        csv_content,
+        mimetype='text/csv',
+        headers={"Content-Disposition": f"attachment; filename={download_name}"}
+    )
 
 #show the job roles page with suitable jobs
 @app.route('/job_roles')

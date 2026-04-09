@@ -28,6 +28,49 @@
     <p>More information about the {{ industry }} industry.</p>
 </div>
 
+<div class="container card border-dark mb-4" style="background-color: rgb(255, 248, 225)">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h3 class="mb-1">Application Shortlist</h3>
+                <p class="mb-0">Use this company list to apply across the {{ industry }} industry faster. Export it as CSV and track each submission externally.</p>
+            </div>
+            <a class="btn btn-primary" href="{{ url_for('export_industry_applications') }}">Export CSV</a>
+        </div>
+
+        <div class="table-responsive mt-3">
+            <table class="table table-sm align-middle">
+                <thead>
+                    <tr>
+                        <th>Job Title</th>
+                        <th>Company</th>
+                        <th>Location</th>
+                        <th>Posted</th>
+                        <th>Apply</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for job in application_shortlist[:10] %}
+                    <tr>
+                        <td>{{ job.job_title }}</td>
+                        <td>{{ job.company }}</td>
+                        <td>{{ job.location }}</td>
+                        <td>{{ job.posted_date }}</td>
+                        <td>
+                            {% if job.job_url %}
+                            <a href="{{ job.job_url }}" target="_blank">Open Job</a>
+                            {% else %}
+                            <span>No link</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
 
 <div class="jumbotron" style="height: fit-content;">
     <!-- Industry name -->
