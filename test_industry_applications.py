@@ -263,13 +263,75 @@ def test_job_application_route_submits_successfully(monkeypatch):
 
     assert response.status_code == 200
     page = response.get_data(as_text=True)
-    assert "Your job application was submitted successfully." in page
+    assert "Your job application for Data Analyst at Alpha was submitted successfully." in page
     assert captured_submission["name"] == "Alex Tan"
     assert captured_submission["email"] == "alex@example.com"
     assert captured_submission["job_role"] == "Data Analyst"
     assert captured_submission["company"] == "Alpha"
     assert captured_submission["industry"] == "Technology"
     assert captured_submission["skills"] == "SQL, Python"
+    assert captured_submission["resume_uploaded"] is True
+
+
+def test_save_job_application_submission_writes_csv(tmp_path, monkeypatch):
+    submissions_file = tmp_path / "job_application_submissions.csv"
+
+    monkeypatch.setitem(skillsgauge_app.app.config, "UPLOAD_FOLDER", str(tmp_path))
+    monkeypatch.setattr(
+        skillsgauge_app,
+        "APPLICATION_SUBMISSIONS_FILE",
+        str(submissions_file),
+    )
+
+    skillsgauge_app.save_job_application_submission(
+        {
+            "submitted_at": "2026-04-09T12:00:00",
+            "name": "Alex Tan",
+            "email": "alex@example.com",
+            "job_role": "Data Analyst",
+            "company": "Alpha",
+            "supporting_info": "Portfolio attached",
+            "industry": "Technology",
+            "skills": "SQL, Python",
+            "resume_uploaded": True,
+        }
+    )
+
+    saved_content = submissions_file.read_text(encoding="utf-8")
+    assert "submitted_at,name,email,job_role,company,supporting_info,industry,skills,resume_uploaded" in saved_content
+    assert "Alex Tan,alex@example.com,Data Analyst,Alpha,Portfolio attached,Technology,\"SQL, Python\",True" in saved_content
+
+
+def test_job_application_route_shows_save_error(monkeypatch):
+    def fake_save_job_application_submission(submission_data):
+        raise OSError("disk full")
+
+    monkeypatch.setattr(
+        skillsgauge_app,
+        "save_job_application_submission",
+        fake_save_job_application_submission,
+    )
+
+    client = skillsgauge_app.app.test_client()
+    with client.session_transaction() as session:
+        session["industry"] = "Technology"
+        session["userSkills"] = ["SQL", "Python"]
+        session["resume_uploaded"] = True
+
+    response = client.post(
+        "/job_application",
+        data={
+            "name": "Alex Tan",
+            "email": "alex@example.com",
+            "job_role": "Data Analyst",
+            "company": "Alpha",
+            "supporting_info": "Available immediately.",
+        },
+    )
+
+    assert response.status_code == 200
+    page = response.get_data(as_text=True)
+    assert "We could not save your application right now. Please try again." in page
 
 
 def test_update_skills_keeps_application_submission_csv(tmp_path):
