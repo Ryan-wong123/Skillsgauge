@@ -2,6 +2,7 @@
 
 import builtins
 from io import StringIO
+import os
 
 import pandas as pd
 
@@ -188,6 +189,28 @@ def test_job_application_route_shows_validation_errors():
     assert "Enter a job role or company before submitting." in page
 
 
+def test_job_application_route_prefills_context_from_session_and_query():
+    client = skillsgauge_app.app.test_client()
+    with client.session_transaction() as session:
+        session["industry"] = "Technology"
+        session["userSkills"] = ["SQL", "Python"]
+        session["resume_uploaded"] = True
+        session["applicant_name"] = "Alex Tan"
+        session["applicant_email"] = "alex@example.com"
+
+    response = client.get("/job_application?job_role=Data+Analyst&company=Alpha")
+
+    assert response.status_code == 200
+    page = response.get_data(as_text=True)
+    assert "value=\"Alex Tan\"" in page
+    assert "value=\"alex@example.com\"" in page
+    assert "value=\"Data Analyst\"" in page
+    assert "value=\"Alpha\"" in page
+    assert "Technology" in page
+    assert "SQL" in page
+    assert "Python" in page
+
+
 def test_job_application_route_submits_successfully(monkeypatch):
     captured_submission = {}
 
@@ -226,3 +249,39 @@ def test_job_application_route_submits_successfully(monkeypatch):
     assert captured_submission["company"] == "Alpha"
     assert captured_submission["industry"] == "Technology"
     assert captured_submission["skills"] == "SQL, Python"
+
+
+def test_update_skills_keeps_application_submission_csv(tmp_path):
+    uploads_dir = tmp_path / "uploads"
+    uploads_dir.mkdir()
+    resume_file = uploads_dir / "resume.pdf"
+    resume_file.write_text("resume")
+    submissions_file = uploads_dir / "job_application_submissions.csv"
+    submissions_file.write_text("submitted_at,name\n")
+
+    original_upload_folder = skillsgauge_app.UPLOAD_FOLDER
+    original_config_upload_folder = skillsgauge_app.app.config["UPLOAD_FOLDER"]
+    original_submissions_file = skillsgauge_app.APPLICATION_SUBMISSIONS_FILE
+
+    skillsgauge_app.UPLOAD_FOLDER = str(uploads_dir)
+    skillsgauge_app.app.config["UPLOAD_FOLDER"] = str(uploads_dir)
+    skillsgauge_app.APPLICATION_SUBMISSIONS_FILE = str(submissions_file)
+
+    try:
+        client = skillsgauge_app.app.test_client()
+        with client.session_transaction() as session:
+            session["industry"] = "Technology"
+
+        response = client.post(
+            "/update_skills",
+            data={"skills": ["SQL", "Python"]},
+        )
+
+        assert response.status_code == 302
+        assert not resume_file.exists()
+        assert submissions_file.exists()
+        assert os.path.getsize(submissions_file) > 0
+    finally:
+        skillsgauge_app.UPLOAD_FOLDER = original_upload_folder
+        skillsgauge_app.app.config["UPLOAD_FOLDER"] = original_config_upload_folder
+        skillsgauge_app.APPLICATION_SUBMISSIONS_FILE = original_submissions_file
