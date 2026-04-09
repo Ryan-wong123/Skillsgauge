@@ -424,11 +424,26 @@ def process_bulk_applications(shortlist, selected_indexes, user_profile=None):
     selected_indexes = selected_indexes or []
     results = []
 
-    if not shortlist or not selected_indexes:
+    if not shortlist:
         return {
             "results": results,
             "success_count": 0,
             "failure_count": 0,
+            "selected_count": 0,
+            "processed_count": 0,
+            "alert_class": "alert-info",
+            "summary_message": "No suitable jobs are available for bulk application yet.",
+        }
+
+    if not selected_indexes:
+        return {
+            "results": results,
+            "success_count": 0,
+            "failure_count": 0,
+            "selected_count": 0,
+            "processed_count": 0,
+            "alert_class": "alert-info",
+            "summary_message": "Select at least one job before submitting bulk applications.",
         }
 
     for raw_index in selected_indexes:
@@ -465,8 +480,28 @@ def process_bulk_applications(shortlist, selected_indexes, user_profile=None):
     success_count = sum(1 for job in results if job["application_status"] == "Submitted")
     failure_count = len(results) - success_count
 
+    if not results:
+        alert_class = "alert-warning"
+        summary_message = "No valid jobs were processed from the selected application batch."
+    elif failure_count == 0:
+        alert_class = "alert-success"
+        summary_message = f"Submitted {success_count} application(s) successfully."
+    elif success_count == 0:
+        alert_class = "alert-danger"
+        summary_message = f"All {failure_count} selected application(s) failed."
+    else:
+        alert_class = "alert-warning"
+        summary_message = (
+            f"Submitted {success_count} application(s) successfully. "
+            f"{failure_count} application(s) failed."
+        )
+
     return {
         "results": results,
         "success_count": success_count,
         "failure_count": failure_count,
+        "selected_count": len(selected_indexes),
+        "processed_count": len(results),
+        "alert_class": alert_class,
+        "summary_message": summary_message,
     }

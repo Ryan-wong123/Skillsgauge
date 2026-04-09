@@ -21,13 +21,14 @@
     </div>
 
     {% if submission_summary %}
-    <div class="alert {% if submission_summary.failure_count == 0 %}alert-success{% elif submission_summary.success_count == 0 %}alert-danger{% else %}alert-warning{% endif %}">
-        Submitted {{ submission_summary.success_count }} application(s) successfully.
-        {% if submission_summary.failure_count %}
-        {{ submission_summary.failure_count }} application(s) failed.
+    <div class="alert {{ submission_summary.alert_class }}">
+        {{ submission_summary.summary_message }}
+        {% if submission_summary.selected_count and submission_summary.processed_count != submission_summary.selected_count %}
+        {{ submission_summary.selected_count - submission_summary.processed_count }} invalid selection(s) were skipped.
         {% endif %}
     </div>
 
+    {% if submission_summary.results %}
     <div class="card mb-4">
         <div class="card-body">
             <h4 class="mb-3">Submission Results</h4>
@@ -59,6 +60,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
     {% endif %}
 
     <form method="POST">

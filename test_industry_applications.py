@@ -97,8 +97,22 @@ def test_process_bulk_applications_reports_partial_failures():
 
     assert result["success_count"] == 1
     assert result["failure_count"] == 1
+    assert result["summary_message"] == "Submitted 1 application(s) successfully. 1 application(s) failed."
     assert result["results"][0]["application_status"] == "Submitted"
     assert result["results"][1]["application_status"] == "Failed"
+
+
+def test_process_bulk_applications_requires_selection_for_feedback():
+    result = process_bulk_applications(
+        shortlist=[{"job_title": "Data Analyst", "company": "Alpha", "job_url": "https://example.com"}],
+        selected_indexes=[],
+        user_profile={"industry": "Technology", "skills": ["SQL"]},
+    )
+
+    assert result["success_count"] == 0
+    assert result["failure_count"] == 0
+    assert result["alert_class"] == "alert-info"
+    assert result["summary_message"] == "Select at least one job before submitting bulk applications."
 
 
 def test_bulk_industry_applications_route_shows_submission_results(monkeypatch):
