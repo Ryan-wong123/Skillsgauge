@@ -49,8 +49,8 @@ def build_job_application_context(job_role=None, company=None):
     return {
         "name": session.get('applicant_name', ''),
         "email": session.get('applicant_email', ''),
-        "job_role": job_role or '',
-        "company": company or '',
+        "job_role": job_role or session.get('last_applied_job_role', ''),
+        "company": company or session.get('last_applied_company', ''),
         "supporting_info": '',
         "industry": session.get('industry', ''),
         "skills": user_skills,
