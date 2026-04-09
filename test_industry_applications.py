@@ -161,3 +161,68 @@ def test_bulk_industry_applications_route_shows_submission_results(monkeypatch):
     assert "Bulk Apply for Technology" in page
     assert "Submitted 1 application(s) successfully." in page
     assert "1 application(s) failed." in page
+
+
+def test_job_application_route_shows_validation_errors():
+    client = skillsgauge_app.app.test_client()
+    with client.session_transaction() as session:
+        session["industry"] = "Technology"
+        session["userSkills"] = ["SQL", "Python"]
+        session["resume_uploaded"] = True
+
+    response = client.post(
+        "/job_application",
+        data={
+            "name": "",
+            "email": "invalid-email",
+            "job_role": "",
+            "company": "",
+            "supporting_info": "Available immediately.",
+        },
+    )
+
+    assert response.status_code == 200
+    page = response.get_data(as_text=True)
+    assert "Name is required." in page
+    assert "Enter a valid email address." in page
+    assert "Enter a job role or company before submitting." in page
+
+
+def test_job_application_route_submits_successfully(monkeypatch):
+    captured_submission = {}
+
+    def fake_save_job_application_submission(submission_data):
+        captured_submission.update(submission_data)
+
+    monkeypatch.setattr(
+        skillsgauge_app,
+        "save_job_application_submission",
+        fake_save_job_application_submission,
+    )
+
+    client = skillsgauge_app.app.test_client()
+    with client.session_transaction() as session:
+        session["industry"] = "Technology"
+        session["userSkills"] = ["SQL", "Python"]
+        session["resume_uploaded"] = True
+
+    response = client.post(
+        "/job_application",
+        data={
+            "name": "Alex Tan",
+            "email": "alex@example.com",
+            "job_role": "Data Analyst",
+            "company": "Alpha",
+            "supporting_info": "Portfolio: https://example.com/portfolio",
+        },
+    )
+
+    assert response.status_code == 200
+    page = response.get_data(as_text=True)
+    assert "Your job application was submitted successfully." in page
+    assert captured_submission["name"] == "Alex Tan"
+    assert captured_submission["email"] == "alex@example.com"
+    assert captured_submission["job_role"] == "Data Analyst"
+    assert captured_submission["company"] == "Alpha"
+    assert captured_submission["industry"] == "Technology"
+    assert captured_submission["skills"] == "SQL, Python"

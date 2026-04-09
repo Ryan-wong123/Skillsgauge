@@ -1,0 +1,88 @@
+{% extends "index.html" %}
+
+{% block title %} Job Application {% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
+        <div>
+            <h2 class="mb-1">Submit Job Application</h2>
+            <p class="text-muted mb-0">Complete the form below to save an application submission in SkillGauge.</p>
+        </div>
+        {% if form_data.industry %}
+        <a class="btn btn-outline-secondary" href="{{ url_for('Job_roles') }}">Back to Job Roles</a>
+        {% else %}
+        <a class="btn btn-outline-secondary" href="{{ url_for('Industries') }}">Back to Industries</a>
+        {% endif %}
+    </div>
+
+    {% if success_message %}
+    <div class="alert alert-success" role="alert">
+        {{ success_message }}
+    </div>
+    {% endif %}
+
+    {% if error_messages %}
+    <div class="alert alert-danger" role="alert">
+        {% for error in error_messages %}
+        <div>{{ error }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="row">
+        <div class="col-lg-8">
+            <form method="POST" action="{{ url_for('job_application') }}" class="card shadow-sm">
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" class="form-control" id="name" name="name" value="{{ form_data.name }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ form_data.email }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="job_role">Job Role</label>
+                        <input type="text" class="form-control" id="job_role" name="job_role" value="{{ form_data.job_role }}" placeholder="Example: Data Analyst">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="company">Company</label>
+                        <input type="text" class="form-control" id="company" name="company" value="{{ form_data.company }}" placeholder="Example: Example Corp">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="supporting_info">Supporting Information</label>
+                        <textarea class="form-control" id="supporting_info" name="supporting_info" rows="5" placeholder="Add a short note, availability, portfolio link, or other relevant information.">{{ form_data.supporting_info }}</textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Submit Application</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-lg-4 mt-4 mt-lg-0">
+            <div class="card border-light shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Application Context</h5>
+                    <p class="mb-2"><strong>Selected Industry:</strong> {{ form_data.industry or 'Not selected yet' }}</p>
+                    <p class="mb-2"><strong>Resume Uploaded:</strong> {{ 'Yes' if form_data.resume_uploaded else 'No' }}</p>
+                    <p class="mb-2"><strong>Extracted Skills:</strong></p>
+                    {% if form_data.skills %}
+                    <div class="d-flex flex-wrap">
+                        {% for skill in form_data.skills %}
+                        <span class="badge badge-light border mr-1 mb-1">{{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted mb-0">No saved skills yet. Upload a resume or add skills to improve job matching before applying.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
