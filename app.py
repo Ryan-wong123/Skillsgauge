@@ -8,6 +8,8 @@ import Course_Url_Coursera
 from data_analysis import industry_job_trend , industry_general_skills, pull_industry_skills , industry_hiring_trend , skill_match_analysis , match_user_to_job_role, filter_df_by_job_role,industry_job,pull_in_job_trend,  pull_in_hiring_trend , get_job_detail_url, build_application_shortlist, create_application_shortlist_csv, process_bulk_applications
 import threading
 import copy
+import csv
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -15,6 +17,7 @@ app.secret_key = os.urandom(24)
 # Uploads folder name
 UPLOAD_FOLDER = 'uploads'  
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+APPLICATION_SUBMISSIONS_FILE = os.path.join(UPLOAD_FOLDER, 'job_application_submissions.csv')
 
 # Data set file path
 file_path = r'bronze_datasets\\sg_job_data_cleaned.csv'
@@ -39,6 +42,63 @@ class JobRole:
         self.title = title
         self.skill = skill
         self.match_percent = match_percent
+
+
+def build_job_application_context(job_role=None, company=None):
+    user_skills = session.get('userSkills', [])
+    return {
+        "name": session.get('applicant_name', ''),
+        "email": session.get('applicant_email', ''),
+        "job_role": job_role or '',
+        "company": company or '',
+        "supporting_info": '',
+        "industry": session.get('industry', ''),
+        "skills": user_skills,
+        "resume_uploaded": session.get('resume_uploaded', False) or bool(user_skills),
+    }
+
+
+def validate_job_application_form(form_data):
+    errors = []
+    name = form_data.get('name', '').strip()
+    email = form_data.get('email', '').strip()
+    job_role = form_data.get('job_role', '').strip()
+    company = form_data.get('company', '').strip()
+
+    if not name:
+        errors.append("Name is required.")
+
+    if not email:
+        errors.append("Email is required.")
+    elif "@" not in email or "." not in email.split("@")[-1]:
+        errors.append("Enter a valid email address.")
+
+    if not job_role and not company:
+        errors.append("Enter a job role or company before submitting.")
+
+    return errors
+
+
+def save_job_application_submission(submission_data):
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+    file_exists = os.path.exists(APPLICATION_SUBMISSIONS_FILE)
+    fieldnames = [
+        'submitted_at',
+        'name',
+        'email',
+        'job_role',
+        'company',
+        'supporting_info',
+        'industry',
+        'skills',
+        'resume_uploaded',
+    ]
+
+    with open(APPLICATION_SUBMISSIONS_FILE, 'a', newline='', encoding='utf-8') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        if not file_exists:
+            writer.writeheader()
+        writer.writerow(submission_data)
 
 @app.route('/')
 def Home():
@@ -212,6 +272,58 @@ def bulk_industry_applications():
         user_profile=user_profile,
         submission_summary=submission_summary,
         selected_indexes=selected_indexes,
+    )
+
+
+@app.route('/job_application', methods=['GET', 'POST'])
+def job_application():
+    job_role = request.args.get('job_role', '').strip()
+    company = request.args.get('company', '').strip()
+    form_data = build_job_application_context(job_role=job_role, company=company)
+    success_message = None
+    error_messages = []
+
+    if request.method == 'POST':
+        form_data = {
+            "name": request.form.get('name', '').strip(),
+            "email": request.form.get('email', '').strip(),
+            "job_role": request.form.get('job_role', '').strip(),
+            "company": request.form.get('company', '').strip(),
+            "supporting_info": request.form.get('supporting_info', '').strip(),
+            "industry": session.get('industry', ''),
+            "skills": session.get('userSkills', []),
+            "resume_uploaded": session.get('resume_uploaded', False) or bool(session.get('userSkills', [])),
+        }
+
+        error_messages = validate_job_application_form(form_data)
+
+        if not error_messages:
+            submission_record = {
+                "submitted_at": datetime.utcnow().isoformat(timespec='seconds'),
+                "name": form_data["name"],
+                "email": form_data["email"],
+                "job_role": form_data["job_role"],
+                "company": form_data["company"],
+                "supporting_info": form_data["supporting_info"],
+                "industry": form_data["industry"],
+                "skills": ", ".join(form_data["skills"]),
+                "resume_uploaded": form_data["resume_uploaded"],
+            }
+
+            try:
+                save_job_application_submission(submission_record)
+                session['applicant_name'] = form_data["name"]
+                session['applicant_email'] = form_data["email"]
+                success_message = "Your job application was submitted successfully."
+                form_data["supporting_info"] = ''
+            except OSError:
+                error_messages.append("We could not save your application right now. Please try again.")
+
+    return render_template(
+        'job_application.html',
+        form_data=form_data,
+        success_message=success_message,
+        error_messages=error_messages,
     )
 
 #show the job roles page with suitable jobs
