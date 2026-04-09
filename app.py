@@ -100,6 +100,20 @@ def save_job_application_submission(submission_data):
             writer.writeheader()
         writer.writerow(submission_data)
 
+
+def clear_uploaded_resume_files():
+    if not os.path.isdir(UPLOAD_FOLDER):
+        return
+
+    submissions_filename = os.path.basename(APPLICATION_SUBMISSIONS_FILE)
+    for filename in os.listdir(UPLOAD_FOLDER):
+        if filename == submissions_filename:
+            continue
+
+        file_path = os.path.join(UPLOAD_FOLDER, filename)
+        if os.path.isfile(file_path):
+            os.remove(file_path)
+
 @app.route('/')
 def Home():
     # Load the data and make copy of data
@@ -314,8 +328,13 @@ def job_application():
                 save_job_application_submission(submission_record)
                 session['applicant_name'] = form_data["name"]
                 session['applicant_email'] = form_data["email"]
+                session['last_applied_job_role'] = form_data["job_role"]
+                session['last_applied_company'] = form_data["company"]
                 success_message = "Your job application was submitted successfully."
-                form_data["supporting_info"] = ''
+                form_data = build_job_application_context(
+                    job_role=form_data["job_role"],
+                    company=form_data["company"],
+                )
             except OSError:
                 error_messages.append("We could not save your application right now. Please try again.")
 
@@ -481,11 +500,8 @@ def update_skills():
     session['userSkills'] = request.form.getlist('skills')
     session['resume_uploaded'] = True
     
-    # Remove all resume files once skills are submitted
-    for filename in os.listdir(UPLOAD_FOLDER):
-        file_path = os.path.join(UPLOAD_FOLDER, filename)
-        if os.path.isfile(file_path):
-            os.remove(file_path)
+    # Remove uploaded resume artifacts without deleting stored application submissions
+    clear_uploaded_resume_files()
     return redirect(url_for('Job_roles'))
 
 if __name__ == '__main__':
