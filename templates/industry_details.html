@@ -35,7 +35,10 @@
                 <h3 class="mb-1">Application Shortlist</h3>
                 <p class="mb-0">Use this company list to apply across the {{ industry }} industry faster. Export it as CSV and track each submission externally.</p>
             </div>
-            <a class="btn btn-primary" href="{{ url_for('export_industry_applications') }}">Export CSV</a>
+            <div class="d-flex gap-2 flex-wrap">
+                <a class="btn btn-success" href="{{ url_for('bulk_industry_applications') }}">Bulk Apply</a>
+                <a class="btn btn-primary" href="{{ url_for('export_industry_applications') }}">Export CSV</a>
+            </div>
         </div>
 
         <div class="table-responsive mt-3">

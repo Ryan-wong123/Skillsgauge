@@ -1,0 +1,116 @@
+{% extends "index.html" %}
+
+{% block title %} Bulk Job Applications {% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <a href="{{ url_for('industry_details') }}" onclick="event.preventDefault(); window.history.back();" class="btn btn-link px-0">Back</a>
+
+    <div class="card border-dark mb-4" style="background-color: rgb(255, 248, 225)">
+        <div class="card-body">
+            <h2 class="mb-2">Bulk Apply for {{ industry }}</h2>
+            <p class="mb-2">Select several relevant jobs and submit one internal application batch using your saved industry and skills profile.</p>
+            <div class="small text-muted">
+                Saved industry: {{ user_profile.industry }} |
+                Saved skills: {{ user_profile.skills|length }} |
+                Resume profile ready:
+                {% if user_profile.resume_ready %}Yes{% else %}No{% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% if submission_summary %}
+    <div class="alert {% if submission_summary.failure_count == 0 %}alert-success{% elif submission_summary.success_count == 0 %}alert-danger{% else %}alert-warning{% endif %}">
+        Submitted {{ submission_summary.success_count }} application(s) successfully.
+        {% if submission_summary.failure_count %}
+        {{ submission_summary.failure_count }} application(s) failed.
+        {% endif %}
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h4 class="mb-3">Submission Results</h4>
+            <div class="table-responsive">
+                <table class="table table-sm align-middle">
+                    <thead>
+                        <tr>
+                            <th>Job Title</th>
+                            <th>Company</th>
+                            <th>Status</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for job in submission_summary.results %}
+                        <tr>
+                            <td>{{ job.job_title }}</td>
+                            <td>{{ job.company }}</td>
+                            <td>
+                                <span class="badge {% if job.application_status == 'Submitted' %}badge-success{% else %}badge-danger{% endif %}">
+                                    {{ job.application_status }}
+                                </span>
+                            </td>
+                            <td>{{ job.status_message }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <form method="POST">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
+                    <h4 class="mb-0">Recommended Jobs</h4>
+                    <button type="submit" class="btn btn-primary">Submit Selected Applications</button>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Select</th>
+                                <th>Job Title</th>
+                                <th>Company</th>
+                                <th>Location</th>
+                                <th>Posted</th>
+                                <th>Job Link</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for job in shortlist %}
+                            <tr>
+                                <td>
+                                    <input type="checkbox" name="selected_jobs" value="{{ loop.index0 }}"
+                                        {% if loop.index0|string in selected_indexes %}checked{% endif %}>
+                                </td>
+                                <td>{{ job.job_title }}</td>
+                                <td>{{ job.company }}</td>
+                                <td>{{ job.location }}</td>
+                                <td>{{ job.posted_date }}</td>
+                                <td>
+                                    {% if job.job_url %}
+                                    <a href="{{ job.job_url }}" target="_blank">Open Job</a>
+                                    {% else %}
+                                    <span class="text-muted">No link available</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {% if not shortlist %}
+                <p class="mb-0 text-muted">No suitable jobs were found for this industry yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

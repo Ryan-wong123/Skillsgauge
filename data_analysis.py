@@ -418,3 +418,55 @@ def create_application_shortlist_csv(shortlist):
         writer.writerow({field: job.get(field, '') for field in fieldnames})
 
     return output.getvalue()
+
+
+def process_bulk_applications(shortlist, selected_indexes, user_profile=None):
+    selected_indexes = selected_indexes or []
+    results = []
+
+    if not shortlist or not selected_indexes:
+        return {
+            "results": results,
+            "success_count": 0,
+            "failure_count": 0,
+        }
+
+    for raw_index in selected_indexes:
+        try:
+            index = int(raw_index)
+        except (TypeError, ValueError):
+            continue
+
+        if index < 0 or index >= len(shortlist):
+            continue
+
+        job = shortlist[index]
+        application_status = "Submitted"
+        status_message = "Application submitted successfully."
+
+        if not job.get("job_url"):
+            application_status = "Failed"
+            status_message = "Application could not be submitted because the job link is unavailable."
+        elif user_profile and not user_profile.get("industry"):
+            application_status = "Failed"
+            status_message = "Application could not be submitted because the industry profile is missing."
+        elif user_profile and not user_profile.get("skills"):
+            application_status = "Submitted"
+            status_message = "Application submitted with a limited profile because no saved skills were found."
+
+        results.append(
+            {
+                **job,
+                "application_status": application_status,
+                "status_message": status_message,
+            }
+        )
+
+    success_count = sum(1 for job in results if job["application_status"] == "Submitted")
+    failure_count = len(results) - success_count
+
+    return {
+        "results": results,
+        "success_count": success_count,
+        "failure_count": failure_count,
+    }

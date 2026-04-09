@@ -5,7 +5,7 @@ import resume_skills_extractor
 import os
 import pandas as pd
 import Course_Url_Coursera 
-from data_analysis import industry_job_trend , industry_general_skills, pull_industry_skills , industry_hiring_trend , skill_match_analysis , match_user_to_job_role, filter_df_by_job_role,industry_job,pull_in_job_trend,  pull_in_hiring_trend , get_job_detail_url, build_application_shortlist, create_application_shortlist_csv
+from data_analysis import industry_job_trend , industry_general_skills, pull_industry_skills , industry_hiring_trend , skill_match_analysis , match_user_to_job_role, filter_df_by_job_role,industry_job,pull_in_job_trend,  pull_in_hiring_trend , get_job_detail_url, build_application_shortlist, create_application_shortlist_csv, process_bulk_applications
 import threading
 import copy
 
@@ -177,6 +177,43 @@ def export_industry_applications():
         headers={"Content-Disposition": f"attachment; filename={download_name}"}
     )
 
+
+@app.route('/industry_applications/bulk', methods=['GET', 'POST'])
+def bulk_industry_applications():
+    if 'industry' not in session:
+        return redirect(url_for("Industries"))
+
+    industry_name = session["industry"]
+    industry_key = industry_name.replace(" ", "_")
+    industry_path = "bronze_datasets/(Final)_past_" + industry_key + ".csv"
+
+    with open(industry_path, encoding='utf-8') as csvfile:
+        df = pd.read_csv(csvfile, index_col=False)
+
+    shortlist = build_application_shortlist(df)
+    user_skills = session.get('userSkills', [])
+    user_profile = {
+        "industry": industry_name,
+        "skills": user_skills,
+        "resume_ready": session.get('resume_uploaded', False) or bool(user_skills),
+    }
+
+    submission_summary = None
+    selected_indexes = []
+
+    if request.method == 'POST':
+        selected_indexes = request.form.getlist('selected_jobs')
+        submission_summary = process_bulk_applications(shortlist, selected_indexes, user_profile)
+
+    return render_template(
+        'bulk_industry_applications.html',
+        industry=industry_name,
+        shortlist=shortlist,
+        user_profile=user_profile,
+        submission_summary=submission_summary,
+        selected_indexes=selected_indexes,
+    )
+
 #show the job roles page with suitable jobs
 @app.route('/job_roles')
 def Job_roles():
@@ -314,6 +351,7 @@ def upload_resume():
     #get skills 
     resume_skills_extractor.extract_text_from_pdf(pdf_path)
     skills_found = resume_skills_extractor.outputSkillsExtracted(5)
+    session['resume_uploaded'] = True
 
     return render_template('edit_resume.html', skills=skills_found)
 
@@ -329,6 +367,7 @@ def add_skills():
 def update_skills():
     # Update the session with the list of skills submitted by the user from the form
     session['userSkills'] = request.form.getlist('skills')
+    session['resume_uploaded'] = True
     
     # Remove all resume files once skills are submitted
     for filename in os.listdir(UPLOAD_FOLDER):
