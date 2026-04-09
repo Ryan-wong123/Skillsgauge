@@ -211,6 +211,27 @@ def test_job_application_route_prefills_context_from_session_and_query():
     assert "Python" in page
 
 
+def test_job_application_route_reuses_last_selected_context_from_session():
+    client = skillsgauge_app.app.test_client()
+    with client.session_transaction() as session:
+        session["industry"] = "Technology"
+        session["userSkills"] = ["SQL", "Python"]
+        session["resume_uploaded"] = True
+        session["applicant_name"] = "Alex Tan"
+        session["applicant_email"] = "alex@example.com"
+        session["last_applied_job_role"] = "Data Analyst"
+        session["last_applied_company"] = "Alpha"
+
+    response = client.get("/job_application")
+
+    assert response.status_code == 200
+    page = response.get_data(as_text=True)
+    assert "value=\"Alex Tan\"" in page
+    assert "value=\"alex@example.com\"" in page
+    assert "value=\"Data Analyst\"" in page
+    assert "value=\"Alpha\"" in page
+
+
 def test_job_application_route_submits_successfully(monkeypatch):
     captured_submission = {}
 
