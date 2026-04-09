@@ -330,7 +330,10 @@ def job_application():
                 session['applicant_email'] = form_data["email"]
                 session['last_applied_job_role'] = form_data["job_role"]
                 session['last_applied_company'] = form_data["company"]
-                success_message = "Your job application was submitted successfully."
+                applied_target = form_data["job_role"] or form_data["company"]
+                if form_data["job_role"] and form_data["company"]:
+                    applied_target = f'{form_data["job_role"]} at {form_data["company"]}'
+                success_message = f"Your job application for {applied_target} was submitted successfully."
                 form_data = build_job_application_context(
                     job_role=form_data["job_role"],
                     company=form_data["company"],

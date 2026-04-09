@@ -8,6 +8,9 @@
         <div>
             <h2 class="mb-1">Submit Job Application</h2>
             <p class="text-muted mb-0">Complete the form below to save an application submission in SkillGauge using your current resume, skills, and industry context where available.</p>
+            {% if form_data.job_role or form_data.company %}
+            <p class="text-muted mb-0">This form has been prefilled from your current job search flow where possible.</p>
+            {% endif %}
         </div>
         {% if form_data.industry %}
         <a class="btn btn-outline-secondary" href="{{ url_for('Job_roles') }}">Back to Job Roles</a>
