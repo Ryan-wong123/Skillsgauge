@@ -458,6 +458,25 @@ def expanded_job_roles(job_title):
 def Resume():
     return render_template('resume.html')
 
+
+@app.route('/skills')
+def skill_database():
+    search_query = request.args.get('q', '').strip()
+    selected_category = request.args.get('category', 'All').strip() or 'All'
+    available_categories = ["All"] + [
+        category for category, _ in resume_skills_extractor.SKILL_DATABASE_SOURCES
+    ]
+
+    if selected_category not in available_categories:
+        selected_category = 'All'
+
+    skill_catalog = resume_skills_extractor.load_skill_database(
+        search_query=search_query,
+        selected_category=selected_category,
+    )
+
+    return render_template('skill_database.html', skill_catalog=skill_catalog)
+
 '''
 Author: Ryan Wong
 Handles the file input and editing of skills of the resume extractor

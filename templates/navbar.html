@@ -30,6 +30,10 @@
         <a class="nav-link" href="{{ url_for('Industries') }}">Trending Jobs</a>
       </li>
 
+      <li class="nav-item mt-1">
+        <a class="nav-link" href="{{ url_for('skill_database') }}">Skill Database</a>
+      </li>
+
       {% if session.get('industry') or session.get('userSkills') %}
       <li class="nav-item mt-1">
         <a class="nav-link" href="{{ url_for('job_application') }}">Job Application</a>

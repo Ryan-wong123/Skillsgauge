@@ -21,6 +21,15 @@ industry_files = [
 general_skills_file = "Skills/general_skills.json"
 file_path = os.path.join('uploads', 'results.txt')
 
+SKILL_DATABASE_SOURCES = [
+    ("General", general_skills_file),
+    ("Engineering", "Skills/engineering_skills.json"),
+    ("Healthcare", "Skills/healthcare_skills.json"),
+    ("Legal Services", "Skills/legal_service_skills.json"),
+    ("Finance", "Skills/finance_skills.json"),
+    ("Technology", "Skills/tech_skills.json"),
+]
+
 
 def _normalize_text(text):
     # Keep symbols often used in skill names (e.g., c++, c#), normalize other separators.
@@ -54,6 +63,60 @@ def _contains_skill(text, term):
     escaped = re.escape(term).replace(r"\ ", r"\s+")
     pattern = rf"(?<!\w){escaped}(?!\w)"
     return re.search(pattern, text) is not None
+
+
+def load_skill_database(search_query="", selected_category="All"):
+    normalized_query = _normalize_text(search_query) if search_query else ""
+    categories = ["All"] + [category for category, _ in SKILL_DATABASE_SOURCES]
+    if selected_category not in categories:
+        selected_category = "All"
+    category_groups = []
+    total_skills = 0
+
+    for category, path in SKILL_DATABASE_SOURCES:
+        if selected_category not in ("All", category):
+            continue
+
+        category_data = _load_skills(path)
+        skills = []
+
+        for skill_name, aliases in sorted(category_data.items()):
+            alias_values = sorted(dict.fromkeys(_alias_list(aliases)))
+            searchable_terms = [_normalize_text(skill_name)] + [
+                _normalize_text(alias) for alias in alias_values
+            ]
+
+            if normalized_query and not any(
+                normalized_query in term for term in searchable_terms if term
+            ):
+                continue
+
+            skills.append(
+                {
+                    "name": skill_name,
+                    "aliases": alias_values,
+                    "category": category,
+                    "alias_count": len(alias_values),
+                }
+            )
+
+        if skills:
+            category_groups.append(
+                {
+                    "category": category,
+                    "skills": skills,
+                    "count": len(skills),
+                }
+            )
+            total_skills += len(skills)
+
+    return {
+        "categories": categories,
+        "selected_category": selected_category,
+        "search_query": search_query.strip(),
+        "groups": category_groups,
+        "total_skills": total_skills,
+    }
 
 # Extract text from PDF and output as TXT file
 def extract_text_from_pdf(pdf_file, output_file=file_path):
