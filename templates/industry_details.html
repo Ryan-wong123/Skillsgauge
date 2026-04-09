@@ -50,7 +50,7 @@
                         <th>Company</th>
                         <th>Location</th>
                         <th>Posted</th>
-                        <th>Apply</th>
+                        <th>Links</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -62,10 +62,11 @@
                         <td>{{ job.posted_date }}</td>
                         <td>
                             {% if job.job_url %}
-                            <a href="{{ job.job_url }}" target="_blank">Open Job</a>
+                            <a class="d-inline-block mr-2" href="{{ job.job_url }}" target="_blank">Open Job</a>
                             {% else %}
-                            <span>No link</span>
+                            <span class="d-inline-block mr-2">No link</span>
                             {% endif %}
+                            <a href="{{ url_for('job_application', job_role=job.job_title, company=job.company) }}">Apply in SkillGauge</a>
                         </td>
                     </tr>
                     {% endfor %}
