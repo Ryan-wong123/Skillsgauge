@@ -8,7 +8,9 @@ def test_load_skill_database_groups_existing_skill_files():
     catalog = resume_skills_extractor.load_skill_database()
 
     assert catalog["total_skills"] > 0
+    assert catalog["library_total_skills"] >= catalog["total_skills"]
     assert "Technology" in catalog["categories"]
+    assert any(summary["category"] == "Technology" for summary in catalog["category_summaries"])
     assert any(group["category"] == "Technology" for group in catalog["groups"])
 
 

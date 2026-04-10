@@ -72,12 +72,25 @@ def load_skill_database(search_query="", selected_category="All"):
         selected_category = "All"
     category_groups = []
     total_skills = 0
+    library_total_skills = 0
+    category_summaries = []
 
     for category, path in SKILL_DATABASE_SOURCES:
+        category_data = _load_skills(path)
+        category_total = len(category_data)
+        library_total_skills += category_total
+
+        category_summaries.append(
+            {
+                "category": category,
+                "total_skills": category_total,
+                "is_selected": selected_category in ("All", category),
+            }
+        )
+
         if selected_category not in ("All", category):
             continue
 
-        category_data = _load_skills(path)
         skills = []
 
         for skill_name, aliases in sorted(category_data.items()):
@@ -112,10 +125,12 @@ def load_skill_database(search_query="", selected_category="All"):
 
     return {
         "categories": categories,
+        "category_summaries": category_summaries,
         "selected_category": selected_category,
         "search_query": search_query.strip(),
         "groups": category_groups,
         "total_skills": total_skills,
+        "library_total_skills": library_total_skills,
     }
 
 # Extract text from PDF and output as TXT file
