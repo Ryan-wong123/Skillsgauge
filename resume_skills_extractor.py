@@ -31,6 +31,10 @@ SKILL_DATABASE_SOURCES = [
 ]
 
 
+def get_skill_database_categories():
+    return ["All"] + [category for category, _ in SKILL_DATABASE_SOURCES]
+
+
 def _normalize_text(text):
     # Keep symbols often used in skill names (e.g., c++, c#), normalize other separators.
     text = text.lower()
@@ -67,7 +71,7 @@ def _contains_skill(text, term):
 
 def load_skill_database(search_query="", selected_category="All"):
     normalized_query = _normalize_text(search_query) if search_query else ""
-    categories = ["All"] + [category for category, _ in SKILL_DATABASE_SOURCES]
+    categories = get_skill_database_categories()
     if selected_category not in categories:
         selected_category = "All"
     category_groups = []
@@ -79,17 +83,6 @@ def load_skill_database(search_query="", selected_category="All"):
         category_data = _load_skills(path)
         category_total = len(category_data)
         library_total_skills += category_total
-
-        category_summaries.append(
-            {
-                "category": category,
-                "total_skills": category_total,
-                "is_selected": selected_category in ("All", category),
-            }
-        )
-
-        if selected_category not in ("All", category):
-            continue
 
         skills = []
 
@@ -112,6 +105,18 @@ def load_skill_database(search_query="", selected_category="All"):
                     "alias_count": len(alias_values),
                 }
             )
+
+        category_summaries.append(
+            {
+                "category": category,
+                "total_skills": category_total,
+                "matching_skills": len(skills),
+                "is_selected": selected_category == category,
+            }
+        )
+
+        if selected_category not in ("All", category):
+            continue
 
         if skills:
             category_groups.append(

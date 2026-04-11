@@ -39,6 +39,9 @@
           <button type="submit" class="btn btn-primary btn-block">Apply</button>
         </div>
       </div>
+      {% if skill_catalog.search_query or skill_catalog.selected_category != 'All' %}
+      <a class="btn btn-link px-0" href="{{ url_for('skill_database') }}">Clear filters</a>
+      {% endif %}
     </form>
   </div>
 </div>
@@ -72,12 +75,18 @@
 
 <div class="card shadow-sm mb-4">
   <div class="card-body">
-    <h2 class="h5 mb-3">Categories</h2>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="h5 mb-0">Categories</h2>
+      <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('skill_database', q=skill_catalog.search_query, category='All') }}">Browse all</a>
+    </div>
     <div class="d-flex flex-wrap">
       {% for summary in skill_catalog.category_summaries %}
-      <span class="badge {% if summary.is_selected %}badge-primary{% else %}badge-light{% endif %} mr-2 mb-2 p-2">
-        {{ summary.category }}: {{ summary.total_skills }}
-      </span>
+      <a
+        class="badge {% if summary.is_selected %}badge-primary{% else %}badge-light{% endif %} mr-2 mb-2 p-2 text-decoration-none"
+        href="{{ url_for('skill_database', q=skill_catalog.search_query, category=summary.category) }}"
+      >
+        {{ summary.category }}: {{ summary.matching_skills }} shown / {{ summary.total_skills }} total
+      </a>
       {% endfor %}
     </div>
   </div>
