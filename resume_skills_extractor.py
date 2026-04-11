@@ -6,7 +6,10 @@ Extracts the skills from the resume that the user upload
 import os
 import json
 import re
-from pdfminer.high_level import extract_text
+try:
+    from pdfminer.high_level import extract_text
+except ImportError:  # pragma: no cover - depends on optional runtime dependency
+    extract_text = None
 
 # Define the list of industry JSON files
 industry_files = [
@@ -141,6 +144,9 @@ def load_skill_database(search_query="", selected_category="All"):
 # Extract text from PDF and output as TXT file
 def extract_text_from_pdf(pdf_file, output_file=file_path):
     try:
+        if extract_text is None:
+            raise ImportError("pdfminer.six is required to extract text from PDF resumes.")
+
         # Open the PDF file in read-binary mode
         with open(pdf_file, 'rb') as f:
             # Extract text from the PDF using a library function
