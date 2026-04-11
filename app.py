@@ -463,9 +463,7 @@ def Resume():
 def skill_database():
     search_query = request.args.get('q', '').strip()
     selected_category = request.args.get('category', 'All').strip() or 'All'
-    available_categories = ["All"] + [
-        category for category, _ in resume_skills_extractor.SKILL_DATABASE_SOURCES
-    ]
+    available_categories = resume_skills_extractor.get_skill_database_categories()
 
     if selected_category not in available_categories:
         selected_category = 'All'

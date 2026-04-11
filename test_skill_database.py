@@ -25,6 +25,11 @@ def test_load_skill_database_filters_by_query_and_category():
     assert len(catalog["groups"]) == 1
     assert catalog["groups"][0]["category"] == "Technology"
     assert any(skill["name"] == "python" for skill in catalog["groups"][0]["skills"])
+    technology_summary = next(
+        summary for summary in catalog["category_summaries"] if summary["category"] == "Technology"
+    )
+    assert technology_summary["is_selected"] is True
+    assert technology_summary["matching_skills"] >= 1
 
 
 def test_skill_database_route_renders_filtered_results():
