@@ -6,6 +6,7 @@ Extracts the skills from the resume that the user upload
 import os
 import json
 import re
+from functools import lru_cache
 try:
     from pdfminer.high_level import extract_text
 except ImportError:  # pragma: no cover - depends on optional runtime dependency
@@ -78,48 +79,88 @@ def _contains_skill(text, term):
     return re.search(pattern, text) is not None
 
 
-def load_skill_database(search_query="", selected_category="All"):
-    normalized_query = _normalize_text(search_query) if search_query else ""
-    categories = get_skill_database_categories()
-    if selected_category not in categories:
-        selected_category = "All"
+def _normalize_category(selected_category):
+    if not selected_category:
+        return "All"
+
+    category_lookup = {
+        category.lower(): category for category in get_skill_database_categories()
+    }
+    return category_lookup.get(selected_category.strip().lower(), "All")
+
+
+@lru_cache(maxsize=1)
+def _load_skill_database_library():
     category_groups = []
-    total_skills = 0
-    library_total_skills = 0
     category_summaries = []
+    library_total_skills = 0
 
     for category, path in SKILL_DATABASE_SOURCES:
         category_data = _load_skills(path)
-        category_total = len(category_data)
-        library_total_skills += category_total
-
         skills = []
 
         for skill_name, aliases in sorted(category_data.items()):
             alias_values = sorted(dict.fromkeys(_alias_list(aliases)))
-            searchable_terms = [_normalize_text(skill_name)] + [
-                _normalize_text(alias) for alias in alias_values
-            ]
-
-            if normalized_query and not any(
-                normalized_query in term for term in searchable_terms if term
-            ):
-                continue
-
             skills.append(
                 {
                     "name": skill_name,
                     "aliases": alias_values,
                     "category": category,
                     "alias_count": len(alias_values),
+                    "search_terms": [_normalize_text(skill_name)] + [
+                        _normalize_text(alias) for alias in alias_values
+                    ],
                 }
             )
 
+        category_groups.append(
+            {
+                "category": category,
+                "skills": skills,
+                "count": len(skills),
+            }
+        )
         category_summaries.append(
             {
                 "category": category,
-                "total_skills": category_total,
-                "matching_skills": len(skills),
+                "total_skills": len(skills),
+            }
+        )
+        library_total_skills += len(skills)
+
+    return {
+        "groups": category_groups,
+        "category_summaries": category_summaries,
+        "library_total_skills": library_total_skills,
+    }
+
+
+def load_skill_database(search_query="", selected_category="All"):
+    normalized_query = _normalize_text(search_query) if search_query else ""
+    categories = get_skill_database_categories()
+    selected_category = _normalize_category(selected_category)
+    library = _load_skill_database_library()
+    category_groups = []
+    total_skills = 0
+    category_summaries = []
+
+    for group, summary in zip(library["groups"], library["category_summaries"]):
+        filtered_skills = []
+        for skill in group["skills"]:
+            if normalized_query and not any(
+                normalized_query in term for term in skill["search_terms"] if term
+            ):
+                continue
+            filtered_skill = dict(skill)
+            filtered_skill.pop("search_terms", None)
+            filtered_skills.append(filtered_skill)
+
+        category = group["category"]
+        category_summaries.append(
+            {
+                "category": category,
+                "total_skills": summary["total_skills"],
+                "matching_skills": len(filtered_skills),
                 "is_selected": selected_category == category,
             }
         )
@@ -127,15 +168,15 @@ def load_skill_database(search_query="", selected_category="All"):
         if selected_category not in ("All", category):
             continue
 
-        if skills:
+        if filtered_skills:
             category_groups.append(
                 {
                     "category": category,
-                    "skills": skills,
-                    "count": len(skills),
+                    "skills": filtered_skills,
+                    "count": len(filtered_skills),
                 }
             )
-            total_skills += len(skills)
+            total_skills += len(filtered_skills)
 
     return {
         "categories": categories,
@@ -144,7 +185,7 @@ def load_skill_database(search_query="", selected_category="All"):
         "search_query": search_query.strip(),
         "groups": category_groups,
         "total_skills": total_skills,
-        "library_total_skills": library_total_skills,
+        "library_total_skills": library["library_total_skills"],
     }
 
 # Extract text from PDF and output as TXT file

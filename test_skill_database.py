@@ -32,6 +32,18 @@ def test_load_skill_database_filters_by_query_and_category():
     assert technology_summary["matching_skills"] >= 1
 
 
+def test_load_skill_database_normalizes_category_selection():
+    catalog = resume_skills_extractor.load_skill_database(
+        search_query="excel",
+        selected_category="finance",
+    )
+
+    assert catalog["selected_category"] == "Finance"
+    assert len(catalog["groups"]) == 1
+    assert catalog["groups"][0]["category"] == "Finance"
+    assert any(skill["name"] == "excel" for skill in catalog["groups"][0]["skills"])
+
+
 def test_skill_database_route_renders_filtered_results():
     client = skillsgauge_app.app.test_client()
 
