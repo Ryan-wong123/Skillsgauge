@@ -6,6 +6,7 @@ Extracts the skills from the resume that the user upload
 import os
 import json
 import re
+from functools import lru_cache
 try:
     from pdfminer.high_level import extract_text
 except ImportError:  # pragma: no cover - depends on optional runtime dependency
@@ -82,6 +83,7 @@ def _normalize_text(text):
     return text
 
 
+@lru_cache(maxsize=None)
 def _load_skills(path):
     if not os.path.exists(path):
         return {}
