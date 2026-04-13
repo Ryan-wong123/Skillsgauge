@@ -32,6 +32,16 @@ def test_load_skill_database_filters_by_query_and_category():
     assert technology_summary["matching_skills"] >= 1
 
 
+def test_load_skill_database_falls_back_to_all_for_unknown_category():
+    catalog = resume_skills_extractor.load_skill_database(
+        search_query="python",
+        selected_category="Unknown Category",
+    )
+
+    assert catalog["selected_category"] == "All"
+    assert any(group["category"] == "Technology" for group in catalog["groups"])
+
+
 def test_skill_database_route_renders_filtered_results():
     client = skillsgauge_app.app.test_client()
 

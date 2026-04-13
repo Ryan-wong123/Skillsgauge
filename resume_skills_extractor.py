@@ -17,26 +17,54 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 def _project_path(*parts):
     return os.path.join(BASE_DIR, *parts)
 
-# Define the list of industry JSON files
-industry_files = [
-    _project_path("Skills", "engineering_skills.json"),
-    _project_path("Skills", "healthcare_skills.json"),
-    _project_path("Skills", "legal_service_skills.json"),
-    _project_path("Skills", "finance_skills.json"),
-    _project_path("Skills", "tech_skills.json")
+SKILL_LIBRARY_SOURCES = [
+    {
+        "category": "General",
+        "path": _project_path("Skills", "general_skills.json"),
+        "used_for_resume_matching": False,
+    },
+    {
+        "category": "Engineering",
+        "path": _project_path("Skills", "engineering_skills.json"),
+        "used_for_resume_matching": True,
+    },
+    {
+        "category": "Healthcare",
+        "path": _project_path("Skills", "healthcare_skills.json"),
+        "used_for_resume_matching": True,
+    },
+    {
+        "category": "Legal Services",
+        "path": _project_path("Skills", "legal_service_skills.json"),
+        "used_for_resume_matching": True,
+    },
+    {
+        "category": "Finance",
+        "path": _project_path("Skills", "finance_skills.json"),
+        "used_for_resume_matching": True,
+    },
+    {
+        "category": "Technology",
+        "path": _project_path("Skills", "tech_skills.json"),
+        "used_for_resume_matching": True,
+    },
 ]
 
-# Define the general skills JSON file
-general_skills_file = _project_path("Skills", "general_skills.json")
+industry_files = [
+    source["path"]
+    for source in SKILL_LIBRARY_SOURCES
+    if source["used_for_resume_matching"]
+]
+
+general_skills_file = next(
+    source["path"]
+    for source in SKILL_LIBRARY_SOURCES
+    if source["category"] == "General"
+)
 file_path = _project_path('uploads', 'results.txt')
 
 SKILL_DATABASE_SOURCES = [
-    ("General", general_skills_file),
-    ("Engineering", _project_path("Skills", "engineering_skills.json")),
-    ("Healthcare", _project_path("Skills", "healthcare_skills.json")),
-    ("Legal Services", _project_path("Skills", "legal_service_skills.json")),
-    ("Finance", _project_path("Skills", "finance_skills.json")),
-    ("Technology", _project_path("Skills", "tech_skills.json")),
+    (source["category"], source["path"]) for source in SKILL_LIBRARY_SOURCES
 ]
 
 
@@ -57,9 +85,12 @@ def _load_skills(path):
     if not os.path.exists(path):
         return {}
 
-    with open(path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-        return data if isinstance(data, dict) else {}
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            return data if isinstance(data, dict) else {}
+    except (OSError, json.JSONDecodeError):
+        return {}
 
 
 def _alias_list(aliases):
