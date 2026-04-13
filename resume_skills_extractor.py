@@ -17,26 +17,55 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 def _project_path(*parts):
     return os.path.join(BASE_DIR, *parts)
 
-# Define the list of industry JSON files
-industry_files = [
-    _project_path("Skills", "engineering_skills.json"),
-    _project_path("Skills", "healthcare_skills.json"),
-    _project_path("Skills", "legal_service_skills.json"),
-    _project_path("Skills", "finance_skills.json"),
-    _project_path("Skills", "tech_skills.json")
+SKILL_SOURCE_DEFINITIONS = [
+    {
+        "key": "general",
+        "category": "General",
+        "path": _project_path("Skills", "general_skills.json"),
+        "include_in_industry_match": False,
+    },
+    {
+        "key": "engineering",
+        "category": "Engineering",
+        "path": _project_path("Skills", "engineering_skills.json"),
+        "include_in_industry_match": True,
+    },
+    {
+        "key": "healthcare",
+        "category": "Healthcare",
+        "path": _project_path("Skills", "healthcare_skills.json"),
+        "include_in_industry_match": True,
+    },
+    {
+        "key": "legal_services",
+        "category": "Legal Services",
+        "path": _project_path("Skills", "legal_service_skills.json"),
+        "include_in_industry_match": True,
+    },
+    {
+        "key": "finance",
+        "category": "Finance",
+        "path": _project_path("Skills", "finance_skills.json"),
+        "include_in_industry_match": True,
+    },
+    {
+        "key": "technology",
+        "category": "Technology",
+        "path": _project_path("Skills", "tech_skills.json"),
+        "include_in_industry_match": True,
+    },
 ]
 
-# Define the general skills JSON file
-general_skills_file = _project_path("Skills", "general_skills.json")
+industry_files = [
+    source["path"] for source in SKILL_SOURCE_DEFINITIONS if source["include_in_industry_match"]
+]
+general_skills_file = next(
+    source["path"] for source in SKILL_SOURCE_DEFINITIONS if not source["include_in_industry_match"]
+)
 file_path = _project_path('uploads', 'results.txt')
 
 SKILL_DATABASE_SOURCES = [
-    ("General", general_skills_file),
-    ("Engineering", _project_path("Skills", "engineering_skills.json")),
-    ("Healthcare", _project_path("Skills", "healthcare_skills.json")),
-    ("Legal Services", _project_path("Skills", "legal_service_skills.json")),
-    ("Finance", _project_path("Skills", "finance_skills.json")),
-    ("Technology", _project_path("Skills", "tech_skills.json")),
+    (source["category"], source["path"]) for source in SKILL_SOURCE_DEFINITIONS
 ]
 
 
