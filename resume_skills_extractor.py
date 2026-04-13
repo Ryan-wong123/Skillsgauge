@@ -17,26 +17,33 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 def _project_path(*parts):
     return os.path.join(BASE_DIR, *parts)
 
+ENGINEERING_SKILLS_FILE = _project_path("Skills", "engineering_skills.json")
+HEALTHCARE_SKILLS_FILE = _project_path("Skills", "healthcare_skills.json")
+LEGAL_SERVICE_SKILLS_FILE = _project_path("Skills", "legal_service_skills.json")
+FINANCE_SKILLS_FILE = _project_path("Skills", "finance_skills.json")
+TECH_SKILLS_FILE = _project_path("Skills", "tech_skills.json")
+GENERAL_SKILLS_FILE = _project_path("Skills", "general_skills.json")
+
 # Define the list of industry JSON files
 industry_files = [
-    _project_path("Skills", "engineering_skills.json"),
-    _project_path("Skills", "healthcare_skills.json"),
-    _project_path("Skills", "legal_service_skills.json"),
-    _project_path("Skills", "finance_skills.json"),
-    _project_path("Skills", "tech_skills.json")
+    ENGINEERING_SKILLS_FILE,
+    HEALTHCARE_SKILLS_FILE,
+    LEGAL_SERVICE_SKILLS_FILE,
+    FINANCE_SKILLS_FILE,
+    TECH_SKILLS_FILE,
 ]
 
 # Define the general skills JSON file
-general_skills_file = _project_path("Skills", "general_skills.json")
+general_skills_file = GENERAL_SKILLS_FILE
 file_path = _project_path('uploads', 'results.txt')
 
 SKILL_DATABASE_SOURCES = [
-    ("General", general_skills_file),
-    ("Engineering", _project_path("Skills", "engineering_skills.json")),
-    ("Healthcare", _project_path("Skills", "healthcare_skills.json")),
-    ("Legal Services", _project_path("Skills", "legal_service_skills.json")),
-    ("Finance", _project_path("Skills", "finance_skills.json")),
-    ("Technology", _project_path("Skills", "tech_skills.json")),
+    ("General", GENERAL_SKILLS_FILE),
+    ("Engineering", ENGINEERING_SKILLS_FILE),
+    ("Healthcare", HEALTHCARE_SKILLS_FILE),
+    ("Legal Services", LEGAL_SERVICE_SKILLS_FILE),
+    ("Finance", FINANCE_SKILLS_FILE),
+    ("Technology", TECH_SKILLS_FILE),
 ]
 
 
@@ -70,6 +77,22 @@ def _alias_list(aliases):
     return []
 
 
+def _clean_aliases(skill_name, aliases):
+    skill_key = _normalize_text(skill_name)
+    cleaned_aliases = []
+
+    for alias in _alias_list(aliases):
+        alias_text = str(alias).strip()
+        if not alias_text:
+            continue
+        if _normalize_text(alias_text) == skill_key:
+            continue
+        if alias_text not in cleaned_aliases:
+            cleaned_aliases.append(alias_text)
+
+    return cleaned_aliases
+
+
 def _contains_skill(text, term):
     if not term:
         return False
@@ -96,7 +119,7 @@ def load_skill_database(search_query="", selected_category="All"):
         skills = []
 
         for skill_name, aliases in sorted(category_data.items()):
-            alias_values = sorted(dict.fromkeys(_alias_list(aliases)))
+            alias_values = _clean_aliases(skill_name, aliases)
             searchable_terms = [_normalize_text(skill_name)] + [
                 _normalize_text(alias) for alias in alias_values
             ]
