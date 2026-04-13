@@ -17,27 +17,28 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 def _project_path(*parts):
     return os.path.join(BASE_DIR, *parts)
 
-# Define the list of industry JSON files
-industry_files = [
-    _project_path("Skills", "engineering_skills.json"),
-    _project_path("Skills", "healthcare_skills.json"),
-    _project_path("Skills", "legal_service_skills.json"),
-    _project_path("Skills", "finance_skills.json"),
-    _project_path("Skills", "tech_skills.json")
+CATEGORY_FILE_NAMES = [
+    ("General", "general_skills.json"),
+    ("Engineering", "engineering_skills.json"),
+    ("Healthcare", "healthcare_skills.json"),
+    ("Legal Services", "legal_service_skills.json"),
+    ("Finance", "finance_skills.json"),
+    ("Technology", "tech_skills.json"),
 ]
-
-# Define the general skills JSON file
-general_skills_file = _project_path("Skills", "general_skills.json")
-file_path = _project_path('uploads', 'results.txt')
 
 SKILL_DATABASE_SOURCES = [
-    ("General", general_skills_file),
-    ("Engineering", _project_path("Skills", "engineering_skills.json")),
-    ("Healthcare", _project_path("Skills", "healthcare_skills.json")),
-    ("Legal Services", _project_path("Skills", "legal_service_skills.json")),
-    ("Finance", _project_path("Skills", "finance_skills.json")),
-    ("Technology", _project_path("Skills", "tech_skills.json")),
+    (category, _project_path("Skills", file_name))
+    for category, file_name in CATEGORY_FILE_NAMES
 ]
+
+# Define the list of industry JSON files
+industry_files = [path for category, path in SKILL_DATABASE_SOURCES if category != "General"]
+
+# Define the general skills JSON file
+general_skills_file = next(
+    path for category, path in SKILL_DATABASE_SOURCES if category == "General"
+)
+file_path = _project_path('uploads', 'results.txt')
 
 
 def get_skill_database_categories():

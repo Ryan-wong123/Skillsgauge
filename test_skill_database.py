@@ -42,3 +42,15 @@ def test_skill_database_route_renders_filtered_results():
     assert "Skill Database" in page
     assert "Technology" in page
     assert "python" in page
+
+
+def test_skill_database_invalid_category_falls_back_to_all():
+    client = skillsgauge_app.app.test_client()
+
+    response = client.get("/skills?category=Unknown")
+
+    assert response.status_code == 200
+    page = response.get_data(as_text=True)
+    assert "Skill Database" in page
+    assert "Available Skills" in page
+    assert "General" in page
