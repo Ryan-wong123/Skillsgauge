@@ -17,27 +17,19 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 def _project_path(*parts):
     return os.path.join(BASE_DIR, *parts)
 
-# Define the list of industry JSON files
-industry_files = [
-    _project_path("Skills", "engineering_skills.json"),
-    _project_path("Skills", "healthcare_skills.json"),
-    _project_path("Skills", "legal_service_skills.json"),
-    _project_path("Skills", "finance_skills.json"),
-    _project_path("Skills", "tech_skills.json")
-]
-
-# Define the general skills JSON file
-general_skills_file = _project_path("Skills", "general_skills.json")
-file_path = _project_path('uploads', 'results.txt')
-
 SKILL_DATABASE_SOURCES = [
-    ("General", general_skills_file),
+    ("General", _project_path("Skills", "general_skills.json")),
     ("Engineering", _project_path("Skills", "engineering_skills.json")),
     ("Healthcare", _project_path("Skills", "healthcare_skills.json")),
     ("Legal Services", _project_path("Skills", "legal_service_skills.json")),
     ("Finance", _project_path("Skills", "finance_skills.json")),
     ("Technology", _project_path("Skills", "tech_skills.json")),
 ]
+
+# Reuse the skill database sources as the single source of truth for extraction files.
+general_skills_file = SKILL_DATABASE_SOURCES[0][1]
+industry_files = [path for _, path in SKILL_DATABASE_SOURCES[1:]]
+file_path = _project_path('uploads', 'results.txt')
 
 
 def get_skill_database_categories():
