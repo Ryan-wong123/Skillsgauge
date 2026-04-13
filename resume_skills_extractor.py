@@ -11,26 +11,32 @@ try:
 except ImportError:  # pragma: no cover - depends on optional runtime dependency
     extract_text = None
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
+def _project_path(*parts):
+    return os.path.join(BASE_DIR, *parts)
+
 # Define the list of industry JSON files
 industry_files = [
-    "Skills/engineering_skills.json",
-    "Skills/healthcare_skills.json",
-    "Skills/legal_service_skills.json",
-    "Skills/finance_skills.json",
-    "Skills/tech_skills.json"
+    _project_path("Skills", "engineering_skills.json"),
+    _project_path("Skills", "healthcare_skills.json"),
+    _project_path("Skills", "legal_service_skills.json"),
+    _project_path("Skills", "finance_skills.json"),
+    _project_path("Skills", "tech_skills.json")
 ]
 
 # Define the general skills JSON file
-general_skills_file = "Skills/general_skills.json"
-file_path = os.path.join('uploads', 'results.txt')
+general_skills_file = _project_path("Skills", "general_skills.json")
+file_path = _project_path('uploads', 'results.txt')
 
 SKILL_DATABASE_SOURCES = [
     ("General", general_skills_file),
-    ("Engineering", "Skills/engineering_skills.json"),
-    ("Healthcare", "Skills/healthcare_skills.json"),
-    ("Legal Services", "Skills/legal_service_skills.json"),
-    ("Finance", "Skills/finance_skills.json"),
-    ("Technology", "Skills/tech_skills.json"),
+    ("Engineering", _project_path("Skills", "engineering_skills.json")),
+    ("Healthcare", _project_path("Skills", "healthcare_skills.json")),
+    ("Legal Services", _project_path("Skills", "legal_service_skills.json")),
+    ("Finance", _project_path("Skills", "finance_skills.json")),
+    ("Technology", _project_path("Skills", "tech_skills.json")),
 ]
 
 
