@@ -32,6 +32,17 @@ def test_load_skill_database_filters_by_query_and_category():
     assert technology_summary["matching_skills"] >= 1
 
 
+def test_load_skill_database_matches_skill_aliases():
+    catalog = resume_skills_extractor.load_skill_database(
+        search_query="postgresql",
+        selected_category="Technology",
+    )
+
+    assert catalog["total_skills"] == 1
+    assert catalog["groups"][0]["skills"][0]["name"] == "sql"
+    assert "postgresql" in catalog["groups"][0]["skills"][0]["aliases"]
+
+
 def test_skill_database_route_renders_filtered_results():
     client = skillsgauge_app.app.test_client()
 
