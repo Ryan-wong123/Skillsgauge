@@ -133,6 +133,7 @@
               <tr>
                 <th scope="col">Skill</th>
                 <th scope="col">Aliases / Related Terms</th>
+                <th scope="col" class="text-right">Draft</th>
               </tr>
             </thead>
             <tbody>
@@ -144,6 +145,18 @@
                     {{ skill.aliases | join(', ') }}
                   {% else %}
                     <span class="text-muted">None listed</span>
+                  {% endif %}
+                </td>
+                <td class="text-right">
+                  {% if skill.name|lower in draft_skill_names %}
+                  <button type="button" class="btn btn-sm btn-outline-secondary" disabled>Added</button>
+                  {% else %}
+                  <form method="post" action="{{ url_for('add_skill_to_draft') }}" class="d-inline">
+                    <input type="hidden" name="skill_name" value="{{ skill.name }}">
+                    <input type="hidden" name="q" value="{{ skill_catalog.search_query }}">
+                    <input type="hidden" name="category" value="{{ skill_catalog.selected_category }}">
+                    <button type="submit" class="btn btn-sm btn-outline-primary">Add to Draft</button>
+                  </form>
                   {% endif %}
                 </td>
               </tr>

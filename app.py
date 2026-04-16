@@ -473,7 +473,37 @@ def skill_database():
         selected_category=selected_category,
     )
 
-    return render_template('skill_database.html', skill_catalog=skill_catalog)
+    draft_skills = session.get('userSkills', [])
+    draft_skill_names = {
+        skill.strip().lower() for skill in draft_skills if isinstance(skill, str) and skill.strip()
+    }
+
+    return render_template(
+        'skill_database.html',
+        skill_catalog=skill_catalog,
+        draft_skills=draft_skills,
+        draft_skill_names=draft_skill_names,
+    )
+
+
+@app.route('/skills/draft', methods=['POST'])
+def add_skill_to_draft():
+    skill_name = request.form.get('skill_name', '').strip()
+    search_query = request.form.get('q', '').strip()
+    selected_category = request.form.get('category', 'All').strip() or 'All'
+
+    if skill_name:
+        draft_skills = session.get('userSkills', [])
+        normalized_draft_skills = {
+            skill.strip().lower() for skill in draft_skills if isinstance(skill, str) and skill.strip()
+        }
+
+        if skill_name.lower() not in normalized_draft_skills:
+            draft_skills.append(skill_name)
+            session['userSkills'] = draft_skills
+            session['resume_uploaded'] = True
+
+    return redirect(url_for('skill_database', q=search_query, category=selected_category))
 
 '''
 Author: Ryan Wong

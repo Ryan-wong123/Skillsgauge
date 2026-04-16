@@ -65,3 +65,43 @@ def test_skill_database_route_renders_filtered_results():
     assert "Skill Database" in page
     assert "Technology" in page
     assert "python" in page
+    assert "Add to Draft" in page
+
+
+def test_add_skill_to_draft_updates_session_and_redirects_back_to_filters():
+    client = skillsgauge_app.app.test_client()
+
+    response = client.post(
+        "/skills/draft",
+        data={
+            "skill_name": "python",
+            "q": "python",
+            "category": "Technology",
+        },
+        follow_redirects=False,
+    )
+
+    assert response.status_code == 302
+    assert response.headers["Location"].endswith("/skills?q=python&category=Technology")
+
+    with client.session_transaction() as session:
+        assert "python" in session["userSkills"]
+        assert session["resume_uploaded"] is True
+
+
+def test_add_skill_to_draft_does_not_duplicate_existing_skill():
+    client = skillsgauge_app.app.test_client()
+
+    with client.session_transaction() as session:
+        session["userSkills"] = ["Python"]
+
+    response = client.post(
+        "/skills/draft",
+        data={"skill_name": "python"},
+        follow_redirects=False,
+    )
+
+    assert response.status_code == 302
+
+    with client.session_transaction() as session:
+        assert session["userSkills"] == ["Python"]
