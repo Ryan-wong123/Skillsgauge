@@ -40,6 +40,12 @@
       </li>
       {% endif %}
 
+      {% if session.get('saved_jobs') %}
+      <li class="nav-item mt-1">
+        <a class="nav-link" href="{{ url_for('saved_jobs') }}">Saved Jobs</a>
+      </li>
+      {% endif %}
+
     </ul>
 
     <br>

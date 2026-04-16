@@ -368,3 +368,75 @@ def test_update_skills_keeps_application_submission_csv(tmp_path):
         skillsgauge_app.UPLOAD_FOLDER = original_upload_folder
         skillsgauge_app.app.config["UPLOAD_FOLDER"] = original_config_upload_folder
         skillsgauge_app.APPLICATION_SUBMISSIONS_FILE = original_submissions_file
+
+
+def test_resume_route_shows_resume_progress_from_draft():
+    client = skillsgauge_app.app.test_client()
+    with client.session_transaction() as session:
+        session["resumeDraftSkills"] = ["SQL", "Python"]
+        session["resume_filename"] = "alex_resume.pdf"
+
+    response = client.get("/resume")
+
+    assert response.status_code == 200
+    page = response.get_data(as_text=True)
+    assert "Resume draft ready" in page
+    assert "2 skills available" in page
+    assert "alex_resume.pdf" in page
+    assert "Resume Editing" in page
+
+
+def test_add_saved_job_route_stores_session_job_and_renders_page():
+    client = skillsgauge_app.app.test_client()
+    with client.session_transaction() as session:
+        session["industry"] = "Technology"
+
+    response = client.post(
+        "/saved_jobs/add",
+        data={
+            "job_role": "Data Analyst",
+            "company": "Alpha",
+            "job_url": "https://example.com/jobs/alpha",
+            "next_url": "/saved_jobs",
+        },
+        follow_redirects=True,
+    )
+
+    assert response.status_code == 200
+    page = response.get_data(as_text=True)
+    assert "Saved Jobs" in page
+    assert "Data Analyst" in page
+    assert "Alpha" in page
+
+    with client.session_transaction() as session:
+        assert len(session["saved_jobs"]) == 1
+        assert session["saved_jobs"][0]["industry"] == "Technology"
+
+
+def test_delete_saved_job_route_removes_saved_job():
+    client = skillsgauge_app.app.test_client()
+    with client.session_transaction() as session:
+        session["saved_jobs"] = [
+            {
+                "job_role": "Data Analyst",
+                "company": "Alpha",
+                "industry": "Technology",
+                "job_url": "https://example.com/jobs/alpha",
+                "location": "",
+                "source": "job_roles",
+                "added_at": "2026-04-16T12:00:00",
+            }
+        ]
+
+    response = client.post(
+        "/saved_jobs/remove/0",
+        data={"next_url": "/saved_jobs"},
+        follow_redirects=True,
+    )
+
+    assert response.status_code == 200
+    page = response.get_data(as_text=True)
+    assert "No saved jobs yet." in page
+
+    with client.session_transaction() as session:
+        assert session["saved_jobs"] == []

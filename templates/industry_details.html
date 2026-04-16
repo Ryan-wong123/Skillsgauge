@@ -39,6 +39,7 @@
                 <a class="btn btn-outline-secondary" href="{{ url_for('job_application') }}">Submit One Application</a>
                 <a class="btn btn-success" href="{{ url_for('bulk_industry_applications') }}">Bulk Apply</a>
                 <a class="btn btn-primary" href="{{ url_for('export_industry_applications') }}">Export CSV</a>
+                <a class="btn btn-outline-primary" href="{{ url_for('saved_jobs') }}">Saved Jobs</a>
             </div>
         </div>
 
@@ -63,6 +64,16 @@
                         <td>
                             <a href="{{ url_for('job_application', job_role=job.job_title, company=job.company) }}">Apply in SkillGauge</a>
                             <br>
+                            <form action="{{ url_for('add_saved_job') }}" method="POST">
+                                <input type="hidden" name="job_role" value="{{ job.job_title }}">
+                                <input type="hidden" name="company" value="{{ job.company }}">
+                                <input type="hidden" name="location" value="{{ job.location }}">
+                                <input type="hidden" name="job_url" value="{{ job.job_url }}">
+                                <input type="hidden" name="industry" value="{{ industry }}">
+                                <input type="hidden" name="source" value="industry_shortlist">
+                                <input type="hidden" name="next_url" value="{{ url_for('saved_jobs') }}">
+                                <button type="submit" class="btn btn-link p-0">Save Job</button>
+                            </form>
                             {% if job.job_url %}
                             <a href="{{ job.job_url }}" target="_blank">Open Job</a>
                             {% else %}

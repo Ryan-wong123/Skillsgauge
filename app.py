@@ -18,6 +18,8 @@ app.secret_key = os.urandom(24)
 UPLOAD_FOLDER = 'uploads'  
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 APPLICATION_SUBMISSIONS_FILE = os.path.join(UPLOAD_FOLDER, 'job_application_submissions.csv')
+SAVED_JOBS_SESSION_KEY = 'saved_jobs'
+RESUME_DRAFT_SESSION_KEY = 'resumeDraftSkills'
 
 # Data set file path
 file_path = r'bronze_datasets\\sg_job_data_cleaned.csv'
@@ -56,6 +58,87 @@ def build_job_application_context(job_role=None, company=None):
         "skills": user_skills,
         "resume_uploaded": session.get('resume_uploaded', False) or bool(user_skills),
     }
+
+
+def get_resume_draft_skills():
+    return session.get(RESUME_DRAFT_SESSION_KEY, [])
+
+
+def build_resume_context():
+    draft_skills = get_resume_draft_skills()
+    saved_skills = session.get('userSkills', [])
+    current_skills = draft_skills or saved_skills
+
+    if draft_skills:
+        progress_label = 'Resume draft ready'
+    elif saved_skills:
+        progress_label = 'Saved resume skills ready'
+    else:
+        progress_label = ''
+
+    continue_endpoint = None
+    if draft_skills:
+        continue_endpoint = url_for('resume_edit')
+    elif saved_skills and 'industry' in session:
+        continue_endpoint = url_for('Job_roles')
+    elif saved_skills:
+        continue_endpoint = url_for('Industries')
+
+    return {
+        "skills": current_skills,
+        "skills_count": len(current_skills),
+        "has_resume_progress": bool(current_skills),
+        "progress_label": progress_label,
+        "resume_filename": session.get('resume_filename', ''),
+        "continue_endpoint": continue_endpoint,
+    }
+
+
+def get_saved_jobs():
+    return session.get(SAVED_JOBS_SESSION_KEY, [])
+
+
+def save_job_for_later(job_data):
+    saved_jobs = get_saved_jobs()
+    normalized_job = {
+        "job_role": job_data.get('job_role', '').strip(),
+        "company": job_data.get('company', '').strip(),
+        "location": job_data.get('location', '').strip(),
+        "job_url": job_data.get('job_url', '').strip(),
+        "industry": job_data.get('industry', '').strip(),
+        "source": job_data.get('source', '').strip(),
+        "added_at": datetime.utcnow().isoformat(timespec='seconds'),
+    }
+
+    duplicate = next(
+        (
+            job for job in saved_jobs
+            if job.get('job_role', '') == normalized_job["job_role"]
+            and job.get('company', '') == normalized_job["company"]
+            and job.get('job_url', '') == normalized_job["job_url"]
+            and job.get('industry', '') == normalized_job["industry"]
+        ),
+        None,
+    )
+
+    if duplicate:
+        return False
+
+    saved_jobs.append(normalized_job)
+    session[SAVED_JOBS_SESSION_KEY] = saved_jobs
+    session.modified = True
+    return True
+
+
+def remove_saved_job(saved_job_index):
+    saved_jobs = get_saved_jobs()
+    if saved_job_index < 0 or saved_job_index >= len(saved_jobs):
+        return False
+
+    saved_jobs.pop(saved_job_index)
+    session[SAVED_JOBS_SESSION_KEY] = saved_jobs
+    session.modified = True
+    return True
 
 
 def validate_job_application_form(form_data):
@@ -346,7 +429,36 @@ def job_application():
         form_data=form_data,
         success_message=success_message,
         error_messages=error_messages,
+        saved_jobs=get_saved_jobs(),
     )
+
+
+@app.route('/saved_jobs')
+def saved_jobs():
+    return render_template('saved_jobs.html', saved_jobs=get_saved_jobs())
+
+
+@app.route('/saved_jobs/add', methods=['POST'])
+def add_saved_job():
+    redirect_target = request.form.get('next_url', '').strip() or url_for('saved_jobs')
+    save_job_for_later(
+        {
+            "job_role": request.form.get('job_role', ''),
+            "company": request.form.get('company', ''),
+            "location": request.form.get('location', ''),
+            "job_url": request.form.get('job_url', ''),
+            "industry": request.form.get('industry', '') or session.get('industry', ''),
+            "source": request.form.get('source', ''),
+        }
+    )
+    return redirect(redirect_target)
+
+
+@app.route('/saved_jobs/remove/<int:saved_job_index>', methods=['POST'])
+def delete_saved_job(saved_job_index):
+    remove_saved_job(saved_job_index)
+    redirect_target = request.form.get('next_url', '').strip() or url_for('saved_jobs')
+    return redirect(redirect_target)
 
 #show the job roles page with suitable jobs
 @app.route('/job_roles')
@@ -456,7 +568,16 @@ def expanded_job_roles(job_title):
 # Resume upload page
 @app.route('/resume')
 def Resume():
-    return render_template('resume.html')
+    return render_template('resume.html', resume_state=build_resume_context())
+
+
+@app.route('/resume/edit')
+def resume_edit():
+    skills = get_resume_draft_skills() or session.get('userSkills', [])
+    if not skills:
+        return redirect(url_for('Resume'))
+
+    return render_template('edit_resume.html', skills=skills)
 
 
 @app.route('/skills')
@@ -503,6 +624,8 @@ def upload_resume():
     resume_skills_extractor.extract_text_from_pdf(pdf_path)
     skills_found = resume_skills_extractor.outputSkillsExtracted(5)
     session['resume_uploaded'] = True
+    session['resume_filename'] = file.filename
+    session[RESUME_DRAFT_SESSION_KEY] = skills_found
 
     return render_template('edit_resume.html', skills=skills_found)
 
@@ -511,14 +634,16 @@ def upload_resume():
 def add_skills():
     # Get the list of skills from the form
     skills = request.form.getlist('skills')
+    session[RESUME_DRAFT_SESSION_KEY] = [skill.strip() for skill in skills if skill.strip()]
     return render_template('edit_resume.html', skills=skills)
 
 # Update and submit skills 
 @app.route('/update_skills', methods=['POST'])
 def update_skills():
     # Update the session with the list of skills submitted by the user from the form
-    session['userSkills'] = request.form.getlist('skills')
+    session['userSkills'] = [skill.strip() for skill in request.form.getlist('skills') if skill.strip()]
     session['resume_uploaded'] = True
+    session.pop(RESUME_DRAFT_SESSION_KEY, None)
     
     # Remove uploaded resume artifacts without deleting stored application submissions
     clear_uploaded_resume_files()

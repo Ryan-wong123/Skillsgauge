@@ -8,6 +8,29 @@
 
     <h2>Use AI to extract skills</h2>
 
+    {% if resume_state.has_resume_progress %}
+    <div class="alert alert-info" role="alert">
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+            <div>
+                <strong>{{ resume_state.progress_label }}</strong>
+                <div>
+                    {{ resume_state.skills_count }} skill{{ '' if resume_state.skills_count == 1 else 's' }} available
+                    {% if resume_state.resume_filename %}
+                    from {{ resume_state.resume_filename }}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="mt-2 mt-sm-0">
+                {% if session.get('resumeDraftSkills') %}
+                <a class="btn btn-outline-primary" href="{{ url_for('resume_edit') }}">Resume Editing</a>
+                {% elif resume_state.continue_endpoint %}
+                <a class="btn btn-outline-primary" href="{{ resume_state.continue_endpoint }}">Continue</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     <!-- Form for uploading a resume -->
     <form id="uploadForm" action="{{ url_for('upload_resume') }}" method="POST" enctype="multipart/form-data">
         <!-- Hidden file input for resume upload -->

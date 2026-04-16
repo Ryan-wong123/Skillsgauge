@@ -1,0 +1,56 @@
+{% extends "index.html" %}
+
+{% block title %} Saved Jobs {% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
+        <div>
+            <h2 class="mb-1">Saved Jobs</h2>
+            <p class="text-muted mb-0">Track roles you want to apply for later, then jump into the existing application flow when ready.</p>
+        </div>
+        <a class="btn btn-outline-primary" href="{{ url_for('job_application') }}">Open Application Form</a>
+    </div>
+
+    {% if saved_jobs %}
+    <div class="table-responsive">
+        <table class="table table-sm align-middle">
+            <thead>
+                <tr>
+                    <th>Job Role</th>
+                    <th>Company</th>
+                    <th>Industry</th>
+                    <th>Saved</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for job in saved_jobs %}
+                <tr>
+                    <td>{{ job.job_role or 'Not set' }}</td>
+                    <td>{{ job.company or 'Not set' }}</td>
+                    <td>{{ job.industry or 'Not set' }}</td>
+                    <td>{{ job.added_at }}</td>
+                    <td>
+                        <a href="{{ url_for('job_application', job_role=job.job_role, company=job.company) }}">Apply</a>
+                        {% if job.job_url %}
+                        <br>
+                        <a href="{{ job.job_url }}" target="_blank">Open Job</a>
+                        {% endif %}
+                        <form action="{{ url_for('delete_saved_job', saved_job_index=loop.index0) }}" method="POST" class="mt-1">
+                            <input type="hidden" name="next_url" value="{{ request.path }}">
+                            <button type="submit" class="btn btn-link p-0 text-danger">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info mb-0" role="alert">
+        No saved jobs yet. Use the save buttons on industry shortlists or job role pages to build your apply-later list.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
