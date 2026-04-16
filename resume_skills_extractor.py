@@ -65,12 +65,18 @@ general_skills_file = next(
 file_path = _project_path('uploads', 'results.txt')
 
 SKILL_DATABASE_SOURCES = [
-    (source["category"], source["path"]) for source in SKILL_SOURCE_DEFINITIONS
+    {
+        "key": source["key"],
+        "category": source["category"],
+        "path": source["path"],
+        "source_file": os.path.basename(source["path"]),
+    }
+    for source in SKILL_SOURCE_DEFINITIONS
 ]
 
 
 def get_skill_database_categories():
-    return ["All"] + [category for category, _ in SKILL_DATABASE_SOURCES]
+    return ["All"] + [source["category"] for source in SKILL_DATABASE_SOURCES]
 
 
 def _normalize_text(text):
@@ -117,8 +123,9 @@ def load_skill_database(search_query="", selected_category="All"):
     library_total_skills = 0
     category_summaries = []
 
-    for category, path in SKILL_DATABASE_SOURCES:
-        category_data = _load_skills(path)
+    for source in SKILL_DATABASE_SOURCES:
+        category = source["category"]
+        category_data = _load_skills(source["path"])
         category_total = len(category_data)
         library_total_skills += category_total
 
@@ -147,6 +154,7 @@ def load_skill_database(search_query="", selected_category="All"):
         category_summaries.append(
             {
                 "category": category,
+                "source_file": source["source_file"],
                 "total_skills": category_total,
                 "matching_skills": len(skills),
                 "is_selected": selected_category == category,
@@ -159,6 +167,8 @@ def load_skill_database(search_query="", selected_category="All"):
         if skills:
             category_groups.append(
                 {
+                    "source_key": source["key"],
+                    "source_file": source["source_file"],
                     "category": category,
                     "skills": skills,
                     "count": len(skills),
@@ -172,6 +182,8 @@ def load_skill_database(search_query="", selected_category="All"):
         "selected_category": selected_category,
         "search_query": search_query.strip(),
         "groups": category_groups,
+        "total_categories": len(SKILL_DATABASE_SOURCES),
+        "visible_categories": len(category_groups),
         "total_skills": total_skills,
         "library_total_skills": library_total_skills,
     }
