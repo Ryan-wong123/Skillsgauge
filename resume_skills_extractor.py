@@ -99,6 +99,28 @@ def _alias_list(aliases):
     return []
 
 
+def _normalized_unique_terms(values):
+    seen = set()
+    unique_values = []
+
+    for value in values:
+        if not isinstance(value, str):
+            continue
+
+        cleaned_value = value.strip()
+        if not cleaned_value:
+            continue
+
+        normalized_value = _normalize_text(cleaned_value)
+        if normalized_value in seen:
+            continue
+
+        seen.add(normalized_value)
+        unique_values.append(cleaned_value)
+
+    return unique_values
+
+
 def _contains_skill(text, term):
     if not term:
         return False
@@ -125,7 +147,11 @@ def load_skill_database(search_query="", selected_category="All"):
         skills = []
 
         for skill_name, aliases in sorted(category_data.items()):
-            alias_values = sorted(dict.fromkeys(_alias_list(aliases)))
+            alias_values = [
+                alias
+                for alias in _normalized_unique_terms(_alias_list(aliases))
+                if _normalize_text(alias) != _normalize_text(skill_name)
+            ]
             searchable_terms = [_normalize_text(skill_name)] + [
                 _normalize_text(alias) for alias in alias_values
             ]

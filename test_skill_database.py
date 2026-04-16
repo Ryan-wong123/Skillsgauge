@@ -43,6 +43,18 @@ def test_load_skill_database_matches_skill_aliases():
     assert "postgresql" in catalog["groups"][0]["skills"][0]["aliases"]
 
 
+def test_load_skill_database_excludes_duplicate_canonical_aliases():
+    catalog = resume_skills_extractor.load_skill_database(
+        search_query="accounting",
+        selected_category="Finance",
+    )
+
+    assert catalog["total_skills"] == 1
+    assert catalog["groups"][0]["skills"][0]["name"] == "accounting"
+    assert "accounting" not in catalog["groups"][0]["skills"][0]["aliases"]
+    assert "bookkeeping" in catalog["groups"][0]["skills"][0]["aliases"]
+
+
 def test_skill_database_route_renders_filtered_results():
     client = skillsgauge_app.app.test_client()
 
