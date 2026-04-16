@@ -1,6 +1,7 @@
 """Tests for industry application shortlist helpers."""
 
 import builtins
+from io import BytesIO
 from io import StringIO
 import os
 
@@ -332,6 +333,90 @@ def test_job_application_route_shows_save_error(monkeypatch):
     assert response.status_code == 200
     page = response.get_data(as_text=True)
     assert "We could not save your application right now. Please try again." in page
+
+
+def test_resume_page_shows_auto_resume_state():
+    client = skillsgauge_app.app.test_client()
+    with client.session_transaction() as session:
+        session["userSkills"] = ["SQL", "Python"]
+        session["resume_uploaded"] = True
+
+    response = client.get("/resume")
+
+    assert response.status_code == 200
+    page = response.get_data(as_text=True)
+    assert "Your latest resume skills are already active." in page
+    assert "SQL" in page
+    assert "Python" in page
+
+
+def test_upload_resume_sets_user_skills_in_session(monkeypatch, tmp_path):
+    monkeypatch.setitem(skillsgauge_app.app.config, "UPLOAD_FOLDER", str(tmp_path))
+    monkeypatch.setattr(skillsgauge_app.resume_skills_extractor, "extract_text_from_pdf", lambda path: "resume text")
+    monkeypatch.setattr(skillsgauge_app.resume_skills_extractor, "outputSkillsExtracted", lambda industry_choice: ["SQL", "Python"])
+
+    client = skillsgauge_app.app.test_client()
+    response = client.post(
+        "/upload",
+        data={"resume": (BytesIO(b"fake pdf"), "resume.pdf")},
+        content_type="multipart/form-data",
+    )
+
+    assert response.status_code == 200
+    page = response.get_data(as_text=True)
+    assert "Edit Your Skills" in page
+
+    with client.session_transaction() as session:
+        assert session["resume_uploaded"] is True
+        assert session["userSkills"] == ["SQL", "Python"]
+
+
+def test_add_saved_job_route_stores_job_in_session():
+    client = skillsgauge_app.app.test_client()
+    with client.session_transaction() as session:
+        session["industry"] = "Technology"
+
+    response = client.post(
+        "/saved_jobs/add",
+        data={
+            "job_role": "Data Analyst",
+            "company": "Alpha",
+            "location": "Singapore",
+            "job_url": "https://example.com/alpha",
+        },
+    )
+
+    assert response.status_code == 302
+    assert response.headers["Location"].endswith("/saved_jobs")
+    with client.session_transaction() as session:
+        assert len(session["saved_jobs"]) == 1
+        assert session["saved_jobs"][0]["job_role"] == "Data Analyst"
+        assert session["saved_jobs"][0]["company"] == "Alpha"
+        assert session["saved_jobs"][0]["industry"] == "Technology"
+
+
+def test_saved_jobs_route_supports_remove():
+    client = skillsgauge_app.app.test_client()
+    with client.session_transaction() as session:
+        session["saved_jobs"] = [
+            {
+                "job_role": "Data Analyst",
+                "company": "Alpha",
+                "location": "Singapore",
+                "job_url": "https://example.com/alpha",
+                "industry": "Technology",
+                "saved_at": "2026-04-16T12:00:00",
+            }
+        ]
+
+    response = client.post(
+        "/saved_jobs/remove",
+        data={"saved_at": "2026-04-16T12:00:00"},
+    )
+
+    assert response.status_code == 302
+    with client.session_transaction() as session:
+        assert session["saved_jobs"] == []
 
 
 def test_update_skills_keeps_application_submission_csv(tmp_path):

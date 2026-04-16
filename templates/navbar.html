@@ -38,6 +38,9 @@
       <li class="nav-item mt-1">
         <a class="nav-link" href="{{ url_for('job_application') }}">Job Application</a>
       </li>
+      <li class="nav-item mt-1">
+        <a class="nav-link" href="{{ url_for('saved_jobs') }}">Saved Jobs{% if session.get('saved_jobs') %} ({{ session.get('saved_jobs') | length }}){% endif %}</a>
+      </li>
       {% endif %}
 
     </ul>

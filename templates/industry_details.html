@@ -68,6 +68,19 @@
                             {% else %}
                             <span>No link</span>
                             {% endif %}
+                            <br>
+                            <form action="{{ url_for('add_saved_job') }}" method="POST" class="mt-1">
+                                <input type="hidden" name="job_role" value="{{ job.job_title }}">
+                                <input type="hidden" name="company" value="{{ job.company }}">
+                                <input type="hidden" name="location" value="{{ job.location }}">
+                                <input type="hidden" name="job_url" value="{{ job.job_url }}">
+                                <input type="hidden" name="next_url" value="{{ url_for('saved_jobs') }}">
+                                {% if job_matches_saved_jobs(job.job_title, job.company) %}
+                                <button type="submit" class="btn btn-sm btn-success" disabled>Saved</button>
+                                {% else %}
+                                <button type="submit" class="btn btn-sm btn-outline-secondary">Save Job</button>
+                                {% endif %}
+                            </form>
                         </td>
                     </tr>
                     {% endfor %}

@@ -44,6 +44,52 @@ class JobRole:
         self.match_percent = match_percent
 
 
+def get_saved_jobs():
+    saved_jobs = session.get('saved_jobs', [])
+    if not isinstance(saved_jobs, list):
+        return []
+    return saved_jobs
+
+
+def build_saved_job(job_role='', company='', location='', job_url=''):
+    return {
+        "job_role": job_role.strip(),
+        "company": company.strip(),
+        "location": location.strip(),
+        "job_url": job_url.strip(),
+        "industry": session.get('industry', '').strip(),
+        "saved_at": datetime.utcnow().isoformat(timespec='seconds'),
+    }
+
+
+def job_matches_saved_jobs(job_role='', company=''):
+    normalized_job_role = job_role.strip().lower()
+    normalized_company = company.strip().lower()
+
+    for saved_job in get_saved_jobs():
+        if (
+            saved_job.get('job_role', '').strip().lower() == normalized_job_role
+            and saved_job.get('company', '').strip().lower() == normalized_company
+        ):
+            return True
+
+    return False
+
+
+def save_job_to_session(saved_job):
+    if not saved_job["job_role"] and not saved_job["company"]:
+        return False
+
+    saved_jobs = get_saved_jobs()
+    if job_matches_saved_jobs(saved_job["job_role"], saved_job["company"]):
+        return False
+
+    saved_jobs.insert(0, saved_job)
+    session['saved_jobs'] = saved_jobs[:30]
+    session.modified = True
+    return True
+
+
 def build_job_application_context(job_role=None, company=None):
     user_skills = session.get('userSkills', [])
     return {
@@ -113,6 +159,45 @@ def clear_uploaded_resume_files():
         file_path = os.path.join(UPLOAD_FOLDER, filename)
         if os.path.isfile(file_path):
             os.remove(file_path)
+
+
+@app.route('/saved_jobs')
+def saved_jobs():
+    return render_template('saved_jobs.html', saved_jobs=get_saved_jobs())
+
+
+@app.route('/saved_jobs/add', methods=['POST'])
+def add_saved_job():
+    saved_job = build_saved_job(
+        job_role=request.form.get('job_role', ''),
+        company=request.form.get('company', ''),
+        location=request.form.get('location', ''),
+        job_url=request.form.get('job_url', ''),
+    )
+    save_job_to_session(saved_job)
+
+    redirect_target = request.form.get('next_url', '').strip()
+    if redirect_target:
+        return redirect(redirect_target)
+
+    return redirect(url_for('saved_jobs'))
+
+
+@app.route('/saved_jobs/remove', methods=['POST'])
+def remove_saved_job():
+    target_saved_at = request.form.get('saved_at', '').strip()
+    if target_saved_at:
+        session['saved_jobs'] = [
+            job for job in get_saved_jobs()
+            if job.get('saved_at', '') != target_saved_at
+        ]
+        session.modified = True
+
+    redirect_target = request.form.get('next_url', '').strip()
+    if redirect_target:
+        return redirect(redirect_target)
+
+    return redirect(url_for('saved_jobs'))
 
 @app.route('/')
 def Home():
@@ -227,7 +312,8 @@ def industry_details():
                            salary_growth_chart = salary_growth_chart,
                            job_title_chart=job_title_chart,
                            salary_chart=salary_chart,
-                           salary_trend_chart = salary_trend_chart)    
+                           salary_trend_chart = salary_trend_chart,
+                           job_matches_saved_jobs=job_matches_saved_jobs)    
 
 
 @app.route('/industry_applications/export')
@@ -346,6 +432,7 @@ def job_application():
         form_data=form_data,
         success_message=success_message,
         error_messages=error_messages,
+        saved_jobs=get_saved_jobs(),
     )
 
 #show the job roles page with suitable jobs
@@ -406,7 +493,11 @@ def Job_roles():
     if len(job_role_list) > 15:
         job_role_list = job_role_list[:15]
 
-    return render_template('job_roles.html', job_role=job_role_list)
+    return render_template(
+        'job_roles.html',
+        job_role=job_role_list,
+        job_matches_saved_jobs=job_matches_saved_jobs,
+    )
 
 # Show the individual job page
 @app.route("/job_roles/<job_title>")
@@ -451,12 +542,17 @@ def expanded_job_roles(job_title):
                            courses = urlCourses,
                            chart=skillComparisonChart,
                             skillsDemand_Chart = skillsDemandChart,
-                           job_detail_data = job_detail_data)
+                           job_detail_data = job_detail_data,
+                           job_matches_saved_jobs=job_matches_saved_jobs)
 
 # Resume upload page
 @app.route('/resume')
 def Resume():
-    return render_template('resume.html')
+    return render_template(
+        'resume.html',
+        saved_skills=session.get('userSkills', []),
+        resume_uploaded=session.get('resume_uploaded', False),
+    )
 
 
 @app.route('/skills')
@@ -502,6 +598,7 @@ def upload_resume():
     #get skills 
     resume_skills_extractor.extract_text_from_pdf(pdf_path)
     skills_found = resume_skills_extractor.outputSkillsExtracted(5)
+    session['userSkills'] = skills_found
     session['resume_uploaded'] = True
 
     return render_template('edit_resume.html', skills=skills_found)

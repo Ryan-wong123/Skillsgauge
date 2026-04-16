@@ -10,6 +10,15 @@
     <div class="mb-3">
         <a class="btn btn-primary" href="{{ url_for('job_application', job_role=job_title) }}">Apply For This Role</a>
         <a class="btn btn-outline-primary" href="{{ url_for('bulk_industry_applications') }}">Bulk Apply Across This Industry</a>
+        {% if job_matches_saved_jobs(job_title, '') %}
+        <span class="badge badge-success">Saved</span>
+        {% else %}
+        <form method="POST" action="{{ url_for('add_saved_job') }}" class="d-inline">
+            <input type="hidden" name="job_role" value="{{ job_title }}">
+            <input type="hidden" name="next_url" value="{{ request.path }}">
+            <button type="submit" class="btn btn-outline-secondary">Save Job</button>
+        </form>
+        {% endif %}
     </div>
 
     <!-- skill section -->
@@ -81,6 +90,17 @@
                     <br>
                     <a href="{{ job['Job URL'] }}" class="card-link" target="_blank">Job Link</a>
                     <a href="{{ url_for('job_application', job_role=job_title, company=job.get('Company', '')) }}" class="card-link">Apply in SkillGauge</a>
+                    <form method="POST" action="{{ url_for('add_saved_job') }}" class="mt-2">
+                        <input type="hidden" name="job_role" value="{{ job['Job Title'] }}">
+                        <input type="hidden" name="company" value="{{ job.get('Company', '') }}">
+                        <input type="hidden" name="job_url" value="{{ job.get('Job URL', '') }}">
+                        <input type="hidden" name="next_url" value="{{ request.path }}">
+                        {% if job_matches_saved_jobs(job['Job Title'], job.get('Company', '')) %}
+                        <button type="submit" class="btn btn-sm btn-success" disabled>Saved</button>
+                        {% else %}
+                        <button type="submit" class="btn btn-sm btn-outline-secondary">Save Job</button>
+                        {% endif %}
+                    </form>
                 </div>
             </div>
             {% endfor %}

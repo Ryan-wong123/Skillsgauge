@@ -7,6 +7,19 @@
 <div class="container mt-5">
 
     <h2>Use AI to extract skills</h2>
+    {% if resume_uploaded and saved_skills %}
+    <div class="alert alert-success" role="alert">
+        Your latest resume skills are already active. Upload a new resume only if you want to replace them.
+    </div>
+    <div class="mb-4">
+        <h5>Current Resume Skills</h5>
+        <div class="d-flex flex-wrap">
+            {% for skill in saved_skills %}
+            <span class="badge badge-light border mr-1 mb-1">{{ skill }}</span>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
 
     <!-- Form for uploading a resume -->
     <form id="uploadForm" action="{{ url_for('upload_resume') }}" method="POST" enctype="multipart/form-data">
