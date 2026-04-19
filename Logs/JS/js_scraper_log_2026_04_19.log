@@ -1,0 +1,5 @@
+2026-04-19 03:33:37,459 - INFO - Scraper started
+2026-04-19 03:33:43,497 - INFO - Browser listening on: ws://127.0.0.1:46051/devtools/browser/245f689f-fac8-4cc3-b1ae-386c2c5bd993
+2026-04-19 03:33:54,803 - INFO - terminate chrome process...
+2026-04-19 03:33:54,870 - WARNING - No rows scraped; skipping CSV write
+2026-04-19 03:33:54,870 - ERROR - Scraper error:Waiting for selector "[data-automation='splitViewJobDetailsWrapper']" failed: timeout 10000ms exceeds.
