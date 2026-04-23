@@ -58,6 +58,12 @@
 
                     <div class="mt-3">
                         <a class="btn btn-sm btn-primary" href="{{ url_for('job_application', job_role=x.title) }}">Apply Now</a>
+                        <form method="POST" action="{{ url_for('add_user_job') }}" class="d-inline">
+                            <input type="hidden" name="job_title" value="{{ x.title }}">
+                            <input type="hidden" name="industry" value="{{ session.get('industry', '') }}">
+                            <input type="hidden" name="next" value="{{ request.full_path }}">
+                            <button type="submit" class="btn btn-sm btn-outline-primary">Add to My Jobs</button>
+                        </form>
                     </div>
                 </div>
 
@@ -100,6 +106,12 @@
 
                     <div class="mt-3">
                         <a class="btn btn-sm btn-primary" href="{{ url_for('job_application', job_role=x.title) }}">Apply Now</a>
+                        <form method="POST" action="{{ url_for('add_user_job') }}" class="d-inline">
+                            <input type="hidden" name="job_title" value="{{ x.title }}">
+                            <input type="hidden" name="industry" value="{{ session.get('industry', '') }}">
+                            <input type="hidden" name="next" value="{{ request.full_path }}">
+                            <button type="submit" class="btn btn-sm btn-outline-primary">Add to My Jobs</button>
+                        </form>
                     </div>
                 </div>
                 {% endif %}

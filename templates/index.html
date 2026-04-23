@@ -18,6 +18,12 @@
   <br>
 
   <div class="container">
+    {% if request.args.get('job_status') == 'added' %}
+    <div class="alert alert-success" role="alert">Job added to My Jobs.</div>
+    {% elif request.args.get('job_status') == 'duplicate' %}
+    <div class="alert alert-info" role="alert">This job is already in My Jobs.</div>
+    {% endif %}
+
     {% block content %} {% endblock %}
   </div>
 

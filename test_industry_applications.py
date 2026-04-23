@@ -189,6 +189,81 @@ def test_job_application_route_shows_validation_errors():
     assert "Enter a job role or company before submitting." in page
 
 
+def test_add_user_job_saves_job_in_session():
+    client = skillsgauge_app.app.test_client()
+    with client.session_transaction() as session:
+        session["industry"] = "Technology"
+
+    response = client.post(
+        "/jobs/add",
+        data={
+            "job_title": "Data Analyst",
+            "company": "Alpha",
+            "location": "Singapore",
+            "job_url": "https://example.com/alpha",
+            "next": "/jobs",
+        },
+    )
+
+    assert response.status_code == 302
+    assert response.headers["Location"] == "/jobs?job_status=added"
+
+    with client.session_transaction() as session:
+        saved_jobs = session["saved_jobs"]
+
+    assert len(saved_jobs) == 1
+    assert saved_jobs[0]["job_title"] == "Data Analyst"
+    assert saved_jobs[0]["company"] == "Alpha"
+    assert saved_jobs[0]["industry"] == "Technology"
+    assert saved_jobs[0]["status"] == "To Apply"
+
+
+def test_add_user_job_deduplicates_existing_job():
+    client = skillsgauge_app.app.test_client()
+
+    form_data = {
+        "job_title": "Data Analyst",
+        "company": "Alpha",
+        "job_url": "https://example.com/alpha",
+        "next": "/jobs",
+    }
+
+    first_response = client.post("/jobs/add", data=form_data)
+    second_response = client.post("/jobs/add", data=form_data)
+
+    assert first_response.headers["Location"] == "/jobs?job_status=added"
+    assert second_response.headers["Location"] == "/jobs?job_status=duplicate"
+
+    with client.session_transaction() as session:
+        assert len(session["saved_jobs"]) == 1
+
+
+def test_user_jobs_route_renders_saved_jobs():
+    client = skillsgauge_app.app.test_client()
+    with client.session_transaction() as session:
+        session["saved_jobs"] = [
+            {
+                "job_title": "Data Analyst",
+                "company": "Alpha",
+                "location": "Singapore",
+                "job_url": "https://example.com/alpha",
+                "industry": "Technology",
+                "notes": "",
+                "status": "To Apply",
+                "added_at": "2026-04-23T12:00:00",
+            }
+        ]
+
+    response = client.get("/jobs")
+
+    assert response.status_code == 200
+    page = response.get_data(as_text=True)
+    assert "My Jobs" in page
+    assert "Data Analyst" in page
+    assert "Alpha" in page
+    assert "Apply in SkillGauge" in page
+
+
 def test_job_application_route_prefills_context_from_session_and_query():
     client = skillsgauge_app.app.test_client()
     with client.session_transaction() as session:

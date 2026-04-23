@@ -18,6 +18,7 @@ app.secret_key = os.urandom(24)
 UPLOAD_FOLDER = 'uploads'  
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 APPLICATION_SUBMISSIONS_FILE = os.path.join(UPLOAD_FOLDER, 'job_application_submissions.csv')
+SAVED_JOBS_SESSION_KEY = 'saved_jobs'
 
 # Data set file path
 file_path = r'bronze_datasets\\sg_job_data_cleaned.csv'
@@ -99,6 +100,59 @@ def save_job_application_submission(submission_data):
         if not file_exists:
             writer.writeheader()
         writer.writerow(submission_data)
+
+
+def get_saved_jobs():
+    return session.get(SAVED_JOBS_SESSION_KEY, [])
+
+
+def build_saved_job_from_form(form_data):
+    job_title = form_data.get('job_title', '').strip()
+    company = form_data.get('company', '').strip()
+
+    if not job_title and not company:
+        return None
+
+    return {
+        "job_title": job_title,
+        "company": company,
+        "location": form_data.get('location', '').strip(),
+        "job_url": form_data.get('job_url', '').strip(),
+        "industry": form_data.get('industry', '').strip() or session.get('industry', ''),
+        "notes": form_data.get('notes', '').strip(),
+        "status": "To Apply",
+        "added_at": datetime.utcnow().isoformat(timespec='seconds'),
+    }
+
+
+def add_saved_job(job):
+    saved_jobs = get_saved_jobs()
+    dedupe_key = (
+        job.get('job_title', '').lower(),
+        job.get('company', '').lower(),
+        job.get('job_url', '').lower(),
+    )
+
+    for saved_job in saved_jobs:
+        saved_key = (
+            saved_job.get('job_title', '').lower(),
+            saved_job.get('company', '').lower(),
+            saved_job.get('job_url', '').lower(),
+        )
+        if saved_key == dedupe_key:
+            return False
+
+    saved_jobs.append(job)
+    session[SAVED_JOBS_SESSION_KEY] = saved_jobs
+    session.modified = True
+    return True
+
+
+def get_safe_redirect(default_endpoint='user_jobs'):
+    next_url = request.form.get('next') or request.referrer
+    if next_url and next_url.startswith('/') and not next_url.startswith('//'):
+        return next_url
+    return url_for(default_endpoint)
 
 
 def clear_uploaded_resume_files():
@@ -287,6 +341,28 @@ def bulk_industry_applications():
         submission_summary=submission_summary,
         selected_indexes=selected_indexes,
     )
+
+
+@app.route('/jobs')
+def user_jobs():
+    return render_template(
+        'user_jobs.html',
+        saved_jobs=get_saved_jobs(),
+    )
+
+
+@app.route('/jobs/add', methods=['POST'])
+def add_user_job():
+    job = build_saved_job_from_form(request.form)
+
+    if job is None:
+        return redirect(get_safe_redirect())
+
+    added = add_saved_job(job)
+    status = 'added' if added else 'duplicate'
+    redirect_url = get_safe_redirect()
+    separator = '&' if '?' in redirect_url else '?'
+    return redirect(f"{redirect_url}{separator}job_status={status}")
 
 
 @app.route('/job_application', methods=['GET', 'POST'])

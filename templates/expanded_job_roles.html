@@ -9,6 +9,12 @@
     <h1><u>{{ job_title.title() }}</u> </h1>
     <div class="mb-3">
         <a class="btn btn-primary" href="{{ url_for('job_application', job_role=job_title) }}">Apply For This Role</a>
+        <form method="POST" action="{{ url_for('add_user_job') }}" class="d-inline">
+            <input type="hidden" name="job_title" value="{{ job_title }}">
+            <input type="hidden" name="industry" value="{{ session.get('industry', '') }}">
+            <input type="hidden" name="next" value="{{ request.full_path }}">
+            <button type="submit" class="btn btn-outline-primary">Add to My Jobs</button>
+        </form>
         <a class="btn btn-outline-primary" href="{{ url_for('bulk_industry_applications') }}">Bulk Apply Across This Industry</a>
     </div>
 
@@ -81,6 +87,15 @@
                     <br>
                     <a href="{{ job['Job URL'] }}" class="card-link" target="_blank">Job Link</a>
                     <a href="{{ url_for('job_application', job_role=job_title, company=job.get('Company', '')) }}" class="card-link">Apply in SkillGauge</a>
+                    <form method="POST" action="{{ url_for('add_user_job') }}" class="d-inline">
+                        <input type="hidden" name="job_title" value="{{ job.get('Job Title', job_title) }}">
+                        <input type="hidden" name="company" value="{{ job.get('Company', '') }}">
+                        <input type="hidden" name="location" value="{{ job.get('Location', '') }}">
+                        <input type="hidden" name="job_url" value="{{ job.get('Job URL', '') }}">
+                        <input type="hidden" name="industry" value="{{ session.get('industry', '') }}">
+                        <input type="hidden" name="next" value="{{ request.full_path }}">
+                        <button type="submit" class="btn btn-sm btn-outline-primary">Add to My Jobs</button>
+                    </form>
                 </div>
             </div>
             {% endfor %}

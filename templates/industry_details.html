@@ -61,6 +61,15 @@
                         <td>{{ job.location }}</td>
                         <td>{{ job.posted_date }}</td>
                         <td>
+                            <form method="POST" action="{{ url_for('add_user_job') }}" class="mb-1">
+                                <input type="hidden" name="job_title" value="{{ job.job_title }}">
+                                <input type="hidden" name="company" value="{{ job.company }}">
+                                <input type="hidden" name="location" value="{{ job.location }}">
+                                <input type="hidden" name="job_url" value="{{ job.job_url }}">
+                                <input type="hidden" name="industry" value="{{ industry }}">
+                                <input type="hidden" name="next" value="{{ url_for('user_jobs') }}">
+                                <button type="submit" class="btn btn-sm btn-outline-primary">Add to My Jobs</button>
+                            </form>
                             <a href="{{ url_for('job_application', job_role=job.job_title, company=job.company) }}">Apply in SkillGauge</a>
                             <br>
                             {% if job.job_url %}

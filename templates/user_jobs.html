@@ -1,0 +1,57 @@
+{% extends "index.html" %}
+
+{% block title %} My Jobs {% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
+        <div>
+            <h2 class="mb-1">My Jobs</h2>
+            <p class="text-muted mb-0">Jobs you have added to apply for later.</p>
+        </div>
+        <a class="btn btn-outline-primary" href="{{ url_for('Industries') }}">Find Jobs</a>
+    </div>
+
+    {% if saved_jobs %}
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Job Title</th>
+                    <th>Company</th>
+                    <th>Industry</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for job in saved_jobs %}
+                <tr>
+                    <td>{{ job.job_title or 'Not provided' }}</td>
+                    <td>{{ job.company or 'Not provided' }}</td>
+                    <td>{{ job.industry or 'Not selected' }}</td>
+                    <td>{{ job.location or 'Not provided' }}</td>
+                    <td>{{ job.status }}</td>
+                    <td>
+                        <a href="{{ url_for('job_application', job_role=job.job_title, company=job.company) }}">Apply in SkillGauge</a>
+                        {% if job.job_url %}
+                        <br>
+                        <a href="{{ job.job_url }}" target="_blank">Open Job</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="card">
+        <div class="card-body">
+            <p class="mb-3">No jobs have been added yet.</p>
+            <a class="btn btn-primary" href="{{ url_for('Industries') }}">Browse Industries</a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
