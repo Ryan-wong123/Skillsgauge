@@ -101,6 +101,24 @@ def save_job_application_submission(submission_data):
         writer.writerow(submission_data)
 
 
+def load_job_application_submissions(email=None):
+    if not os.path.exists(APPLICATION_SUBMISSIONS_FILE):
+        return []
+
+    with open(APPLICATION_SUBMISSIONS_FILE, newline='', encoding='utf-8') as csvfile:
+        applications = list(csv.DictReader(csvfile))
+
+    if email:
+        email = email.strip().lower()
+        applications = [
+            application for application in applications
+            if application.get('email', '').strip().lower() == email
+        ]
+
+    applications.sort(key=lambda application: application.get('submitted_at', ''), reverse=True)
+    return applications
+
+
 def clear_uploaded_resume_files():
     if not os.path.isdir(UPLOAD_FOLDER):
         return
@@ -347,6 +365,23 @@ def job_application():
         success_message=success_message,
         error_messages=error_messages,
     )
+
+
+@app.route('/profile')
+def Profile():
+    applicant_email = session.get('applicant_email', '')
+    applied_jobs = load_job_application_submissions(applicant_email) if applicant_email else []
+    profile_context = {
+        "name": session.get('applicant_name', ''),
+        "email": applicant_email,
+        "industry": session.get('industry', ''),
+        "skills": session.get('userSkills', []),
+        "resume_uploaded": session.get('resume_uploaded', False) or bool(session.get('userSkills', [])),
+        "applied_jobs": applied_jobs,
+        "amos_role": "Amos is responsible for the user profile job-tracking view and the job-adding workflow for saved applications.",
+    }
+
+    return render_template('profile.html', profile=profile_context)
 
 #show the job roles page with suitable jobs
 @app.route('/job_roles')

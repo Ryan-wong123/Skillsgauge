@@ -22,6 +22,7 @@
     {% if success_message %}
     <div class="alert alert-success" role="alert">
         {{ success_message }}
+        <a class="alert-link" href="{{ url_for('Profile') }}">View your profile.</a>
     </div>
     {% endif %}
 

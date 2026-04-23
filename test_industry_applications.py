@@ -302,6 +302,63 @@ def test_save_job_application_submission_writes_csv(tmp_path, monkeypatch):
     assert "Alex Tan,alex@example.com,Data Analyst,Alpha,Portfolio attached,Technology,\"SQL, Python\",True" in saved_content
 
 
+def test_load_job_application_submissions_filters_by_email_and_sorts(tmp_path, monkeypatch):
+    submissions_file = tmp_path / "job_application_submissions.csv"
+    submissions_file.write_text(
+        "submitted_at,name,email,job_role,company,supporting_info,industry,skills,resume_uploaded\n"
+        "2026-04-09T12:00:00,Alex Tan,alex@example.com,Data Analyst,Alpha,,Technology,\"SQL, Python\",True\n"
+        "2026-04-10T09:00:00,Alex Tan,alex@example.com,BI Analyst,Beta,,Technology,SQL,True\n"
+        "2026-04-11T08:00:00,Sam Lee,sam@example.com,Engineer,Gamma,,Engineering,Python,True\n",
+        encoding="utf-8",
+    )
+
+    monkeypatch.setattr(
+        skillsgauge_app,
+        "APPLICATION_SUBMISSIONS_FILE",
+        str(submissions_file),
+    )
+
+    applications = skillsgauge_app.load_job_application_submissions("alex@example.com")
+
+    assert len(applications) == 2
+    assert applications[0]["job_role"] == "BI Analyst"
+    assert applications[1]["job_role"] == "Data Analyst"
+
+
+def test_profile_route_shows_current_user_applied_jobs(tmp_path, monkeypatch):
+    submissions_file = tmp_path / "job_application_submissions.csv"
+    submissions_file.write_text(
+        "submitted_at,name,email,job_role,company,supporting_info,industry,skills,resume_uploaded\n"
+        "2026-04-09T12:00:00,Alex Tan,alex@example.com,Data Analyst,Alpha,,Technology,\"SQL, Python\",True\n"
+        "2026-04-11T08:00:00,Sam Lee,sam@example.com,Engineer,Gamma,,Engineering,Python,True\n",
+        encoding="utf-8",
+    )
+
+    monkeypatch.setattr(
+        skillsgauge_app,
+        "APPLICATION_SUBMISSIONS_FILE",
+        str(submissions_file),
+    )
+
+    client = skillsgauge_app.app.test_client()
+    with client.session_transaction() as session:
+        session["applicant_name"] = "Alex Tan"
+        session["applicant_email"] = "alex@example.com"
+        session["industry"] = "Technology"
+        session["userSkills"] = ["SQL", "Python"]
+        session["resume_uploaded"] = True
+
+    response = client.get("/profile")
+
+    assert response.status_code == 200
+    page = response.get_data(as_text=True)
+    assert "Jobs Applied" in page
+    assert "Data Analyst" in page
+    assert "Alpha" in page
+    assert "Engineer" not in page
+    assert "Amos is responsible for the user profile job-tracking view" in page
+
+
 def test_job_application_route_shows_save_error(monkeypatch):
     def fake_save_job_application_submission(submission_data):
         raise OSError("disk full")
