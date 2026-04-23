@@ -18,6 +18,7 @@ app.secret_key = os.urandom(24)
 UPLOAD_FOLDER = 'uploads'  
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 APPLICATION_SUBMISSIONS_FILE = os.path.join(UPLOAD_FOLDER, 'job_application_submissions.csv')
+SAVED_JOBS_FILE = os.path.join(UPLOAD_FOLDER, 'saved_jobs.csv')
 
 # Data set file path
 file_path = r'bronze_datasets\\sg_job_data_cleaned.csv'
@@ -79,6 +80,52 @@ def validate_job_application_form(form_data):
     return errors
 
 
+def validate_saved_job_form(form_data):
+    errors = []
+    job_role = form_data.get('job_role', '').strip()
+    company = form_data.get('company', '').strip()
+    job_url = form_data.get('job_url', '').strip()
+
+    if not job_role:
+        errors.append("Job role is required.")
+
+    if not company:
+        errors.append("Company is required.")
+
+    if job_url and not (job_url.startswith("http://") or job_url.startswith("https://")):
+        errors.append("Job URL must start with http:// or https://.")
+
+    return errors
+
+
+def load_saved_jobs():
+    if not os.path.exists(SAVED_JOBS_FILE):
+        return []
+
+    with open(SAVED_JOBS_FILE, newline='', encoding='utf-8') as csvfile:
+        return list(csv.DictReader(csvfile))
+
+
+def save_user_job(job_data):
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+    file_exists = os.path.exists(SAVED_JOBS_FILE)
+    fieldnames = [
+        'added_at',
+        'job_role',
+        'company',
+        'job_url',
+        'status',
+        'notes',
+        'industry',
+    ]
+
+    with open(SAVED_JOBS_FILE, 'a', newline='', encoding='utf-8') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        if not file_exists:
+            writer.writeheader()
+        writer.writerow(job_data)
+
+
 def save_job_application_submission(submission_data):
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     file_exists = os.path.exists(APPLICATION_SUBMISSIONS_FILE)
@@ -105,9 +152,12 @@ def clear_uploaded_resume_files():
     if not os.path.isdir(UPLOAD_FOLDER):
         return
 
-    submissions_filename = os.path.basename(APPLICATION_SUBMISSIONS_FILE)
+    protected_upload_files = {
+        os.path.basename(APPLICATION_SUBMISSIONS_FILE),
+        os.path.basename(SAVED_JOBS_FILE),
+    }
     for filename in os.listdir(UPLOAD_FOLDER):
-        if filename == submissions_filename:
+        if filename in protected_upload_files:
             continue
 
         file_path = os.path.join(UPLOAD_FOLDER, filename)
@@ -286,6 +336,63 @@ def bulk_industry_applications():
         user_profile=user_profile,
         submission_summary=submission_summary,
         selected_indexes=selected_indexes,
+    )
+
+
+@app.route('/jobs/add', methods=['GET', 'POST'])
+def add_job():
+    form_data = {
+        "job_role": request.args.get('job_role', '').strip(),
+        "company": request.args.get('company', '').strip(),
+        "job_url": request.args.get('job_url', '').strip(),
+        "status": "To Apply",
+        "notes": "",
+        "industry": session.get('industry', ''),
+    }
+    success_message = None
+    error_messages = []
+
+    if request.method == 'POST':
+        form_data = {
+            "job_role": request.form.get('job_role', '').strip(),
+            "company": request.form.get('company', '').strip(),
+            "job_url": request.form.get('job_url', '').strip(),
+            "status": request.form.get('status', 'To Apply').strip() or "To Apply",
+            "notes": request.form.get('notes', '').strip(),
+            "industry": session.get('industry', ''),
+        }
+
+        error_messages = validate_saved_job_form(form_data)
+
+        if not error_messages:
+            try:
+                save_user_job({
+                    "added_at": datetime.utcnow().isoformat(timespec='seconds'),
+                    "job_role": form_data["job_role"],
+                    "company": form_data["company"],
+                    "job_url": form_data["job_url"],
+                    "status": form_data["status"],
+                    "notes": form_data["notes"],
+                    "industry": form_data["industry"],
+                })
+                success_message = f"{form_data['job_role']} at {form_data['company']} was added to your saved jobs."
+                form_data = {
+                    "job_role": "",
+                    "company": "",
+                    "job_url": "",
+                    "status": "To Apply",
+                    "notes": "",
+                    "industry": session.get('industry', ''),
+                }
+            except OSError:
+                error_messages.append("We could not save this job right now. Please try again.")
+
+    return render_template(
+        'add_job.html',
+        form_data=form_data,
+        saved_jobs=load_saved_jobs(),
+        success_message=success_message,
+        error_messages=error_messages,
     )
 
 

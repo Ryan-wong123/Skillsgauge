@@ -9,6 +9,7 @@
     <h1><u>{{ job_title.title() }}</u> </h1>
     <div class="mb-3">
         <a class="btn btn-primary" href="{{ url_for('job_application', job_role=job_title) }}">Apply For This Role</a>
+        <a class="btn btn-outline-primary" href="{{ url_for('add_job', job_role=job_title) }}">Save This Role</a>
         <a class="btn btn-outline-primary" href="{{ url_for('bulk_industry_applications') }}">Bulk Apply Across This Industry</a>
     </div>
 
@@ -81,6 +82,7 @@
                     <br>
                     <a href="{{ job['Job URL'] }}" class="card-link" target="_blank">Job Link</a>
                     <a href="{{ url_for('job_application', job_role=job_title, company=job.get('Company', '')) }}" class="card-link">Apply in SkillGauge</a>
+                    <a href="{{ url_for('add_job', job_role=job_title, company=job.get('Company', ''), job_url=job.get('Job URL', '')) }}" class="card-link">Save Job</a>
                 </div>
             </div>
             {% endfor %}

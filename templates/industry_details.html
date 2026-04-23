@@ -36,6 +36,7 @@
                 <p class="mb-0">Use this company list to apply across the {{ industry }} industry faster. Export it as CSV and track each submission externally.</p>
             </div>
             <div class="d-flex gap-2 flex-wrap">
+                <a class="btn btn-outline-secondary" href="{{ url_for('add_job') }}">Add Job</a>
                 <a class="btn btn-outline-secondary" href="{{ url_for('job_application') }}">Submit One Application</a>
                 <a class="btn btn-success" href="{{ url_for('bulk_industry_applications') }}">Bulk Apply</a>
                 <a class="btn btn-primary" href="{{ url_for('export_industry_applications') }}">Export CSV</a>
@@ -62,6 +63,8 @@
                         <td>{{ job.posted_date }}</td>
                         <td>
                             <a href="{{ url_for('job_application', job_role=job.job_title, company=job.company) }}">Apply in SkillGauge</a>
+                            <br>
+                            <a href="{{ url_for('add_job', job_role=job.job_title, company=job.company, job_url=job.job_url) }}">Save Job</a>
                             <br>
                             {% if job.job_url %}
                             <a href="{{ job.job_url }}" target="_blank">Open Job</a>

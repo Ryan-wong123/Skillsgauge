@@ -189,6 +189,76 @@ def test_job_application_route_shows_validation_errors():
     assert "Enter a job role or company before submitting." in page
 
 
+def test_add_job_route_shows_validation_errors():
+    client = skillsgauge_app.app.test_client()
+
+    response = client.post(
+        "/jobs/add",
+        data={
+            "job_role": "",
+            "company": "",
+            "job_url": "example.com/job",
+            "status": "To Apply",
+            "notes": "",
+        },
+    )
+
+    assert response.status_code == 200
+    page = response.get_data(as_text=True)
+    assert "Job role is required." in page
+    assert "Company is required." in page
+    assert "Job URL must start with http:// or https://." in page
+
+
+def test_add_job_route_prefills_from_query():
+    client = skillsgauge_app.app.test_client()
+    with client.session_transaction() as session:
+        session["industry"] = "Technology"
+
+    response = client.get("/jobs/add?job_role=Data+Analyst&company=Alpha&job_url=https://example.com/job")
+
+    assert response.status_code == 200
+    page = response.get_data(as_text=True)
+    assert "value=\"Data Analyst\"" in page
+    assert "value=\"Alpha\"" in page
+    assert "value=\"https://example.com/job\"" in page
+
+
+def test_add_job_route_saves_job(monkeypatch):
+    captured_job = {}
+
+    def fake_save_user_job(job_data):
+        captured_job.update(job_data)
+
+    monkeypatch.setattr(skillsgauge_app, "save_user_job", fake_save_user_job)
+    monkeypatch.setattr(skillsgauge_app, "load_saved_jobs", lambda: [captured_job] if captured_job else [])
+
+    client = skillsgauge_app.app.test_client()
+    with client.session_transaction() as session:
+        session["industry"] = "Technology"
+
+    response = client.post(
+        "/jobs/add",
+        data={
+            "job_role": "Data Analyst",
+            "company": "Alpha",
+            "job_url": "https://example.com/job",
+            "status": "To Apply",
+            "notes": "Remote preferred.",
+        },
+    )
+
+    assert response.status_code == 200
+    page = response.get_data(as_text=True)
+    assert "Data Analyst at Alpha was added to your saved jobs." in page
+    assert captured_job["job_role"] == "Data Analyst"
+    assert captured_job["company"] == "Alpha"
+    assert captured_job["job_url"] == "https://example.com/job"
+    assert captured_job["status"] == "To Apply"
+    assert captured_job["notes"] == "Remote preferred."
+    assert captured_job["industry"] == "Technology"
+
+
 def test_job_application_route_prefills_context_from_session_and_query():
     client = skillsgauge_app.app.test_client()
     with client.session_transaction() as session:
@@ -302,6 +372,29 @@ def test_save_job_application_submission_writes_csv(tmp_path, monkeypatch):
     assert "Alex Tan,alex@example.com,Data Analyst,Alpha,Portfolio attached,Technology,\"SQL, Python\",True" in saved_content
 
 
+def test_save_user_job_writes_csv(tmp_path, monkeypatch):
+    saved_jobs_file = tmp_path / "saved_jobs.csv"
+
+    monkeypatch.setitem(skillsgauge_app.app.config, "UPLOAD_FOLDER", str(tmp_path))
+    monkeypatch.setattr(skillsgauge_app, "SAVED_JOBS_FILE", str(saved_jobs_file))
+
+    skillsgauge_app.save_user_job(
+        {
+            "added_at": "2026-04-09T12:00:00",
+            "job_role": "Data Analyst",
+            "company": "Alpha",
+            "job_url": "https://example.com/job",
+            "status": "To Apply",
+            "notes": "Remote preferred",
+            "industry": "Technology",
+        }
+    )
+
+    saved_content = saved_jobs_file.read_text(encoding="utf-8")
+    assert "added_at,job_role,company,job_url,status,notes,industry" in saved_content
+    assert "Data Analyst,Alpha,https://example.com/job,To Apply,Remote preferred,Technology" in saved_content
+
+
 def test_job_application_route_shows_save_error(monkeypatch):
     def fake_save_job_application_submission(submission_data):
         raise OSError("disk full")
@@ -341,14 +434,18 @@ def test_update_skills_keeps_application_submission_csv(tmp_path):
     resume_file.write_text("resume")
     submissions_file = uploads_dir / "job_application_submissions.csv"
     submissions_file.write_text("submitted_at,name\n")
+    saved_jobs_file = uploads_dir / "saved_jobs.csv"
+    saved_jobs_file.write_text("added_at,job_role\n")
 
     original_upload_folder = skillsgauge_app.UPLOAD_FOLDER
     original_config_upload_folder = skillsgauge_app.app.config["UPLOAD_FOLDER"]
     original_submissions_file = skillsgauge_app.APPLICATION_SUBMISSIONS_FILE
+    original_saved_jobs_file = skillsgauge_app.SAVED_JOBS_FILE
 
     skillsgauge_app.UPLOAD_FOLDER = str(uploads_dir)
     skillsgauge_app.app.config["UPLOAD_FOLDER"] = str(uploads_dir)
     skillsgauge_app.APPLICATION_SUBMISSIONS_FILE = str(submissions_file)
+    skillsgauge_app.SAVED_JOBS_FILE = str(saved_jobs_file)
 
     try:
         client = skillsgauge_app.app.test_client()
@@ -363,8 +460,11 @@ def test_update_skills_keeps_application_submission_csv(tmp_path):
         assert response.status_code == 302
         assert not resume_file.exists()
         assert submissions_file.exists()
+        assert saved_jobs_file.exists()
         assert os.path.getsize(submissions_file) > 0
+        assert os.path.getsize(saved_jobs_file) > 0
     finally:
         skillsgauge_app.UPLOAD_FOLDER = original_upload_folder
         skillsgauge_app.app.config["UPLOAD_FOLDER"] = original_config_upload_folder
         skillsgauge_app.APPLICATION_SUBMISSIONS_FILE = original_submissions_file
+        skillsgauge_app.SAVED_JOBS_FILE = original_saved_jobs_file
