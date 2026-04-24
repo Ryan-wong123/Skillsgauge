@@ -9,6 +9,7 @@ Frequency Analysis<br/>
 Trend Analysis<br/>
 Skill Gap Identifier<br/>
 Web-Based User Interface<br/>
+Job Application Tracking<br/>
 
 ## Technology Stack:
 *Frontend*: HTML, CSS, Bootstrap, Jinja, JavaScript<br/>
@@ -23,3 +24,6 @@ Web-Based User Interface<br/>
 ## How to run:
 pip install -r requirements.txt<br/>
 python app.py
+
+## Group Project Roles
+Amos was responsible for the user job-adding flow in the group project, including saving job applications and showing applied jobs on the profile page.

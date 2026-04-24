@@ -101,6 +101,25 @@ def save_job_application_submission(submission_data):
         writer.writerow(submission_data)
 
 
+def load_saved_job_applications(applicant_email):
+    if not applicant_email or not os.path.exists(APPLICATION_SUBMISSIONS_FILE):
+        return []
+
+    saved_applications = []
+    with open(APPLICATION_SUBMISSIONS_FILE, newline='', encoding='utf-8') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            if row.get('email', '').strip().lower() != applicant_email.strip().lower():
+                continue
+            saved_applications.append(row)
+
+    saved_applications.sort(
+        key=lambda application: application.get('submitted_at', ''),
+        reverse=True,
+    )
+    return saved_applications
+
+
 def clear_uploaded_resume_files():
     if not os.path.isdir(UPLOAD_FOLDER):
         return
@@ -346,6 +365,20 @@ def job_application():
         form_data=form_data,
         success_message=success_message,
         error_messages=error_messages,
+    )
+
+
+@app.route('/profile')
+def profile():
+    applicant_email = session.get('applicant_email', '').strip()
+    applicant_name = session.get('applicant_name', '').strip()
+    saved_applications = load_saved_job_applications(applicant_email)
+
+    return render_template(
+        'profile.html',
+        applicant_email=applicant_email,
+        applicant_name=applicant_name,
+        saved_applications=saved_applications,
     )
 
 #show the job roles page with suitable jobs

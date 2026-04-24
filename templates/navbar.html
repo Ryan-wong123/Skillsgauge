@@ -40,6 +40,12 @@
       </li>
       {% endif %}
 
+      {% if session.get('applicant_email') %}
+      <li class="nav-item mt-1">
+        <a class="nav-link" href="{{ url_for('profile') }}">Profile</a>
+      </li>
+      {% endif %}
+
     </ul>
 
     <br>

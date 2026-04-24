@@ -1,0 +1,61 @@
+{% extends "index.html" %}
+
+{% block title %} Profile {% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
+        <div>
+            <h2 class="mb-1">Profile</h2>
+            <p class="text-muted mb-0">Review your saved application details and jobs applied through SkillGauge.</p>
+        </div>
+        <a class="btn btn-outline-secondary" href="{{ url_for('job_application') }}">Add Job Application</a>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Saved User Details</h5>
+            <p class="mb-2"><strong>Name:</strong> {{ applicant_name or 'Not saved yet' }}</p>
+            <p class="mb-0"><strong>Email:</strong> {{ applicant_email or 'Not saved yet' }}</p>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
+                <h5 class="card-title mb-0">Jobs Applied</h5>
+                <span class="badge badge-primary">{{ saved_applications|length }} saved</span>
+            </div>
+
+            {% if saved_applications %}
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered mb-0">
+                    <thead>
+                        <tr>
+                            <th>Submitted</th>
+                            <th>Job Role</th>
+                            <th>Company</th>
+                            <th>Industry</th>
+                            <th>Resume Ready</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for application in saved_applications %}
+                        <tr>
+                            <td>{{ application.submitted_at or '-' }}</td>
+                            <td>{{ application.job_role or '-' }}</td>
+                            <td>{{ application.company or '-' }}</td>
+                            <td>{{ application.industry or '-' }}</td>
+                            <td>{{ application.resume_uploaded or '-' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted mb-0">No saved job applications yet. Submit a job application to start tracking jobs applied.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

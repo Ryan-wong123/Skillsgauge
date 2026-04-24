@@ -271,6 +271,75 @@ def test_job_application_route_submits_successfully(monkeypatch):
     assert captured_submission["industry"] == "Technology"
     assert captured_submission["skills"] == "SQL, Python"
     assert captured_submission["resume_uploaded"] is True
+    with client.session_transaction() as session:
+        assert session["applicant_name"] == "Alex Tan"
+        assert session["applicant_email"] == "alex@example.com"
+        assert session["last_applied_job_role"] == "Data Analyst"
+        assert session["last_applied_company"] == "Alpha"
+
+
+def test_load_saved_job_applications_filters_by_email(tmp_path, monkeypatch):
+    submissions_file = tmp_path / "job_application_submissions.csv"
+    submissions_file.write_text(
+        "\n".join(
+            [
+                "submitted_at,name,email,job_role,company,supporting_info,industry,skills,resume_uploaded",
+                "2026-04-09T12:00:00,Alex Tan,alex@example.com,Data Analyst,Alpha,,Technology,\"SQL, Python\",True",
+                "2026-04-10T12:00:00,Sam Lee,sam@example.com,Engineer,Beta,,Engineering,Python,True",
+                "2026-04-11T12:00:00,Alex Tan,ALEX@example.com,BI Analyst,Gamma,,Technology,SQL,False",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    monkeypatch.setattr(
+        skillsgauge_app,
+        "APPLICATION_SUBMISSIONS_FILE",
+        str(submissions_file),
+    )
+
+    saved_applications = skillsgauge_app.load_saved_job_applications("alex@example.com")
+
+    assert len(saved_applications) == 2
+    assert saved_applications[0]["job_role"] == "BI Analyst"
+    assert saved_applications[1]["job_role"] == "Data Analyst"
+
+
+def test_profile_route_shows_jobs_applied(tmp_path, monkeypatch):
+    submissions_file = tmp_path / "job_application_submissions.csv"
+    submissions_file.write_text(
+        "\n".join(
+            [
+                "submitted_at,name,email,job_role,company,supporting_info,industry,skills,resume_uploaded",
+                "2026-04-09T12:00:00,Alex Tan,alex@example.com,Data Analyst,Alpha,,Technology,\"SQL, Python\",True",
+                "2026-04-10T12:00:00,Jordan,jordan@example.com,Engineer,Beta,,Engineering,Python,True",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    monkeypatch.setattr(
+        skillsgauge_app,
+        "APPLICATION_SUBMISSIONS_FILE",
+        str(submissions_file),
+    )
+
+    client = skillsgauge_app.app.test_client()
+    with client.session_transaction() as session:
+        session["applicant_name"] = "Alex Tan"
+        session["applicant_email"] = "alex@example.com"
+
+    response = client.get("/profile")
+
+    assert response.status_code == 200
+    page = response.get_data(as_text=True)
+    assert "Profile" in page
+    assert "Alex Tan" in page
+    assert "alex@example.com" in page
+    assert "Jobs Applied" in page
+    assert "Data Analyst" in page
+    assert "Alpha" in page
+    assert "Engineer" not in page
 
 
 def test_save_job_application_submission_writes_csv(tmp_path, monkeypatch):

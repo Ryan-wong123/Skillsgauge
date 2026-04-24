@@ -22,6 +22,9 @@
     {% if success_message %}
     <div class="alert alert-success" role="alert">
         {{ success_message }}
+        <div class="mt-2">
+            <a class="btn btn-sm btn-outline-success" href="{{ url_for('profile') }}">View Profile</a>
+        </div>
     </div>
     {% endif %}
 
