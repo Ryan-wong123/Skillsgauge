@@ -58,23 +58,26 @@ def build_job_application_context(job_role=None, company=None):
     }
 
 
-def validate_job_application_form(form_data):
+def validate_job_application_form(form_data, is_draft=False):
     errors = []
     name = form_data.get('name', '').strip()
     email = form_data.get('email', '').strip()
     job_role = form_data.get('job_role', '').strip()
     company = form_data.get('company', '').strip()
+    supporting_info = form_data.get('supporting_info', '').strip()
 
-    if not name:
+    if not is_draft and not name:
         errors.append("Name is required.")
 
-    if not email:
+    if not is_draft and not email:
         errors.append("Email is required.")
-    elif "@" not in email or "." not in email.split("@")[-1]:
+    elif email and ("@" not in email or "." not in email.split("@")[-1]):
         errors.append("Enter a valid email address.")
 
-    if not job_role and not company:
+    if not is_draft and not job_role and not company:
         errors.append("Enter a job role or company before submitting.")
+    elif is_draft and not any([name, email, job_role, company, supporting_info]):
+        errors.append("Add at least one application detail before saving a draft.")
 
     return errors
 
@@ -89,6 +92,7 @@ def save_job_application_submission(submission_data):
         'job_role',
         'company',
         'supporting_info',
+        'status',
         'industry',
         'skills',
         'resume_uploaded',
@@ -317,6 +321,7 @@ def job_application():
     error_messages = []
 
     if request.method == 'POST':
+        is_draft = request.form.get('submission_action') == 'draft'
         form_data = {
             "name": request.form.get('name', '').strip(),
             "email": request.form.get('email', '').strip(),
@@ -328,7 +333,7 @@ def job_application():
             "resume_uploaded": session.get('resume_uploaded', False) or bool(session.get('userSkills', [])),
         }
 
-        error_messages = validate_job_application_form(form_data)
+        error_messages = validate_job_application_form(form_data, is_draft=is_draft)
 
         if not error_messages:
             submission_record = {
@@ -338,6 +343,7 @@ def job_application():
                 "job_role": form_data["job_role"],
                 "company": form_data["company"],
                 "supporting_info": form_data["supporting_info"],
+                "status": "Draft" if is_draft else "Submitted",
                 "industry": form_data["industry"],
                 "skills": ", ".join(form_data["skills"]),
                 "resume_uploaded": form_data["resume_uploaded"],
@@ -345,14 +351,21 @@ def job_application():
 
             try:
                 save_job_application_submission(submission_record)
-                session['applicant_name'] = form_data["name"]
-                session['applicant_email'] = form_data["email"]
+                if form_data["name"]:
+                    session['applicant_name'] = form_data["name"]
+                if form_data["email"]:
+                    session['applicant_email'] = form_data["email"]
                 session['last_applied_job_role'] = form_data["job_role"]
                 session['last_applied_company'] = form_data["company"]
                 applied_target = form_data["job_role"] or form_data["company"]
                 if form_data["job_role"] and form_data["company"]:
                     applied_target = f'{form_data["job_role"]} at {form_data["company"]}'
-                success_message = f"Your job application for {applied_target} was submitted successfully."
+                if is_draft:
+                    success_message = "Your job application draft was saved successfully."
+                    if applied_target:
+                        success_message = f"Your draft for {applied_target} was saved successfully."
+                else:
+                    success_message = f"Your job application for {applied_target} was submitted successfully."
                 form_data = build_job_application_context(
                     job_role=form_data["job_role"],
                     company=form_data["company"],

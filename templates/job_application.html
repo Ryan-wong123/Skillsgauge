@@ -65,7 +65,10 @@
                         <textarea class="form-control" id="supporting_info" name="supporting_info" rows="5" placeholder="Add a short note, availability, portfolio link, or other relevant information.">{{ form_data.supporting_info }}</textarea>
                     </div>
 
-                    <button type="submit" class="btn btn-primary">Submit Application</button>
+                    <div class="d-flex flex-wrap">
+                        <button type="submit" name="submission_action" value="submit" class="btn btn-primary mr-2 mb-2">Submit Application</button>
+                        <button type="submit" name="submission_action" value="draft" formnovalidate class="btn btn-outline-secondary mb-2">Save as Draft</button>
+                    </div>
                 </div>
             </form>
         </div>

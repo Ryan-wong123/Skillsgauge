@@ -33,6 +33,7 @@
                     <thead>
                         <tr>
                             <th>Submitted</th>
+                            <th>Status</th>
                             <th>Job Role</th>
                             <th>Company</th>
                             <th>Industry</th>
@@ -43,6 +44,7 @@
                         {% for application in saved_applications %}
                         <tr>
                             <td>{{ application.submitted_at or '-' }}</td>
+                            <td>{{ application.status or 'Submitted' }}</td>
                             <td>{{ application.job_role or '-' }}</td>
                             <td>{{ application.company or '-' }}</td>
                             <td>{{ application.industry or '-' }}</td>

@@ -268,6 +268,7 @@ def test_job_application_route_submits_successfully(monkeypatch):
     assert captured_submission["email"] == "alex@example.com"
     assert captured_submission["job_role"] == "Data Analyst"
     assert captured_submission["company"] == "Alpha"
+    assert captured_submission["status"] == "Submitted"
     assert captured_submission["industry"] == "Technology"
     assert captured_submission["skills"] == "SQL, Python"
     assert captured_submission["resume_uploaded"] is True
@@ -278,15 +279,79 @@ def test_job_application_route_submits_successfully(monkeypatch):
         assert session["last_applied_company"] == "Alpha"
 
 
+def test_job_application_route_saves_draft_with_partial_details(monkeypatch):
+    captured_submission = {}
+
+    def fake_save_job_application_submission(submission_data):
+        captured_submission.update(submission_data)
+
+    monkeypatch.setattr(
+        skillsgauge_app,
+        "save_job_application_submission",
+        fake_save_job_application_submission,
+    )
+
+    client = skillsgauge_app.app.test_client()
+    with client.session_transaction() as session:
+        session["industry"] = "Technology"
+        session["userSkills"] = ["SQL", "Python"]
+        session["resume_uploaded"] = True
+
+    response = client.post(
+        "/job_application",
+        data={
+            "name": "",
+            "email": "",
+            "job_role": "Data Analyst",
+            "company": "",
+            "supporting_info": "",
+            "submission_action": "draft",
+        },
+    )
+
+    assert response.status_code == 200
+    page = response.get_data(as_text=True)
+    assert "Your draft for Data Analyst was saved successfully." in page
+    assert captured_submission["job_role"] == "Data Analyst"
+    assert captured_submission["status"] == "Draft"
+    with client.session_transaction() as session:
+        assert session.get("applicant_name") is None
+        assert session.get("applicant_email") is None
+        assert session["last_applied_job_role"] == "Data Analyst"
+        assert session["last_applied_company"] == ""
+
+
+def test_job_application_route_rejects_empty_draft(monkeypatch):
+    client = skillsgauge_app.app.test_client()
+    with client.session_transaction() as session:
+        session["industry"] = "Technology"
+
+    response = client.post(
+        "/job_application",
+        data={
+            "name": "",
+            "email": "",
+            "job_role": "",
+            "company": "",
+            "supporting_info": "",
+            "submission_action": "draft",
+        },
+    )
+
+    assert response.status_code == 200
+    page = response.get_data(as_text=True)
+    assert "Add at least one application detail before saving a draft." in page
+
+
 def test_load_saved_job_applications_filters_by_email(tmp_path, monkeypatch):
     submissions_file = tmp_path / "job_application_submissions.csv"
     submissions_file.write_text(
         "\n".join(
             [
-                "submitted_at,name,email,job_role,company,supporting_info,industry,skills,resume_uploaded",
-                "2026-04-09T12:00:00,Alex Tan,alex@example.com,Data Analyst,Alpha,,Technology,\"SQL, Python\",True",
-                "2026-04-10T12:00:00,Sam Lee,sam@example.com,Engineer,Beta,,Engineering,Python,True",
-                "2026-04-11T12:00:00,Alex Tan,ALEX@example.com,BI Analyst,Gamma,,Technology,SQL,False",
+                "submitted_at,name,email,job_role,company,supporting_info,status,industry,skills,resume_uploaded",
+                "2026-04-09T12:00:00,Alex Tan,alex@example.com,Data Analyst,Alpha,,Submitted,Technology,\"SQL, Python\",True",
+                "2026-04-10T12:00:00,Sam Lee,sam@example.com,Engineer,Beta,,Submitted,Engineering,Python,True",
+                "2026-04-11T12:00:00,Alex Tan,ALEX@example.com,BI Analyst,Gamma,,Draft,Technology,SQL,False",
             ]
         ),
         encoding="utf-8",
@@ -302,6 +367,7 @@ def test_load_saved_job_applications_filters_by_email(tmp_path, monkeypatch):
 
     assert len(saved_applications) == 2
     assert saved_applications[0]["job_role"] == "BI Analyst"
+    assert saved_applications[0]["status"] == "Draft"
     assert saved_applications[1]["job_role"] == "Data Analyst"
 
 
@@ -310,9 +376,9 @@ def test_profile_route_shows_jobs_applied(tmp_path, monkeypatch):
     submissions_file.write_text(
         "\n".join(
             [
-                "submitted_at,name,email,job_role,company,supporting_info,industry,skills,resume_uploaded",
-                "2026-04-09T12:00:00,Alex Tan,alex@example.com,Data Analyst,Alpha,,Technology,\"SQL, Python\",True",
-                "2026-04-10T12:00:00,Jordan,jordan@example.com,Engineer,Beta,,Engineering,Python,True",
+                "submitted_at,name,email,job_role,company,supporting_info,status,industry,skills,resume_uploaded",
+                "2026-04-09T12:00:00,Alex Tan,alex@example.com,Data Analyst,Alpha,,Draft,Technology,\"SQL, Python\",True",
+                "2026-04-10T12:00:00,Jordan,jordan@example.com,Engineer,Beta,,Submitted,Engineering,Python,True",
             ]
         ),
         encoding="utf-8",
@@ -339,6 +405,7 @@ def test_profile_route_shows_jobs_applied(tmp_path, monkeypatch):
     assert "Jobs Applied" in page
     assert "Data Analyst" in page
     assert "Alpha" in page
+    assert "Draft" in page
     assert "Engineer" not in page
 
 
@@ -360,6 +427,7 @@ def test_save_job_application_submission_writes_csv(tmp_path, monkeypatch):
             "job_role": "Data Analyst",
             "company": "Alpha",
             "supporting_info": "Portfolio attached",
+            "status": "Submitted",
             "industry": "Technology",
             "skills": "SQL, Python",
             "resume_uploaded": True,
@@ -367,8 +435,8 @@ def test_save_job_application_submission_writes_csv(tmp_path, monkeypatch):
     )
 
     saved_content = submissions_file.read_text(encoding="utf-8")
-    assert "submitted_at,name,email,job_role,company,supporting_info,industry,skills,resume_uploaded" in saved_content
-    assert "Alex Tan,alex@example.com,Data Analyst,Alpha,Portfolio attached,Technology,\"SQL, Python\",True" in saved_content
+    assert "submitted_at,name,email,job_role,company,supporting_info,status,industry,skills,resume_uploaded" in saved_content
+    assert "Alex Tan,alex@example.com,Data Analyst,Alpha,Portfolio attached,Submitted,Technology,\"SQL, Python\",True" in saved_content
 
 
 def test_job_application_route_shows_save_error(monkeypatch):
