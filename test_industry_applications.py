@@ -92,15 +92,49 @@ def test_process_bulk_applications_reports_partial_failures():
 
     result = process_bulk_applications(
         shortlist,
+        selected_indexes=["1"],
+        user_profile={"industry": "Technology", "skills": ["SQL", "Python"]},
+    )
+
+    assert result["success_count"] == 0
+    assert result["failure_count"] == 1
+    assert result["summary_message"] == "All 1 selected application(s) failed."
+    assert result["results"][0]["application_status"] == "Failed"
+
+
+def test_process_bulk_applications_rejects_multiple_selected_jobs():
+    shortlist = [
+        {
+            "job_title": "Data Analyst",
+            "company": "Alpha",
+            "location": "Singapore",
+            "posted_date": "2026-04-01",
+            "job_url": "https://example.com/alpha-1",
+            "status": "To Apply",
+            "notes": "",
+        },
+        {
+            "job_title": "BI Analyst",
+            "company": "Beta",
+            "location": "Remote",
+            "posted_date": "2026-04-02",
+            "job_url": "https://example.com/beta-1",
+            "status": "To Apply",
+            "notes": "",
+        },
+    ]
+
+    result = process_bulk_applications(
+        shortlist,
         selected_indexes=["0", "1"],
         user_profile={"industry": "Technology", "skills": ["SQL", "Python"]},
     )
 
-    assert result["success_count"] == 1
-    assert result["failure_count"] == 1
-    assert result["summary_message"] == "Submitted 1 application(s) successfully. 1 application(s) failed."
-    assert result["results"][0]["application_status"] == "Submitted"
-    assert result["results"][1]["application_status"] == "Failed"
+    assert result["success_count"] == 0
+    assert result["failure_count"] == 0
+    assert result["processed_count"] == 0
+    assert result["alert_class"] == "alert-danger"
+    assert result["summary_message"] == "Only one job application can be submitted per draft."
 
 
 def test_process_bulk_applications_requires_selection_for_feedback():
@@ -154,14 +188,60 @@ def test_bulk_industry_applications_route_shows_submission_results(monkeypatch):
 
     response = client.post(
         "/industry_applications/bulk",
-        data={"selected_jobs": ["0", "1"]},
+        data={"selected_jobs": "0"},
     )
 
     assert response.status_code == 200
     page = response.get_data(as_text=True)
     assert "Bulk Apply for Technology" in page
     assert "Submitted 1 application(s) successfully." in page
-    assert "1 application(s) failed." in page
+
+
+def test_bulk_industry_applications_route_rejects_multiple_selected_jobs(monkeypatch):
+    csv_df = pd.DataFrame(
+        [
+            {
+                "Job Title": "Data Analyst",
+                "Company": "Alpha",
+                "Location": "Singapore",
+                "Job Posting Date": "2026-04-01",
+                "Job URL": "https://example.com/alpha-1",
+            },
+            {
+                "Job Title": "BI Analyst",
+                "Company": "Beta",
+                "Location": "Remote",
+                "Job Posting Date": "2026-04-02",
+                "Job URL": "https://example.com/beta-1",
+            },
+        ]
+    )
+
+    original_open = builtins.open
+
+    def fake_open(path, *args, **kwargs):
+        if path == "bronze_datasets/(Final)_past_Technology.csv":
+            return StringIO("placeholder")
+        return original_open(path, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "open", fake_open)
+    monkeypatch.setattr(skillsgauge_app.pd, "read_csv", lambda *args, **kwargs: csv_df.copy())
+
+    client = skillsgauge_app.app.test_client()
+    with client.session_transaction() as session:
+        session["industry"] = "Technology"
+        session["userSkills"] = ["SQL", "Python"]
+        session["resume_uploaded"] = True
+
+    response = client.post(
+        "/industry_applications/bulk",
+        data={"selected_jobs": ["0", "1"]},
+    )
+
+    assert response.status_code == 200
+    page = response.get_data(as_text=True)
+    assert "Only one job application can be submitted per draft." in page
+    assert "Submit Selected Application" in page
 
 
 def test_job_application_route_shows_validation_errors():

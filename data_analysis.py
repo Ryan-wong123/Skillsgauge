@@ -446,6 +446,17 @@ def process_bulk_applications(shortlist, selected_indexes, user_profile=None):
             "summary_message": "Select at least one job before submitting bulk applications.",
         }
 
+    if len(selected_indexes) > 1:
+        return {
+            "results": results,
+            "success_count": 0,
+            "failure_count": 0,
+            "selected_count": len(selected_indexes),
+            "processed_count": 0,
+            "alert_class": "alert-danger",
+            "summary_message": "Only one job application can be submitted per draft.",
+        }
+
     for raw_index in selected_indexes:
         try:
             index = int(raw_index)

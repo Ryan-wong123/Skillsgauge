@@ -10,7 +10,7 @@
     <div class="card border-dark mb-4" style="background-color: rgb(255, 248, 225)">
         <div class="card-body">
             <h2 class="mb-2">Bulk Apply for {{ industry }}</h2>
-            <p class="mb-2">Select several relevant jobs and submit one internal application batch using your saved industry and skills profile.</p>
+            <p class="mb-2">Select one relevant job and submit one internal application draft using your saved industry and skills profile.</p>
             <div class="small text-muted">
                 Saved industry: {{ user_profile.industry }} |
                 Saved skills: {{ user_profile.skills|length }} |
@@ -68,8 +68,9 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
                     <h4 class="mb-0">Recommended Jobs</h4>
-                    <button type="submit" class="btn btn-primary">Submit Selected Applications</button>
+                    <button type="submit" class="btn btn-primary">Submit Selected Application</button>
                 </div>
+                <p class="text-muted mb-3">Each draft can include only one job application.</p>
 
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
@@ -87,7 +88,7 @@
                             {% for job in shortlist %}
                             <tr>
                                 <td>
-                                    <input type="checkbox" name="selected_jobs" value="{{ loop.index0 }}"
+                                    <input type="radio" name="selected_jobs" value="{{ loop.index0 }}"
                                         {% if loop.index0|string in selected_indexes %}checked{% endif %}>
                                 </td>
                                 <td>{{ job.job_title }}</td>
