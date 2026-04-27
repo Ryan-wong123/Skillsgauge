@@ -79,6 +79,22 @@ def validate_job_application_form(form_data):
     return errors
 
 
+def validate_application_contact_form(form_data):
+    errors = []
+    name = form_data.get('name', '').strip()
+    email = form_data.get('email', '').strip()
+
+    if not name:
+        errors.append("Name is required.")
+
+    if not email:
+        errors.append("Email is required.")
+    elif "@" not in email or "." not in email.split("@")[-1]:
+        errors.append("Enter a valid email address.")
+
+    return errors
+
+
 def save_job_application_submission(submission_data):
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     file_exists = os.path.exists(APPLICATION_SUBMISSIONS_FILE)
@@ -99,6 +115,58 @@ def save_job_application_submission(submission_data):
         if not file_exists:
             writer.writeheader()
         writer.writerow(submission_data)
+
+
+def save_bulk_application_results(results, form_data, user_profile):
+    for result in results:
+        if result.get("application_status") != "Submitted":
+            continue
+
+        submission_record = {
+            "submitted_at": datetime.utcnow().isoformat(timespec='seconds'),
+            "name": form_data["name"],
+            "email": form_data["email"],
+            "job_role": result.get("job_title", ""),
+            "company": result.get("company", ""),
+            "supporting_info": form_data.get("supporting_info", ""),
+            "industry": user_profile.get("industry", ""),
+            "skills": ", ".join(user_profile.get("skills", [])),
+            "resume_uploaded": user_profile.get("resume_ready", False),
+        }
+
+        try:
+            save_job_application_submission(submission_record)
+        except OSError:
+            result["application_status"] = "Failed"
+            result["status_message"] = "Application could not be saved. Please try again."
+
+
+def refresh_bulk_submission_summary(submission_summary):
+    results = submission_summary.get("results", [])
+    success_count = sum(1 for job in results if job["application_status"] == "Submitted")
+    failure_count = len(results) - success_count
+
+    if not results:
+        return submission_summary
+
+    if failure_count == 0:
+        alert_class = "alert-success"
+        summary_message = f"Submitted {success_count} application(s) successfully."
+    elif success_count == 0:
+        alert_class = "alert-danger"
+        summary_message = f"All {failure_count} selected application(s) failed."
+    else:
+        alert_class = "alert-warning"
+        summary_message = (
+            f"Submitted {success_count} application(s) successfully. "
+            f"{failure_count} application(s) failed."
+        )
+
+    submission_summary["success_count"] = success_count
+    submission_summary["failure_count"] = failure_count
+    submission_summary["alert_class"] = alert_class
+    submission_summary["summary_message"] = summary_message
+    return submission_summary
 
 
 def clear_uploaded_resume_files():
@@ -271,21 +339,43 @@ def bulk_industry_applications():
         "skills": user_skills,
         "resume_ready": session.get('resume_uploaded', False) or bool(user_skills),
     }
+    form_data = {
+        "name": session.get('applicant_name', ''),
+        "email": session.get('applicant_email', ''),
+        "supporting_info": '',
+    }
 
     submission_summary = None
     selected_indexes = []
+    error_messages = []
 
     if request.method == 'POST':
         selected_indexes = request.form.getlist('selected_jobs')
-        submission_summary = process_bulk_applications(shortlist, selected_indexes, user_profile)
+        form_data = {
+            "name": request.form.get('name', '').strip(),
+            "email": request.form.get('email', '').strip(),
+            "supporting_info": request.form.get('supporting_info', '').strip(),
+        }
+        error_messages = validate_application_contact_form(form_data)
+
+        if not error_messages:
+            submission_summary = process_bulk_applications(shortlist, selected_indexes, user_profile)
+            save_bulk_application_results(submission_summary["results"], form_data, user_profile)
+            submission_summary = refresh_bulk_submission_summary(submission_summary)
+
+            if submission_summary["results"]:
+                session['applicant_name'] = form_data["name"]
+                session['applicant_email'] = form_data["email"]
 
     return render_template(
         'bulk_industry_applications.html',
         industry=industry_name,
         shortlist=shortlist,
         user_profile=user_profile,
+        form_data=form_data,
         submission_summary=submission_summary,
         selected_indexes=selected_indexes,
+        error_messages=error_messages,
     )
 
 

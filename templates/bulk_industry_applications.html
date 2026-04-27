@@ -63,9 +63,33 @@
     {% endif %}
     {% endif %}
 
+    {% if error_messages %}
+    <div class="alert alert-danger" role="alert">
+        {% for error in error_messages %}
+        <div>{{ error }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
     <form method="POST">
         <div class="card">
             <div class="card-body">
+                <h4 class="mb-3">Applicant Details</h4>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="name">Full Name</label>
+                        <input type="text" class="form-control" id="name" name="name" value="{{ form_data.name }}" required>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ form_data.email }}" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="supporting_info">Supporting Information</label>
+                    <textarea class="form-control" id="supporting_info" name="supporting_info" rows="3" placeholder="Add a short note, availability, portfolio link, or other relevant information for this batch.">{{ form_data.supporting_info }}</textarea>
+                </div>
+
                 <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
                     <h4 class="mb-0">Recommended Jobs</h4>
                     <button type="submit" class="btn btn-primary">Submit Selected Applications</button>
