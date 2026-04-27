@@ -154,7 +154,12 @@ def test_bulk_industry_applications_route_shows_submission_results(monkeypatch):
 
     response = client.post(
         "/industry_applications/bulk",
-        data={"selected_jobs": ["0", "1"]},
+        data={
+            "name": "Alex Tan",
+            "email": "alex@example.com",
+            "supporting_info": "Available immediately.",
+            "selected_jobs": ["0", "1"],
+        },
     )
 
     assert response.status_code == 200
@@ -162,6 +167,70 @@ def test_bulk_industry_applications_route_shows_submission_results(monkeypatch):
     assert "Bulk Apply for Technology" in page
     assert "Submitted 1 application(s) successfully." in page
     assert "1 application(s) failed." in page
+
+
+def test_bulk_industry_applications_route_saves_successful_submissions(monkeypatch):
+    csv_df = pd.DataFrame(
+        [
+            {
+                "Job Title": "Data Analyst",
+                "Company": "Alpha",
+                "Location": "Singapore",
+                "Job Posting Date": "2026-04-01",
+                "Job URL": "https://example.com/alpha-1",
+            },
+            {
+                "Job Title": "BI Analyst",
+                "Company": "Beta",
+                "Location": "Remote",
+                "Job Posting Date": "2026-04-02",
+                "Job URL": "",
+            },
+        ]
+    )
+    saved_submissions = []
+    original_open = builtins.open
+
+    def fake_open(path, *args, **kwargs):
+        if path == "bronze_datasets/(Final)_past_Technology.csv":
+            return StringIO("placeholder")
+        return original_open(path, *args, **kwargs)
+
+    def fake_save_job_application_submission(submission_data):
+        saved_submissions.append(submission_data)
+
+    monkeypatch.setattr(builtins, "open", fake_open)
+    monkeypatch.setattr(skillsgauge_app.pd, "read_csv", lambda *args, **kwargs: csv_df.copy())
+    monkeypatch.setattr(
+        skillsgauge_app,
+        "save_job_application_submission",
+        fake_save_job_application_submission,
+    )
+
+    client = skillsgauge_app.app.test_client()
+    with client.session_transaction() as session:
+        session["industry"] = "Technology"
+        session["userSkills"] = ["SQL", "Python"]
+        session["resume_uploaded"] = True
+
+    response = client.post(
+        "/industry_applications/bulk",
+        data={
+            "name": "Alex Tan",
+            "email": "alex@example.com",
+            "supporting_info": "Portfolio attached",
+            "selected_jobs": ["0", "1"],
+        },
+    )
+
+    assert response.status_code == 200
+    assert len(saved_submissions) == 1
+    assert saved_submissions[0]["name"] == "Alex Tan"
+    assert saved_submissions[0]["email"] == "alex@example.com"
+    assert saved_submissions[0]["job_role"] == "Data Analyst"
+    assert saved_submissions[0]["company"] == "Alpha"
+    assert saved_submissions[0]["industry"] == "Technology"
+    assert saved_submissions[0]["skills"] == "SQL, Python"
 
 
 def test_job_application_route_shows_validation_errors():
