@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 
 #scraper settings
 scrape_dir = PROJECT_ROOT / "bronze_datasets" / "JS"
-file_name = "js_"+ current_datetime.strftime("%Y_%m_%d") + ".csv"
+file_name = "js_"+ current_datetime.strftime("%Y_%m") + ".csv"
 full_path = scrape_dir / file_name
 
 
@@ -445,5 +445,3 @@ try:
 
 except Exception as e:
     logger.error(f"Scraper error:{str(e)}")
-
-
